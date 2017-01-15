@@ -16,7 +16,23 @@ public abstract class AbstractEntity {
     @Id
     @GeneratedValue
     @Column(name = "oid")
-    public Long oid;
+    private Long oid;
 
-    public UUID identifier;
+    private UUID identifier;
+
+    public Long getOid() {
+        return oid;
+    }
+
+    public void setOid(Long oid) {
+        this.oid = oid;
+    }
+
+    public UUID getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(UUID identifier) {
+        this.identifier = identifier;
+    }
 }

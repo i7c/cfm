@@ -16,11 +16,11 @@ public class ArtistDto extends AbstractDto<Artist> {
     }
 
     public UUID getMbid() {
-        return data.mbid;
+        return data.getMbid();
     }
 
     public String getName() {
-        return data.name;
+        return data.getName();
     }
 
 }

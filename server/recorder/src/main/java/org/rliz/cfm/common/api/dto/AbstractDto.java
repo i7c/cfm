@@ -17,6 +17,6 @@ public abstract class AbstractDto<T extends AbstractEntity> extends ResourceSupp
     }
 
     public UUID getIdentifier() {
-        return data.identifier;
+        return data.getIdentifier();
     }
 }

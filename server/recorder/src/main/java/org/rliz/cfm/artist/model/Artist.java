@@ -13,11 +13,11 @@ import java.util.UUID;
 @Entity
 public class Artist extends AbstractEntity {
 
-    public UUID mbid;
+    private UUID mbid;
 
     @Column
     @NotNull
-    public String name;
+    private String name;
 
     /**
      * Default constructor.
@@ -28,11 +28,28 @@ public class Artist extends AbstractEntity {
 
     /**
      * Field setting constructor.
+     *
      * @param mbid the musicbrainz ID of this artist, can be null
      * @param name the name of this artist
      */
     public Artist(UUID mbid, String name) {
         this.mbid = mbid;
+        this.name = name;
+    }
+
+    public UUID getMbid() {
+        return mbid;
+    }
+
+    public void setMbid(UUID mbid) {
+        this.mbid = mbid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 }

@@ -17,7 +17,7 @@ public class ArtistDtoFactory {
     public ArtistDto build(Artist artist) {
         ArtistDto dto = new ArtistDto(artist);
         dto.add(ControllerLinkBuilder.linkTo(methodOn(ArtistController.class)
-                .findOneByIdentifier(artist.identifier)).withSelfRel());
+                .findOneByIdentifier(artist.getIdentifier())).withSelfRel());
         return dto;
     }
 

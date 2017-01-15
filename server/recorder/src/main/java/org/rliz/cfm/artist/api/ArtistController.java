@@ -69,7 +69,7 @@ public class ArtistController {
         Artist createdArtist = artistBoundaryService.createArtist(body.getName(), body.getMbid());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder.fromCurrentRequest().path(PATH_VARIABLE_ID)
-                .buildAndExpand(createdArtist.mbid).toUri());
+                .buildAndExpand(createdArtist.getIdentifier()).toUri());
         return new ResponseEntity<>(artistDtoFactory.build(createdArtist), httpHeaders, HttpStatus.CREATED);
     }
 

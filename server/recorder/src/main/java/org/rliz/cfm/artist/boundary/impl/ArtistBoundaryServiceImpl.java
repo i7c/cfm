@@ -36,7 +36,7 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
     @Override
     public Artist createArtist(String name, UUID mbid) {
         Artist artist = new Artist(mbid, name);
-        artist.identifier = UUID.randomUUID();
+        artist.setIdentifier(UUID.randomUUID());
         return artistRepository.save(artist);
     }
 }
