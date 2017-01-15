@@ -1,7 +1,6 @@
 package org.rliz.cfm.artist.model;
 
 import org.rliz.cfm.common.model.AbstractEntity;
-import com.sun.istack.internal.Nullable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Entity
 public class Artist extends AbstractEntity {
 
-    @Nullable
     public UUID mbid;
 
     @Column
