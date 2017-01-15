@@ -20,6 +20,13 @@ public interface ArtistBoundaryService {
     Page<Artist> findAllArtists(Pageable pageable);
 
     /**
+     * Gets one {@link Artist} by UUID.
+     * @param identifier the uuid of the artist
+     * @return the artist or null if not found
+     */
+    Artist findOneByIdentifier(UUID identifier);
+
+    /**
      * Creates a new artist in the database
      *
      * @param name the name of the artist

@@ -7,7 +7,7 @@ import org.rliz.cfm.common.model.AbstractEntity;
 import java.util.UUID;
 
 /**
- * Created by cmw on 15/01/17.
+ * DTO for {@link Artist}s.
  */
 public class ArtistDto extends AbstractDto<Artist> {
 

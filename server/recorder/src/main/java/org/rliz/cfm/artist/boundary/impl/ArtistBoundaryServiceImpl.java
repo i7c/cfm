@@ -16,7 +16,6 @@ import java.util.UUID;
 @Service
 public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
 
-
     private ArtistRepository artistRepository;
 
     @Autowired
@@ -27,6 +26,11 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
     @Override
     public Page<Artist> findAllArtists(Pageable pageable) {
         return artistRepository.findAll(pageable);
+    }
+
+    @Override
+    public Artist findOneByIdentifier(UUID identifier) {
+        return artistRepository.findOneByIdentifier(identifier);
     }
 
     @Override
