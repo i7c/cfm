@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 /**
  * Implementation for {@link ArtistBoundaryService}.
  */
@@ -25,5 +27,12 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
     @Override
     public Page<Artist> findAllArtists(Pageable pageable) {
         return artistRepository.findAll(pageable);
+    }
+
+    @Override
+    public Artist createArtist(String name, UUID mbid) {
+        Artist artist = new Artist(mbid, name);
+        artist.identifier = UUID.randomUUID();
+        return artistRepository.save(artist);
     }
 }
