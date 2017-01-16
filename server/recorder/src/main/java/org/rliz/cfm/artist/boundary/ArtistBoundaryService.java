@@ -4,6 +4,7 @@ import org.rliz.cfm.artist.model.Artist;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,4 +35,11 @@ public interface ArtistBoundaryService {
      * @return the newly created artist
      */
     Artist createArtist(String name, UUID mbid);
+
+    /**
+     * Gets or creates a list of artists using the Musicbrainz ID.
+     * @param mbids
+     * @return
+     */
+    List<Artist> getOrCreateArtistsWithMusicbrainz(List<UUID> mbids);
 }

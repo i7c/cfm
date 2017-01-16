@@ -3,6 +3,7 @@ package org.rliz.cfm.artist.repository;
 import org.rliz.cfm.artist.model.Artist;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -17,5 +18,13 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
      * @return the artist or null if not found
      */
     Artist findOneByIdentifier(UUID identifier);
+
+    /**
+     * Retrieves a list of artists whose mbids are in the given list.
+     *
+     * @param mbids set of artist mbids
+     * @return a list of artists, possible empty
+     */
+    List<Artist> findByMbidIn(List<UUID> mbids);
 
 }

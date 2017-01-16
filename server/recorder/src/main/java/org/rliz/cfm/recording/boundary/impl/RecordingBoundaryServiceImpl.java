@@ -1,15 +1,17 @@
 package org.rliz.cfm.recording.boundary.impl;
 
 import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
+import org.rliz.cfm.artist.model.Artist;
 import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
-import org.rliz.cfm.musicbrainz.api.dto.MusicbrainzRecording;
+import org.rliz.cfm.musicbrainz.api.dto.MbArtistCreditsDto;
+import org.rliz.cfm.musicbrainz.api.dto.MbRecordingDto;
 import org.rliz.cfm.recording.boundary.RecordingBoundaryService;
 import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.recording.repository.RecordingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link RecordingBoundaryService}.
@@ -33,7 +35,8 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
      * @param artistBoundaryService artist service
      */
     @Autowired
-    public RecordingBoundaryServiceImpl(RecordingRepository recordingRepository, MusicbrainzRestClient musicbrainzRestClient,
+    public RecordingBoundaryServiceImpl(RecordingRepository recordingRepository,
+                                        MusicbrainzRestClient musicbrainzRestClient,
                                         ArtistBoundaryService artistBoundaryService) {
         this.recordingRepository = recordingRepository;
         this.musicbrainzRestClient = musicbrainzRestClient;
@@ -46,8 +49,15 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
         if (foundRecording != null) {
             return foundRecording;
         }
-        MusicbrainzRecording mbRecording = musicbrainzRestClient.getRecording(mbid, "artist-credits", "json");
-        Recording createdRecording = new Recording(mbRecording.getMbid(), mbRecording.getTitle(), Collections.emptySet());
+        MbRecordingDto mbRecording = musicbrainzRestClient.getRecording(mbid, "artist-credits", "json");
+
+        List<UUID> artistMbids = mbRecording.getArtistCredits().stream()
+                .map(MbArtistCreditsDto::getMbid)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        List<Artist> artists = artistBoundaryService.getOrCreateArtistsWithMusicbrainz(artistMbids);
+        Recording createdRecording = new Recording(mbRecording.getMbid(), mbRecording.getTitle(),
+                new TreeSet<>(artists));
         return recordingRepository.save(createdRecording);
     }
 }

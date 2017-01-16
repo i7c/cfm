@@ -3,12 +3,15 @@ package org.rliz.cfm.artist.boundary.impl;
 import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
 import org.rliz.cfm.artist.model.Artist;
 import org.rliz.cfm.artist.repository.ArtistRepository;
+import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
+import org.rliz.cfm.musicbrainz.api.dto.MbArtistDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation for {@link ArtistBoundaryService}.
@@ -17,10 +20,12 @@ import java.util.UUID;
 public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
 
     private ArtistRepository artistRepository;
+    private MusicbrainzRestClient musicbrainzRestClient;
 
     @Autowired
-    public ArtistBoundaryServiceImpl(ArtistRepository artistRepository) {
+    public ArtistBoundaryServiceImpl(ArtistRepository artistRepository, MusicbrainzRestClient musicbrainzRestClient) {
         this.artistRepository = artistRepository;
+        this.musicbrainzRestClient = musicbrainzRestClient;
     }
 
     @Override
@@ -38,5 +43,22 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
         Artist artist = new Artist(mbid, name);
         artist.setIdentifier(UUID.randomUUID());
         return artistRepository.save(artist);
+    }
+
+    @Override
+    public List<Artist> getOrCreateArtistsWithMusicbrainz(List<UUID> mbids) {
+        List<Artist> foundArtists = artistRepository.findByMbidIn(mbids);
+        Set<UUID> unmatchedIdentifiers = new TreeSet<>(mbids);
+        foundArtists.stream().forEach(artist -> unmatchedIdentifiers.remove(artist.getMbid()));
+
+        List<MbArtistDto> mbArtists = unmatchedIdentifiers.stream()
+                .map(mbid -> musicbrainzRestClient.getArtist(mbid, "json"))
+                .collect(Collectors.toList());
+        List<Artist> persistedArtists = mbArtists.stream().map(mbArtist -> {
+            Artist createdArtist = new Artist(mbArtist.getMbid(), mbArtist.getName());
+            return artistRepository.save(createdArtist);
+        }).collect(Collectors.toList());
+        foundArtists.addAll(persistedArtists);
+        return foundArtists;
     }
 }
