@@ -7,31 +7,16 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
- * Represents an artist retrieved from musicbrainz.
+ * Represents the reference to an artist within the artist credits.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MbArtistDto {
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    private String sortName;
+public class MbArtistCreditArtistDto {
 
     @JsonProperty("id")
     @NotNull
     private UUID mbid;
 
-    public String getName() {
-        return name;
-    }
-
-    public String getSortName() {
-        return sortName;
-    }
-
     public UUID getMbid() {
         return mbid;
     }
-
 }

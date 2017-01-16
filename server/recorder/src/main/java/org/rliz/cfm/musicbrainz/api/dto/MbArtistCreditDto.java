@@ -3,18 +3,19 @@ package org.rliz.cfm.musicbrainz.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
  * Represents the nested structure of artist credits in other responses.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MbArtistCreditsDto {
+public class MbArtistCreditDto {
 
-    @JsonProperty("artist.id")
-    private UUID mbid;
+    @NotNull
+    private MbArtistCreditArtistDto artist;
 
-    public UUID getMbid() {
-        return mbid;
+    public MbArtistCreditArtistDto getArtist() {
+        return artist;
     }
 }

@@ -18,8 +18,9 @@ public class Recording extends AbstractEntity {
     @Column(length = 512, nullable = false)
     String title;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_recording_artist"), nullable = false)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(foreignKey = @ForeignKey(name = "FK_recording_artists"),
+            inverseForeignKey = @ForeignKey(name = "FK_artists_recording"))
     private Set<Artist> artists;
 
     /**

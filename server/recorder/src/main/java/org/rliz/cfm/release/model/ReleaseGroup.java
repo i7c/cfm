@@ -15,8 +15,9 @@ public class ReleaseGroup extends AbstractEntity {
 
     private UUID mbid;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_releasegroup_artist"))
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(foreignKey = @ForeignKey(name = "FK_releasegroup_artist"),
+        inverseForeignKey = @ForeignKey(name = "FK_artist_releasegroup"))
     private Set<Artist> artists;
 
     @Column(length = 511, nullable = false)

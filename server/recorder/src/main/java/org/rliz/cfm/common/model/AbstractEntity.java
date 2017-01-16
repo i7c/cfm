@@ -1,16 +1,13 @@
 package org.rliz.cfm.common.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
  * Abstract entity which contains fields common to all entities.
  */
-@Entity
+@MappedSuperclass
 public abstract class AbstractEntity {
 
     @Id

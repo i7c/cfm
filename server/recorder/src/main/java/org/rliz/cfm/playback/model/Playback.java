@@ -14,12 +14,12 @@ import java.util.Date;
 @Entity
 public class Playback extends AbstractEntity {
 
-    @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_crapple_recording"))
+    @OneToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "FK_playback_recording"))
     private Recording recording;
 
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "FK_crapple_releasegroup"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "FK_playback_releasegroup"))
     private ReleaseGroup releaseGroup;
 
     private Date time;

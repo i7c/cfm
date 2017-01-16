@@ -3,6 +3,7 @@ package org.rliz.cfm.musicbrainz.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,11 +16,16 @@ public class MbRecordingDto {
     private Long length;
     private Boolean video;
     private String disambiguation;
+
+    @NotNull
     private String title;
+
     @JsonProperty("id")
     private UUID mbid;
-    @JsonProperty("artist-credits")
-    private List<MbArtistCreditsDto> artistCredits;
+
+    @JsonProperty("artist-credit")
+    @NotNull
+    private List<MbArtistCreditDto> artistCredits;
 
 
     public Long getLength() {
@@ -42,7 +48,7 @@ public class MbRecordingDto {
         return mbid;
     }
 
-    public List<MbArtistCreditsDto> getArtistCredits() {
+    public List<MbArtistCreditDto> getArtistCredits() {
         return artistCredits;
     }
 }

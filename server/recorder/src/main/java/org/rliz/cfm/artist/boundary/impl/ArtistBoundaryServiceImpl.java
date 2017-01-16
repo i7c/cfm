@@ -10,7 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +59,7 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
                 .collect(Collectors.toList());
         List<Artist> persistedArtists = mbArtists.stream().map(mbArtist -> {
             Artist createdArtist = new Artist(mbArtist.getMbid(), mbArtist.getName());
+            createdArtist.setIdentifier(UUID.randomUUID());
             return artistRepository.save(createdArtist);
         }).collect(Collectors.toList());
         foundArtists.addAll(persistedArtists);
