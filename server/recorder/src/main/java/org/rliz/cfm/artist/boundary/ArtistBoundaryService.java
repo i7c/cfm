@@ -28,15 +28,6 @@ public interface ArtistBoundaryService {
     Artist findOneByIdentifier(UUID identifier);
 
     /**
-     * Creates a new artist in the database
-     *
-     * @param name the name of the artist
-     * @param mbid the musicbrainz uuid
-     * @return the newly created artist
-     */
-    Artist createArtist(String name, UUID mbid);
-
-    /**
      * Gets or creates a list of artists using the Musicbrainz ID.
      * @param mbids
      * @return

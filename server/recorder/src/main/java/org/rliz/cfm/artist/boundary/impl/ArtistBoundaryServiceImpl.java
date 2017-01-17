@@ -42,13 +42,6 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
     }
 
     @Override
-    public Artist createArtist(String name, UUID mbid) {
-        Artist artist = new Artist(mbid, name);
-        artist.setIdentifier(UUID.randomUUID());
-        return artistRepository.save(artist);
-    }
-
-    @Override
     public List<Artist> getOrCreateArtistsWithMusicbrainz(List<UUID> mbids) {
         List<Artist> foundArtists = artistRepository.findByMbidIn(mbids);
         Set<UUID> unmatchedIdentifiers = new TreeSet<>(mbids);

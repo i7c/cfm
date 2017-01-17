@@ -57,6 +57,12 @@ public class PlaybackController {
         return playbackDtoFactory.build(playback);
     }
 
+    /**
+     * Requests a list of playbacks..
+     *
+     * @param pageable pageing request
+     * @return list of playbacks
+     */
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET)
     public ListDto<PlaybackDto> getPlaybacks(Pageable pageable) {
