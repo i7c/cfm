@@ -1,6 +1,7 @@
 package org.rliz.cfm.recording.repository;
 
 import org.rliz.cfm.recording.model.Recording;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

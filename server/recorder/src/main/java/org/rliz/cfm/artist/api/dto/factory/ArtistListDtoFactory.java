@@ -23,11 +23,16 @@ public class ArtistListDtoFactory {
         this.artistDtoFactory = artistDtoFactory;
     }
 
-    public ListDto<ArtistDto> build(Page<Artist> page) {
-        List<ArtistDto> artistDtos = page.getContent().stream()
+    public ListDto<ArtistDto> build(List<Artist> artistList) {
+        List<ArtistDto> artistDtoList = artistList.stream()
                 .map(artistDtoFactory::build)
                 .collect(Collectors.toList());
-        return new ListDto<>(artistDtos);
+        return new ListDto<>(artistDtoList);
+    }
+
+    public ListDto<ArtistDto> build(Page<Artist> page) {
+        ListDto<ArtistDto> artistListDto = build(page.getContent());
+        return artistListDto;
     }
 
 }
