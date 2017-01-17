@@ -8,6 +8,8 @@ import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.release.boundary.ReleaseGroupBoundaryService;
 import org.rliz.cfm.release.model.ReleaseGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -46,4 +48,11 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
         playback.setIdentifier(UUID.randomUUID());
         return playbackRepository.save(playback);
     }
+
+    @Override
+    public Page<Playback> findAll(Pageable pageable) {
+        return playbackRepository.findAll(pageable);
+    }
+
+
 }
