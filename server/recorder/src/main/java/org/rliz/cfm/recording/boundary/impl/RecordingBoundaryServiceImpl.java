@@ -2,6 +2,8 @@ package org.rliz.cfm.recording.boundary.impl;
 
 import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
 import org.rliz.cfm.artist.model.Artist;
+import org.rliz.cfm.common.exception.ErrorCodes;
+import org.rliz.cfm.common.exception.ThirdPartyApiException;
 import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
 import org.rliz.cfm.musicbrainz.api.dto.MbRecordingDto;
 import org.rliz.cfm.recording.boundary.RecordingBoundaryService;
@@ -55,6 +57,9 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
             return foundRecording;
         }
         MbRecordingDto mbRecording = musicbrainzRestClient.getRecording(mbid, "artist-credits", "json");
+        if (mbRecording.getArtistCredits() == null) {
+            throw new ThirdPartyApiException("Artist credits missing in musicbrainz answer", ErrorCodes.EC_001);
+        }
 
         List<UUID> artistMbids = mbRecording.getArtistCredits().stream()
                 .map(recording -> recording.getArtist().getMbid())
