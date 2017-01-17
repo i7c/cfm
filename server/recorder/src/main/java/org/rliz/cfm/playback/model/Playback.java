@@ -23,4 +23,48 @@ public class Playback extends AbstractEntity {
     private ReleaseGroup releaseGroup;
 
     private Date time;
+
+    /**
+     * Default constructor.
+     */
+    public Playback() {
+        // For JPA
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param recording    the played recording, must be non-null
+     * @param releaseGroup the associated release group (album), can be null
+     * @param time         the time of playback
+     */
+    public Playback(Recording recording, ReleaseGroup releaseGroup, Date time) {
+        this.recording = recording;
+        this.releaseGroup = releaseGroup;
+        this.time = time;
+    }
+
+    public Recording getRecording() {
+        return recording;
+    }
+
+    public void setRecording(Recording recording) {
+        this.recording = recording;
+    }
+
+    public ReleaseGroup getReleaseGroup() {
+        return releaseGroup;
+    }
+
+    public void setReleaseGroup(ReleaseGroup releaseGroup) {
+        this.releaseGroup = releaseGroup;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
 }

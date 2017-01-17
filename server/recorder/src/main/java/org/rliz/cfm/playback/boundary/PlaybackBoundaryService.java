@@ -1,0 +1,19 @@
+package org.rliz.cfm.playback.boundary;
+
+import org.rliz.cfm.playback.model.Playback;
+
+import java.util.UUID;
+
+/**
+ * Service for business functions related to {@link Playback}s.
+ */
+public interface PlaybackBoundaryService {
+
+    /**
+     * Creates a new playback event using the musicbrainz track ID and release group ID.
+     * @param trackId the musicbrainz track ID
+     * @param releaseGroupId musicbrainz release group ID
+     * @return persisted playback event
+     */
+    Playback createPlaybackWithMbids(UUID trackId, UUID releaseGroupId);
+}
