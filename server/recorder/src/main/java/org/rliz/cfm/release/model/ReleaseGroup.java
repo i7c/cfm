@@ -15,13 +15,14 @@ public class ReleaseGroup extends AbstractEntity {
 
     private UUID mbid;
 
+    @Column(length = 511, nullable = false)
+    private String title;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(foreignKey = @ForeignKey(name = "FK_releasegroup_artist"),
         inverseForeignKey = @ForeignKey(name = "FK_artist_releasegroup"))
     private Set<Artist> artists;
 
-    @Column(length = 511, nullable = false)
-    private String title;
 
     /**
      * Default constructor.
@@ -34,13 +35,13 @@ public class ReleaseGroup extends AbstractEntity {
      * Field setting constructor.
      *
      * @param mbid    the musicbrainz ID of this release group
-     * @param artists the artists of this release group
      * @param title   the title of the release group
+     * @param artists the artists of this release group
      */
-    public ReleaseGroup(UUID mbid, Set<Artist> artists, String title) {
+    public ReleaseGroup(UUID mbid, String title, Set<Artist> artists) {
         this.mbid = mbid;
-        this.artists = artists;
         this.title = title;
+        this.artists = artists;
     }
 
     public UUID getMbid() {
