@@ -23,7 +23,6 @@ public class User extends AbstractEntity {
     @Column(length = 128)
     private String password;
 
-    @NotNull
     @Column(length = 128)
     private String apiKey;
 
