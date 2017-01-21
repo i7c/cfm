@@ -19,7 +19,7 @@ import java.util.UUID;
  * REST controller for {@link org.rliz.cfm.artist.model.Artist}s.
  */
 @RestController
-@RequestMapping("/api/artists")
+@RequestMapping("/api/v1/artists")
 public class ArtistController {
 
     private final static String PATH_VARIABLE_ID = "/{artistId}";
@@ -30,7 +30,9 @@ public class ArtistController {
     private ArtistListDtoFactory artistListDtoFactory;
 
     @Autowired
-    public ArtistController(ArtistBoundaryService artistBoundaryService, ArtistDtoFactory artistDtoFactory, ArtistListDtoFactory artistListDtoFactory) {
+    public ArtistController(ArtistBoundaryService artistBoundaryService,
+                            ArtistDtoFactory artistDtoFactory,
+                            ArtistListDtoFactory artistListDtoFactory) {
         this.artistBoundaryService = artistBoundaryService;
         this.artistDtoFactory = artistDtoFactory;
         this.artistListDtoFactory = artistListDtoFactory;
