@@ -67,4 +67,8 @@ public class Recording extends AbstractEntity {
         this.artists = artists;
     }
 
+    @Override
+    public String getDisplayName() {
+        return title;
+    }
 }

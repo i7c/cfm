@@ -3,8 +3,10 @@ package org.rliz.cfm.playback.model;
 import org.rliz.cfm.common.model.AbstractEntity;
 import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.release.model.ReleaseGroup;
+import org.rliz.cfm.user.model.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -22,6 +24,13 @@ public class Playback extends AbstractEntity {
     @JoinColumn(foreignKey = @ForeignKey(name = "FK_playback_releasegroup"))
     private ReleaseGroup releaseGroup;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(foreignKey = @ForeignKey(name = "FK_playback_user"))
+    @NotNull
+    private User user;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
     private Date time;
 
     /**
@@ -38,9 +47,10 @@ public class Playback extends AbstractEntity {
      * @param releaseGroup the associated release group (album), can be null
      * @param time         the time of playback
      */
-    public Playback(Recording recording, ReleaseGroup releaseGroup, Date time) {
+    public Playback(Recording recording, ReleaseGroup releaseGroup, User user, Date time) {
         this.recording = recording;
         this.releaseGroup = releaseGroup;
+        this.user = user;
         this.time = time;
     }
 
@@ -60,11 +70,24 @@ public class Playback extends AbstractEntity {
         this.releaseGroup = releaseGroup;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Date getTime() {
         return time;
     }
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Playback " + String.valueOf(getIdentifier());
     }
 }

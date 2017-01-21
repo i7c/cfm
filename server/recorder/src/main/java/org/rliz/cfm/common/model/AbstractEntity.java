@@ -32,4 +32,6 @@ public abstract class AbstractEntity {
     public void setIdentifier(UUID identifier) {
         this.identifier = identifier;
     }
+
+    public abstract String getDisplayName();
 }

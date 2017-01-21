@@ -69,4 +69,9 @@ public class User extends AbstractEntity {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
+
+    @Override
+    public String getDisplayName() {
+        return username;
+    }
 }

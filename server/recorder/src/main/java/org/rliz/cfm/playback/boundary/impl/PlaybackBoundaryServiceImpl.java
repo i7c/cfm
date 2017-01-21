@@ -1,5 +1,6 @@
 package org.rliz.cfm.playback.boundary.impl;
 
+import org.rliz.cfm.common.security.SecurityContextHelper;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.playback.repository.PlaybackRepository;
@@ -7,9 +8,11 @@ import org.rliz.cfm.recording.boundary.RecordingBoundaryService;
 import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.release.boundary.ReleaseGroupBoundaryService;
 import org.rliz.cfm.release.model.ReleaseGroup;
+import org.rliz.cfm.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -42,9 +45,10 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
 
     @Override
     public Playback createPlaybackWithMbids(UUID trackId, UUID releaseGroupId) {
+        User currentUser = SecurityContextHelper.getCurrentUser();
         Recording recording = recordingBoundaryService.findOrCreateRecordingWithMusicbrainz(trackId);
         ReleaseGroup releaseGroup = releaseGroupBoundaryService.findOrCreateReleaseGroupWithMusicbrainz(releaseGroupId);
-        Playback playback = new Playback(recording, releaseGroup, Date.from(Instant.now()));
+        Playback playback = new Playback(recording, releaseGroup, currentUser, Date.from(Instant.now()));
         playback.setIdentifier(UUID.randomUUID());
         return playbackRepository.save(playback);
     }

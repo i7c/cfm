@@ -67,4 +67,9 @@ public class ReleaseGroup extends AbstractEntity {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public String getDisplayName() {
+        return title;
+    }
 }

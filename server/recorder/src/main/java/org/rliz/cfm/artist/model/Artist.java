@@ -52,4 +52,9 @@ public class Artist extends AbstractEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String getDisplayName() {
+        return name;
+    }
 }

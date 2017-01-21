@@ -1,8 +1,10 @@
 package org.rliz.cfm.playback.api.dto;
 
 import org.rliz.cfm.common.api.dto.AbstractDto;
+import org.rliz.cfm.common.api.dto.Reference;
 import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.recording.api.dto.RecordingDto;
+import org.rliz.cfm.user.model.User;
 
 import java.util.Date;
 
@@ -24,5 +26,9 @@ public class PlaybackDto extends AbstractDto<Playback> {
 
     public RecordingDto getRecording() {
         return recording;
+    }
+
+    public Reference<User> getUserRef() {
+        return new Reference<>(data.getUser());
     }
 }
