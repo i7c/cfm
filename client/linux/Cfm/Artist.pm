@@ -27,16 +27,6 @@ has identifier => (
     is => 'ro'
 );
 
-sub from_hash() {
-    my $class = shift;
-    my $content = shift;
-
-    Cfm::Artist->_check_mandatory_fields($content);
-
-    return bless $content, $class;
-}
-
-
 sub _mandatory_fields() {
     return \@mandatory;
 }
