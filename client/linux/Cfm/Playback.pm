@@ -17,7 +17,7 @@ has time => (
         is => 'ro'
     );
 
-sub _mandatory_fields() {
+sub _mandatory_fields {
     return \@mandatory;
 }
 

@@ -9,18 +9,17 @@ extends 'Cfm::Resource';
 # Mandatory fields
 my @mandatory = ("elements", "links");
 
-# Lookup for fields
+# Mapping functions for fields
 my %mapping = (
     elements => \&_ds_elements,
-    links => \&_ds_links
+    links    => \&_ds_links
 );
 
-has elements => (
-    is => 'ro'
-);
+has elements => (is => 'ro');
 
-sub _ds_elements() {
-    my $content = shift;
+# deserialise elements
+sub _ds_elements {
+    my ($content) = @_;
 
     my @artists = map {
         Cfm::Artist->from_hash($_)
@@ -28,16 +27,17 @@ sub _ds_elements() {
     return \@artists;
 }
 
-sub _ds_links() {
+# deserialise links
+sub _ds_links {
     my @links = ();
     return \@links;
 }
 
-sub _mandatory_fields() {
+sub _mandatory_fields {
     return \@mandatory;
 }
 
-sub _field_mapping() {
+sub _field_mapping {
     return \%mapping;
 }
 

@@ -14,30 +14,21 @@ use Cfm::Playback;
 
 
 # URL of the back-end server
-has cfm_url => (
-    is => 'ro'
-);
+has cfm_url => (is => 'ro');
 
 # Username
-has cfm_user => (
-    is => 'ro'
-);
+has cfm_user => (is => 'ro');
 
 # Password
-has cfm_password => (
-    is => 'ro'
-);
+has cfm_password => (is => 'ro');
 
 # Default headers
-has headers => (
-    is => 'rw'
-);
+has headers => (is => 'rw');
 
 # HTTP user agent
-has agent => (
-    is => 'rw'
-);
+has agent => (is => 'rw');
 
+# Setup client
 sub BUILD {
     my ($self, $args) = @_;
     my $headers = HTTP::Headers->new;
@@ -50,31 +41,31 @@ sub BUILD {
     $self->headers($headers);
 }
 
+# Perform GET request on given path and return decoded content
+sub _plain_get {
+    my ($self, $path) = @_;
 
-sub _plain_get() {
-    my $self = shift;
-    my $path = shift;
-
-    my $abspath = $self->cfm_url . $path;
+    my $abspath = $self->cfm_url.$path;
     my $resp = $self->agent->get($abspath);
     if ($resp->is_success) {
         return $resp->decoded_content;
     } else {
-        croak $resp->status_line . ": " . $abspath;
+        croak $resp->status_line.": ".$abspath;
     }
 }
 
-sub _json_get() {
-    my $self = shift;
-    my $path = shift;
+# Perform GET request on given path and return response as hash
+sub _get {
+    my ($self, $path) = @_;
 
     return JSON::decode_json($self->_plain_get($path));
 }
 
-sub _plain_post() {
+# Perform POST request on given path with content and return response
+sub _plain_post {
     my ($self, $path, $content) = @_;
 
-    my $abspath = $self->cfm_url . $path;
+    my $abspath = $self->cfm_url.$path;
 
     my $request = HTTP::Request->new('POST', $abspath, $self->headers);
     $request->header("Content-Type" => "application/json");
@@ -83,28 +74,31 @@ sub _plain_post() {
     if ($response->is_success) {
         return $response->decoded_content;
     } else {
-        croak $response->status_line . ": " . $abspath;
+        croak $response->status_line.": ".$abspath;
     }
 }
 
-sub _json_post() {
+# Perform POST request on path and return result as hash
+sub _post {
     my ($self, $path, $content) = @_;
     my $encoded = JSON::encode_json($content);
     return JSON::decode_json($self->_plain_post($path, $encoded));
 }
 
-sub artists() {
-    my $self = shift;
+# Get artists
+sub artists {
+    my ($self) = @_;
 
-    my $artists = $self->_json_get("/artists");
+    my $artists = $self->_get("/artists");
     my $result = Cfm::ArtistList->from_hash($artists);
     return $result;
 }
 
-sub playback() {
-    my ($self, $create_playback)  = @_;
+# Create a new playback
+sub create_playback {
+    my ($self, $create_playback) = @_;
 
-    my $response = $self->_json_post("/playbacks", $create_playback->dto);
+    my $response = $self->_post("/playbacks", $create_playback->dto);
     return Cfm::Playback->from_hash($response);
 }
 

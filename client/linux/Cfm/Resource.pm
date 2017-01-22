@@ -9,7 +9,7 @@ my %mapping = ();
 # Checks if all mandatory fields are present
 sub _check_mandatory_fields {
     my ($class, $content) = @_;
-    my $fields = $class->_mandatory_fields();
+    my $fields = $class->_mandatory_fields;
 
     for my $field (@$fields) {
         if (! $content->{$field}) {
@@ -20,7 +20,7 @@ sub _check_mandatory_fields {
 
 
 # Creates new object from hash
-sub from_hash() {
+sub from_hash {
     my $class = shift;
     my $content = shift;
 
@@ -29,8 +29,8 @@ sub from_hash() {
     return bless $content, $class;
 }
 
-# Deserialise hash into objects using the mapping returned by _field_mapping()
-sub deserialise() {
+# Deserialise hash into objects using the mapping returned by _field_mapping
+sub deserialise {
     my ($class, $content) = @_;
 
     my %obj = map {
@@ -40,7 +40,7 @@ sub deserialise() {
 }
 
 # Deserialise single field using the mapping
-sub _deserialise_field() {
+sub _deserialise_field {
     my ($class, $key, $value) = @_;
 
     my $mapping = $class->_field_mapping;
@@ -52,12 +52,12 @@ sub _deserialise_field() {
 }
 
 # Returns mandatory fields for this type
-sub _mandatory_fields() {
+sub _mandatory_fields {
     return \@mandatory;
 }
 
 # Returns field mapping for this type
-sub _field_mapping() {
+sub _field_mapping {
     return \%mapping;
 }
 
