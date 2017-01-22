@@ -5,6 +5,7 @@ import org.rliz.cfm.common.api.dto.AbstractDto;
 import org.rliz.cfm.common.api.dto.ListDto;
 import org.rliz.cfm.recording.model.Recording;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -12,9 +13,9 @@ import java.util.UUID;
  */
 public class RecordingDto extends AbstractDto<Recording> {
 
-    private ListDto<ArtistDto> artists;
+    private List<ArtistDto> artists;
 
-    public RecordingDto(Recording data, ListDto<ArtistDto> artistListDto) {
+    public RecordingDto(Recording data, List<ArtistDto> artistListDto) {
         super(data);
         this.artists = artistListDto;
     }
@@ -27,7 +28,7 @@ public class RecordingDto extends AbstractDto<Recording> {
         return data.getTitle();
     }
 
-    public ListDto<ArtistDto> getArtists() {
+    public List<ArtistDto> getArtists() {
         return artists;
     }
 }

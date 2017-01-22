@@ -1,13 +1,13 @@
 package org.rliz.cfm.recording.api.dto.factory;
 
 import org.rliz.cfm.artist.api.dto.ArtistDto;
-import org.rliz.cfm.artist.api.dto.factory.ArtistListDtoFactory;
-import org.rliz.cfm.artist.model.Artist;
-import org.rliz.cfm.common.api.dto.ListDto;
+import org.rliz.cfm.artist.api.dto.factory.ArtistDtoFactory;
 import org.rliz.cfm.recording.api.dto.RecordingDto;
 import org.rliz.cfm.recording.model.Recording;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -16,16 +16,18 @@ import java.util.stream.Collectors;
 @Controller
 public class RecordingDtoFactory {
 
-    private ArtistListDtoFactory artistListDtoFactory;
+    private ArtistDtoFactory artistListDtoFactory;
 
-    public RecordingDtoFactory(ArtistListDtoFactory artistListDtoFactory) {
+    @Autowired
+    public RecordingDtoFactory(ArtistDtoFactory artistListDtoFactory) {
         this.artistListDtoFactory = artistListDtoFactory;
     }
 
     public RecordingDto build(Recording recording) {
-        ListDto<ArtistDto> artistListDto = artistListDtoFactory
-                .build(recording.getArtists().stream().collect(Collectors.toList()));
-        RecordingDto dto = new RecordingDto(recording, artistListDto);
+        List<ArtistDto> artistDtos = recording.getArtists().stream()
+                .map(artistListDtoFactory::build)
+                .collect(Collectors.toList());
+        RecordingDto dto = new RecordingDto(recording, artistDtos);
         return dto;
     }
 }
