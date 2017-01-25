@@ -36,6 +36,7 @@ sub BUILD {
         $headers->authorization_basic($args->{cfm_user},
             $args->{cfm_password});
     }
+    $headers->content_type("application/json");
     my $ua = LWP::UserAgent->new(default_headers => $headers);
     $self->agent($ua);
     $self->headers($headers);
@@ -46,7 +47,8 @@ sub _plain_get {
     my ($self, $path) = @_;
 
     my $abspath = $self->cfm_url.$path;
-    my $resp = $self->agent->get($abspath);
+    my $request = HTTP::Request->new('GET', $abspath, $self->headers);
+    my $resp = $self->agent->request($request);
     if ($resp->is_success) {
         return $resp->decoded_content;
     } else {
@@ -68,7 +70,6 @@ sub _plain_post {
     my $abspath = $self->cfm_url.$path;
 
     my $request = HTTP::Request->new('POST', $abspath, $self->headers);
-    $request->header("Content-Type" => "application/json");
     $request->content($content);
     my $response = $self->agent->request($request);
     if ($response->is_success) {
@@ -89,9 +90,17 @@ sub _post {
 sub artists {
     my ($self) = @_;
 
-    my $artists = $self->_get("/artists");
-    my $result = Cfm::ArtistList->from_hash($artists);
+    my $artists_resource = $self->_get("/artists");
+    my $result = Cfm::ArtistList->from_hash($artists_resource);
     return $result;
+}
+
+# Get single artist
+sub artist {
+    my ($self, $identifier) = @_;
+
+    my $artist_resource = $self->_get("/artists/$identifier");
+    return Cfm::Artist->from_hash($artist_resource);
 }
 
 # Create a new playback
