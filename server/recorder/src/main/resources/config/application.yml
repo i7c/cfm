@@ -2,3 +2,5 @@ server:
   port: 1337
 jackson:
     date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+cfm:
+  userAgent: 'CFM/0.0.1 ( i7c@posteo.de )'
