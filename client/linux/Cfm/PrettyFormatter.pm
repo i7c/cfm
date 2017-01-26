@@ -14,7 +14,7 @@ extends 'Cfm::Formatter';
 sub artist {
     my ($self, $artist) = @_;
 
-    my $table = Text::ASCIITable->new({headingText => $artist->name});
+    my $table = Text::ASCIITable->new({ headingText => $artist->name });
     $table->setCols("Field", "Value");
     $table->addRow("Name", $artist->name);
     $table->addRow("Identifier", $artist->identifier);
@@ -25,12 +25,26 @@ sub artist {
 sub artist_list {
     my ($self, $list) = @_;
 
-    my $table = Text::ASCIITable->new({headingText => 'Artists'});
+    my $table = Text::ASCIITable->new({ headingText => 'Artists' });
     $table->setCols("Name", "Identifier", "Mbid");
     for my $artist (@{$list->elements}) {
         $table->addRow($artist->name, $artist->identifier, $artist->mbid);
     }
     print $table;
 }
+
+sub playback {
+    my ($self, $pb) = @_;
+
+    my $table = Text::ASCIITable->new({ headingText => 'Playback' });
+    $table->setCols("Field", "Value");
+    for my $artist (@{$pb->recording->artists}) {
+        $table->addRow("Artist", $artist->name);
+    }
+    $table->addRow("Title", $pb->recording->title);
+    $table->addRow("Time", $pb->time);
+    print $table;
+}
+
 
 1;

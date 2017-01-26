@@ -13,4 +13,8 @@ sub artist_list {
     carp "not implemented";
 }
 
+sub playback {
+    carp "not implemented";
+}
+
 1;
