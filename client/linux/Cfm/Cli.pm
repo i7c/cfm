@@ -10,9 +10,13 @@ use Cfm::Playback;
 use Cfm::PrettyFormatter;
 
 my %command_mapping = (
-    help     => \&cmd_help,
     artists  => \&cmd_artists,
     playback => \&cmd_playback
+);
+
+my %help_mapping = (
+    artists  => \&help_artists,
+    playback => \&help_playback
 );
 
 has 'client' => (is => 'rw');
@@ -27,25 +31,39 @@ sub BUILD {
 
 sub run {
     my ($self) = @_;
-    return $self->cmd_help unless @ARGV;
     my $command = shift @ARGV if $ARGV[0];
-    if ($command_mapping{$command}) {
-        my %options = ();
-        GetOptions(
-            \%options,
-            "cfm-url|h=s",
-            "cfm-user|u=s",
-            "cfm-password|p=s",
-            "mb-track=s",
-            "mb-release-group=s",
-            "quiet"
-        );
-        $self->options(\%options);
-        $self->set_client;
-        $self->set_formatter;
-        $command_mapping{$command}->($self);
+    my %options = ();
+    GetOptions(
+        \%options,
+        "cfm-url|h=s",
+        "cfm-user|u=s",
+        "cfm-password|p=s",
+        "mb-track=s",
+        "mb-release-group=s",
+        "quiet|q",
+        "help|h"
+    );
+    $self->options(\%options, $command);
+    return if $self->handle_help($command);
+    $self->set_client;
+    $self->set_formatter;
+    $command_mapping{$command}->($self);
+}
+
+sub handle_help {
+    my ($self, $command) = @_;
+
+    if ($self->has_option("help")) {
+        $help_mapping{$command}->($self);
+        return 1;
+    } elsif (!$command) {
+        print "Available Commands:\n";
+        for my $available_command (keys %command_mapping) {
+            print "    $available_command\n";
+        }
+        return 1;
     } else {
-        print "Unknown command $command.";
+        return 0;
     }
 }
 
@@ -96,16 +114,16 @@ sub has_option {
     return 0;
 }
 
-sub cmd_help {
-    print "Help.";
-}
-
 sub cmd_artists {
     my ($self) = @_;
 
     my $artist_list = $self->client->artists;
     $self->formatter->artist_list($artist_list);
     return;
+}
+
+sub help_artists {
+    print "Usage: artists\n";
 }
 
 sub cmd_playback {
@@ -125,8 +143,20 @@ sub cmd_playback {
         }
         return;
     } else {
-        carp "Specify --mb-track and --mb-album."
+        carp "Specify --mb-track and --mb-release-group."
     }
+}
+
+sub help_playback {
+    print 'Usage: playback [options]
+
+Creates a new playback on the server. If successful, the playback is returned.
+
+Options:
+    --mb-track           the musicbrainz id of the track
+    --mb-release-group   the musicbrainz id of the release group
+    --quiet              do not return anything in case of success
+';
 }
 
 1;
