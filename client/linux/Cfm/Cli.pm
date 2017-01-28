@@ -62,7 +62,6 @@ sub run {
     $self->set_client;
     $self->set_formatter;
     $command_mapping{$command}->($self);
-    $self->conf->save;
 }
 
 sub handle_help {
