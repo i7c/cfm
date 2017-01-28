@@ -4,6 +4,7 @@ use warnings FATAL => 'all';
 use Getopt::Long;
 use Moo;
 use Carp;
+use Config::Simple;
 
 use Cfm::Client;
 use Cfm::Playback;
@@ -19,11 +20,23 @@ my %help_mapping = (
     playback => \&help_playback
 );
 
+my @config_locations = (
+    $ENV{'HOME'} . "/.cfm.conf",
+    $ENV{'HOME'} . "/.config/cfm/config",
+    "/etc/cfm.conf"
+);
+
+my %conf_default = (
+
+);
+
 has 'client' => (is => 'rw');
 
 has 'options' => (is => 'rw');
 
 has 'formatter' => (is => 'rw');
+
+has 'conf' => (is => 'rw');
 
 sub BUILD {
     Getopt::Long::Configure ("bundling");
@@ -44,10 +57,12 @@ sub run {
         "help|h"
     );
     $self->options(\%options, $command);
+    $self->load_config;
     return if $self->handle_help($command);
     $self->set_client;
     $self->set_formatter;
     $command_mapping{$command}->($self);
+    $self->conf->save;
 }
 
 sub handle_help {
@@ -64,6 +79,18 @@ sub handle_help {
         return 1;
     } else {
         return 0;
+    }
+}
+
+sub load_config {
+    my ($self) = @_;
+
+    for my $conf_file (@config_locations) {
+        if (-f $conf_file) {
+            my $conf = Config::Simple->new($conf_file);
+            $self->conf($conf);
+            return;
+        }
     }
 }
 
@@ -96,7 +123,10 @@ sub set_formatter {
 sub get_option {
     my ($self, $option) = @_;
 
-    return $self->options->{$option};
+    my $cliopt = $self->options->{$option};
+    return $cliopt if $cliopt;
+    return $self->conf()->param($option) if $self->conf && $self->conf->param($option);
+    return $conf_default{$option};
 }
 
 # Returns the option if set and fails with error message otherwise
