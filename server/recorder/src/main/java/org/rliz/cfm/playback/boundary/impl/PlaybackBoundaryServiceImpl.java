@@ -11,6 +11,7 @@ import org.rliz.cfm.release.model.ReleaseGroup;
 import org.rliz.cfm.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,9 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
      * @param playbackRepository          repo for playbacks
      */
     @Autowired
-    public PlaybackBoundaryServiceImpl(RecordingBoundaryService recordingBoundaryService, ReleaseGroupBoundaryService releaseGroupBoundaryService, PlaybackRepository playbackRepository) {
+    public PlaybackBoundaryServiceImpl(RecordingBoundaryService recordingBoundaryService,
+                                       ReleaseGroupBoundaryService releaseGroupBoundaryService,
+                                       PlaybackRepository playbackRepository) {
         this.recordingBoundaryService = recordingBoundaryService;
         this.releaseGroupBoundaryService = releaseGroupBoundaryService;
         this.playbackRepository = playbackRepository;
@@ -56,6 +59,12 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     @Override
     public Page<Playback> findAll(Pageable pageable) {
         return playbackRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Playback> findAllForCurrentUser(Pageable pageable) {
+        User currentUser = SecurityContextHelper.getCurrentUser();
+        return playbackRepository.findByUser(currentUser, pageable);
     }
 
 

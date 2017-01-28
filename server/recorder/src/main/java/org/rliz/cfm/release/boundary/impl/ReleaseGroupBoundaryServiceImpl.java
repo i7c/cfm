@@ -59,6 +59,7 @@ public class ReleaseGroupBoundaryServiceImpl implements ReleaseGroupBoundaryServ
 
         ReleaseGroup createdRg = new ReleaseGroup(mbReleaseGroup.getMbid(), mbReleaseGroup.getTitle(),
                 new HashSet<>(creditedArtists));
+        createdRg.setIdentifier(UUID.randomUUID());
         return releaseGroupRepository.save(createdRg);
     }
 }

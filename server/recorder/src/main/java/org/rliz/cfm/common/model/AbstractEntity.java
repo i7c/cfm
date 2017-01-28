@@ -15,6 +15,7 @@ public abstract class AbstractEntity {
     @Column(name = "oid")
     private Long oid;
 
+    @NotNull
     private UUID identifier;
 
     public Long getOid() {

@@ -5,27 +5,41 @@ use Moo;
 
 use Cfm::Resource;
 use Cfm::Recording;
+use Cfm::ReleaseGroup;
 
 extends "Cfm::Resource";
 
 my @mandatory = (
     "recording",
+    "releaseGroup",
     "time",
-    "userRef"
+    "userRef",
+    "identifier"
 );
 
 my %mapping = (
-    recording => \&_ds_recording
+    recording => \&_ds_recording,
+    releaseGroup => \&_ds_release_group
 );
+
+has recording => (is => 'ro');
+
+has releaseGroup => (is => 'ro');
 
 has time => (is => 'ro');
 
-has recording => (is => 'ro');
+has identifier => (is => 'ro');
 
 sub _ds_recording {
     my ($content) = @_;
 
     return Cfm::Recording->from_hash($content);
+}
+
+sub _ds_release_group {
+    my ($content) = @_;
+
+    return Cfm::ReleaseGroup->from_hash($content);
 }
 
 sub _field_mapping {

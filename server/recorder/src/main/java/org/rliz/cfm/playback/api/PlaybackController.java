@@ -10,6 +10,8 @@ import org.rliz.cfm.playback.model.Playback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +62,7 @@ public class PlaybackController {
     /**
      * Requests a list of playbacks..
      *
-     * @param pageable pageing request
+     * @param pageable page params
      * @return list of playbacks
      */
     @Transactional(readOnly = true)
@@ -70,4 +72,17 @@ public class PlaybackController {
         return playbackListDtoFactory.build(playbackPage);
     }
 
+    /**
+     * Requests own playbacks
+     *
+     * @param pageable page params
+     * @return a list of playbacks
+     */
+    @Transactional(readOnly = true)
+    @RequestMapping(method = RequestMethod.GET, value = "/mine")
+    public ListDto<PlaybackDto> getPlaybacksForUser(@PageableDefault(sort = "time", direction = Sort.Direction.DESC)
+                                                            Pageable pageable) {
+        Page<Playback> playbackPage = playbackBoundaryService.findAllForCurrentUser(pageable);
+        return playbackListDtoFactory.build(playbackPage);
+    }
 }

@@ -12,12 +12,15 @@ use Cfm::PrettyFormatter;
 
 my %command_mapping = (
     artists  => \&cmd_artists,
-    playback => \&cmd_playback
+    playback => \&cmd_playback,
+    playbacks => \&cmd_playbacks
 );
 
 my %help_mapping = (
     artists  => \&help_artists,
-    playback => \&help_playback
+    playback => \&help_playback,
+    playbacks => \&help_playbacks
+
 );
 
 my @config_locations = (
@@ -185,6 +188,21 @@ Options:
     --mb-track           the musicbrainz id of the track
     --mb-release-group   the musicbrainz id of the release group
     --quiet              do not return anything in case of success
+';
+}
+
+sub cmd_playbacks {
+    my ($self) = @_;
+
+    my $pbl = $self->client->my_playbacks;
+    $self->formatter->playback_list($pbl);
+    return;
+}
+
+sub help_playbacks {
+    print 'Prints your playbacks.
+
+    Usage: playbacks
 ';
 }
 

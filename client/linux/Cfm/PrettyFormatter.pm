@@ -46,5 +46,19 @@ sub playback {
     print $table;
 }
 
+sub playback_list {
+    my ($self, $pbl) = @_;
+
+    my $table = Text::ASCIITable->new({ headingText => "Playbacks" });
+    $table->setCols("Identifier", "Time", "Artist", "Title", "Album");
+    for my $pb (@{$pbl->elements}) {
+        $table->addRow($pb->identifier, $pb->time,
+            $self->name_list($pb->recording->artists),
+            $pb->recording->title,
+            $pb->releaseGroup->title);
+    }
+    print $table;
+}
+
 
 1;

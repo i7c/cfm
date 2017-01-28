@@ -21,10 +21,18 @@ public interface PlaybackBoundaryService {
     Playback createPlaybackWithMbids(UUID trackId, UUID releaseGroupId);
 
     /**
-     * Gets a list of {@link Playback}s.
+     * Gets a list of {@link Playback}s regardless of the user.
      *
      * @param pageable pageable from the request
      * @return page of playbacks
      */
     Page<Playback> findAll(Pageable pageable);
+
+    /**
+     * Gets a page of {@link Playback}s for the current user.
+     *
+     * @param pageable pageable from the request
+     * @return page of playbacks
+     */
+    Page<Playback> findAllForCurrentUser(Pageable pageable);
 }

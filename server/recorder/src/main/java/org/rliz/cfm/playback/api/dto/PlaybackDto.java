@@ -4,6 +4,7 @@ import org.rliz.cfm.common.api.dto.AbstractDto;
 import org.rliz.cfm.common.api.dto.Reference;
 import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.recording.api.dto.RecordingDto;
+import org.rliz.cfm.release.api.dto.ReleaseGroupDto;
 import org.rliz.cfm.user.model.User;
 
 import java.util.Date;
@@ -15,9 +16,12 @@ public class PlaybackDto extends AbstractDto<Playback> {
 
     private RecordingDto recording;
 
-    public PlaybackDto(Playback data, RecordingDto recording) {
+    private ReleaseGroupDto releaseGroup;
+
+    public PlaybackDto(Playback data, RecordingDto recordingDto, ReleaseGroupDto releaseGroupDto) {
         super(data);
-        this.recording = recording;
+        this.recording = recordingDto;
+        this.releaseGroup = releaseGroupDto;
     }
 
     public Date getTime() {
@@ -26,6 +30,10 @@ public class PlaybackDto extends AbstractDto<Playback> {
 
     public RecordingDto getRecording() {
         return recording;
+    }
+
+    public ReleaseGroupDto getReleaseGroup() {
+        return releaseGroup;
     }
 
     public Reference<User> getUserRef() {

@@ -11,6 +11,7 @@ use Data::Dumper;
 use Cfm::Artist;
 use Cfm::ArtistList;
 use Cfm::Playback;
+use Cfm::PlaybackList;
 
 
 # URL of the back-end server
@@ -109,6 +110,14 @@ sub create_playback {
 
     my $response = $self->_post("/playbacks", $create_playback->dto);
     return Cfm::Playback->from_hash($response);
+}
+
+# Get playback list
+sub my_playbacks {
+    my ($self) = @_;
+
+    my $response = $self->_get("/playbacks/mine");
+    return  Cfm::PlaybackList->from_hash($response);
 }
 
 1;
