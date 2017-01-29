@@ -75,7 +75,7 @@ public class ArtistApiIntegrationTest {
                 .thenReturn(new PageImpl<Artist>(Lists.newArrayList(artist1, artist2), pageRequest, 2));
 
         mockMvc.perform(get(ArtistController.MAPPING_PATH)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON_UTF8)
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.elements[0].name")
@@ -98,5 +98,55 @@ public class ArtistApiIntegrationTest {
                         .value(2))
                 .andExpect(jsonPath("$.pageSize")
                         .value(20));
+    }
+
+    /**
+     * Verifies retrieving a single artist by identifier.
+     *
+     * @throws Exception not expected
+     */
+    @Test
+    public void testFindOneByIdentifier() throws Exception {
+        UUID artistIdentifier = UUID.randomUUID();
+        UUID artistMbid = UUID.randomUUID();
+        String artistName = "So And So";
+        Artist artist = ArtistBuilder.artist()
+                .withName(artistName)
+                .withIdentifier(artistIdentifier)
+                .withMbid(artistMbid)
+                .build();
+        when(artistRepository.findOneByIdentifier(artistIdentifier))
+                .thenReturn(artist);
+
+        mockMvc.perform(get(ArtistController.MAPPING_PATH + "/" + String.valueOf(artistIdentifier))
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.identifier").value(String.valueOf(artistIdentifier)))
+                .andExpect(jsonPath("$.mbid").value(String.valueOf(artistMbid)))
+                .andExpect(jsonPath("$.name").value(artistName));
+    }
+
+    /**
+     * Verifies that unknown identifier leads to 404.
+     *
+     * @throws Exception not expected
+     */
+    @Test
+    public void testFindWithWrongIdentifier() throws Exception {
+        mockMvc.perform(get(ArtistController.MAPPING_PATH + "/" + String.valueOf(UUID.randomUUID()))
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Verifies that wrong request leads to
+     *
+     * @throws Exception not expected
+     */
+    @Test
+    public void testBullshitRequest() throws Exception {
+        mockMvc.perform(get(ArtistController.MAPPING_PATH + "/asdfbullcrap")
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isBadRequest());
     }
 }
