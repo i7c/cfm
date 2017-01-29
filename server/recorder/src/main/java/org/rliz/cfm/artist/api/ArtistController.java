@@ -19,9 +19,10 @@ import java.util.UUID;
  * REST controller for {@link org.rliz.cfm.artist.model.Artist}s.
  */
 @RestController
-@RequestMapping("/api/v1/artists")
+@RequestMapping(ArtistController.MAPPING_PATH)
 public class ArtistController {
 
+    public final static String MAPPING_PATH = "/api/v1/artists";
     private final static String PATH_VARIABLE_ID = "/{artistId}";
     private final static String VARIABLE_ID = "artistId";
 
