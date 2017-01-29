@@ -27,6 +27,6 @@ public class PlaybackListDtoFactory {
         List<PlaybackDto> playbackDtos = playbackPage.getContent().stream()
                 .map(playbackDtoFactory::build)
                 .collect(Collectors.toList());
-        return new ListDto<>(playbackDtos);
+        return new ListDto<>(playbackDtos, playbackPage);
     }
 }
