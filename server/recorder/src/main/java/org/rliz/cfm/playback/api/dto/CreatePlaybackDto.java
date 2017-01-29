@@ -11,19 +11,29 @@ public class CreatePlaybackDto  {
 
     private UUID mbReleaseGroupId;
 
+    private String artist;
+
+    private String title;
+
+    private String album;
+
     public UUID getMbTrackId() {
         return mbTrackId;
-    }
-
-    public void setMbTrackId(UUID mbTrackId) {
-        this.mbTrackId = mbTrackId;
     }
 
     public UUID getMbReleaseGroupId() {
         return mbReleaseGroupId;
     }
 
-    public void setMbReleaseGroupId(UUID mbReleaseGroupId) {
-        this.mbReleaseGroupId = mbReleaseGroupId;
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAlbum() {
+        return album;
     }
 }

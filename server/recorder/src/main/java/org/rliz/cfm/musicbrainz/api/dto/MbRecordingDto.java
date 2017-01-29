@@ -27,6 +27,7 @@ public class MbRecordingDto {
     @NotNull
     private List<MbArtistCreditDto> artistCredits;
 
+    private List<MbReleaseDto> releases;
 
     public Long getLength() {
         return length;
@@ -50,5 +51,9 @@ public class MbRecordingDto {
 
     public List<MbArtistCreditDto> getArtistCredits() {
         return artistCredits;
+    }
+
+    public List<MbReleaseDto> getReleases() {
+        return releases;
     }
 }

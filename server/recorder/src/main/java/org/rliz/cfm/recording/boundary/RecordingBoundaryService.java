@@ -16,5 +16,6 @@ public interface RecordingBoundaryService {
      * @param mbid the musicbrainz identifier
      * @return persisted recording
      */
-    Recording findOrCreateRecordingWithMusicbrainz(UUID mbid);
+    Recording findOrCreateRecordingWithMbid(UUID mbid);
+
 }

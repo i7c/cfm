@@ -54,8 +54,12 @@ public class PlaybackController {
     @Transactional
     @RequestMapping(method = RequestMethod.POST)
     public PlaybackDto createPlayback(@RequestBody CreatePlaybackDto body) {
-        Playback playback = playbackBoundaryService.createPlaybackWithMbids(body.getMbTrackId(),
-                body.getMbReleaseGroupId());
+        Playback playback = playbackBoundaryService.createPlayback(
+                body.getMbTrackId(),
+                body.getMbReleaseGroupId(),
+                body.getArtist(),
+                body.getTitle(),
+                body.getAlbum());
         return playbackDtoFactory.build(playback);
     }
 

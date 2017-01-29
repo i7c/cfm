@@ -2,10 +2,13 @@ package org.rliz.cfm.recording.boundary.impl;
 
 import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
 import org.rliz.cfm.artist.model.Artist;
+import org.rliz.cfm.common.exception.ApiArgumentsInvalidException;
 import org.rliz.cfm.common.exception.ErrorCodes;
 import org.rliz.cfm.common.exception.ThirdPartyApiException;
 import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
+import org.rliz.cfm.musicbrainz.api.QueryStringBuilder;
 import org.rliz.cfm.musicbrainz.api.dto.MbRecordingDto;
+import org.rliz.cfm.musicbrainz.api.dto.MbRecordingListDto;
 import org.rliz.cfm.recording.boundary.RecordingBoundaryService;
 import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.recording.repository.RecordingRepository;
@@ -51,12 +54,13 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
     }
 
     @Override
-    public Recording findOrCreateRecordingWithMusicbrainz(UUID mbid) {
+    public Recording findOrCreateRecordingWithMbid(UUID mbid) {
         Recording foundRecording = recordingRepository.findOneByMbid(mbid);
         if (foundRecording != null) {
             return foundRecording;
         }
-        MbRecordingDto mbRecording = musicbrainzRestClient.getRecording(mbid, "artist-credits", "json");
+        MbRecordingDto mbRecording = musicbrainzRestClient.getRecording(mbid, "artist-credits",
+                MusicbrainzRestClient.FORMAT_JSON);
         if (mbRecording.getArtistCredits() == null) {
             throw new ThirdPartyApiException("Artist credits missing in musicbrainz answer", ErrorCodes.EC_001);
         }

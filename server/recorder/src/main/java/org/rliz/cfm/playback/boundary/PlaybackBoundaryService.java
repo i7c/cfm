@@ -16,9 +16,12 @@ public interface PlaybackBoundaryService {
      *
      * @param trackId        the musicbrainz track ID
      * @param releaseGroupId musicbrainz release group ID
+     * @param artist         name of the artist
+     * @param title          title of the recording
+     * @param album          album name
      * @return persisted playback event
      */
-    Playback createPlaybackWithMbids(UUID trackId, UUID releaseGroupId);
+    Playback createPlayback(UUID trackId, UUID releaseGroupId, String artist, String title, String album);
 
     /**
      * Gets a list of {@link Playback}s regardless of the user.

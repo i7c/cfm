@@ -5,7 +5,11 @@ package org.rliz.cfm.common.exception;
  */
 public final class ErrorCodes {
 
-    public static final String EC_001 = "api.result.invalid";
+    public static final String EC_001 = "mb.result.invalid";
+
+    public static final String EC_002 = "api.args.insufficient";
+
+    public static final String EC_003 = "mb.result.none";
 
     /**
      * Hide default constructor.

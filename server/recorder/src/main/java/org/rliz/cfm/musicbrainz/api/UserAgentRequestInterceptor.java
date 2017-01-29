@@ -18,5 +18,6 @@ public class UserAgentRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
         template.header("User-Agent", userAgent);
+        template.header("Accept", "application/json");
     }
 }
