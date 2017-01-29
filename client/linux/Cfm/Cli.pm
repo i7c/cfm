@@ -11,21 +11,21 @@ use Cfm::Playback;
 use Cfm::PrettyFormatter;
 
 my %command_mapping = (
-    artists  => \&cmd_artists,
-    playback => \&cmd_playback,
+    artists   => \&cmd_artists,
+    playback  => \&cmd_playback,
     playbacks => \&cmd_playbacks
 );
 
 my %help_mapping = (
-    artists  => \&help_artists,
-    playback => \&help_playback,
+    artists   => \&help_artists,
+    playback  => \&help_playback,
     playbacks => \&help_playbacks
 
 );
 
 my @config_locations = (
-    $ENV{'HOME'} . "/.cfm.conf",
-    $ENV{'HOME'} . "/.config/cfm/config",
+    $ENV{'HOME'}."/.cfm.conf",
+    $ENV{'HOME'}."/.config/cfm/config",
     "/etc/cfm.conf"
 );
 
@@ -57,7 +57,10 @@ sub run {
         "mb-track=s",
         "mb-release-group=s",
         "quiet|q",
-        "help|h"
+        "help|h",
+        "artist|a=s",
+        "title|t=s",
+        "album|A=s"
     );
     $self->options(\%options, $command);
     $self->load_config;
@@ -163,11 +166,17 @@ sub cmd_playback {
 
     my $mb_track_id = $self->get_option("mb-track");
     my $mb_release_group_id = $self->get_option("mb-release-group");
+    my $artist = $self->get_option("artist");
+    my $title = $self->get_option("title");
+    my $album = $self->get_option("album");
 
-    if ($mb_track_id && $mb_release_group_id) {
+    if (($mb_track_id && $mb_release_group_id) || ($artist && $title && $album)) {
         my $create_playback = Cfm::CreatePlayback->new(
             mbTrackId        => $mb_track_id,
-            mbReleaseGroupId => $mb_release_group_id
+            mbReleaseGroupId => $mb_release_group_id,
+            artist           => $artist,
+            title            => $title,
+            album            => $album
         );
         my $playback = $self->client->create_playback($create_playback);
         if (!$self->has_option("quiet")) {
@@ -175,7 +184,7 @@ sub cmd_playback {
         }
         return;
     } else {
-        carp "Specify --mb-track and --mb-release-group."
+        carp "Specify (--mb-track and --mb-release-group) or (--artist and --title and --album)."
     }
 }
 
