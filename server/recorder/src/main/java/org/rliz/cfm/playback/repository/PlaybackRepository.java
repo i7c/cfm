@@ -4,6 +4,7 @@ import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -18,6 +19,7 @@ public interface PlaybackRepository extends JpaRepository<Playback, Long> {
      * @param pageable pageable from the request
      * @return a page of playbacks for this user
      */
+    @EntityGraph(attributePaths = {"recording.artists", "releaseGroup"})
     Page<Playback> findByUser(User user, Pageable pageable);
 
 }
