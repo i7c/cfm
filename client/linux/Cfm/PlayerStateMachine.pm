@@ -4,7 +4,9 @@ use strict;
 use warnings FATAL => 'all';
 use Moo;
 
-# played artist
+use Data::Dumper;
+
+# list of artists of the currently played song
 has artist => (is => 'rw');
 
 # played title
@@ -45,6 +47,11 @@ sub BUILD {
 
     $self->state(- 1);
     $self->threshold(0.5);
+    $self->passed_time(0);
+    $self->artist([ ]);
+    $self->title("");
+    $self->album("");
+    $self->length(- 1);
 }
 
 # Moves the machine into "playing" state. If the transition is from "stopped", a "begin of track" event will be fired
@@ -94,18 +101,17 @@ sub pause {
     } elsif ($self->state == 0) {
         # transition: paused -> paused
         # do nothing
-    } elsif ($self->state == -1) {
+    } elsif ($self->state == - 1) {
         # transition: stopped -> paused
         $self->_set_paused;
     } else {
         die "this should not happen: invalid state in PlayerStateMachine.";
     }
 
-
     if ($self->_track_changed($data)) {
         $self->_emit_end_of_track_event(\@user_args);
         $self->_set_new_track($data);
-        $self->_emit_begin_of_track_event($data);
+        $self->_emit_begin_of_track_event(\@user_args);
         return;
     } else {
         return;
@@ -145,9 +151,20 @@ sub _set_paused {
 sub _track_changed {
     my ($self, $data) = @_;
 
-    return 1 if (($self->artist ne $data->{artist})
+    return 1 if (_arrays_differ($self->artist, $data->{artist})
         || ($self->title ne $data->{title})
         || ($self->album ne $data->{album}));
+    return 0;
+}
+
+sub _arrays_differ {
+    my ($a1, $a2) = @_;
+
+    return 1 if (scalar @$a1 != scalar @$a2);
+
+    for (my $i = 0; $i < scalar @$a1; $i++) {
+        return 1 if ($a1->[$i] ne $a2->[$i]);
+    }
     return 0;
 }
 
