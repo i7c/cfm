@@ -4,29 +4,40 @@ use strict;
 use warnings FATAL => 'all';
 use Moo;
 
+# played artist
 has artist => (is => 'rw');
 
+# played title
 has title => (is => 'rw');
 
+# played album
 has album => (is => 'rw');
 
+# length of the title in seconds
 has length => (is => 'rw');
 
 # -1: stopped/neverplayed; 0: pause; 1: playing
 has state => (is => 'rw');
 
+# when the machine last moved into "playing" state
 has start_time => (is => 'rw');
 
+# amount of time spent in "playing" state so for
 has passed_time => (is => 'rw');
 
+# client-defined percentage when a track is considered to be completed
 has threshold => (is => 'rw');
 
+# callback when track completed
 has cb_playback_completed => (is => 'rw');
 
+# callback when track canceled
 has cb_playback_canceled => (is => 'rw');
 
+# callback when track started
 has cb_playback_started => (is => 'rw');
 
+# callback when track resumed
 has cb_playback_resumed => (is => 'rw');
 
 sub BUILD {
@@ -48,8 +59,8 @@ sub play {
 
     if ($self->state == - 1) {
         # transition: stopped -> playing
-        $self->_set_new_track($data);
         $self->_set_playing;
+        $self->_set_new_track($data);
         $self->_emit_begin_of_track_event(\@user_args);
         return;
     } elsif ($self->state == 0 || $self->state == 1) {
@@ -57,12 +68,11 @@ sub play {
         if ($self->_track_changed($data)) {
             $self->_update_passed_time if ($self->state == 1);
             $self->_emit_end_of_track_event(\@user_args);
-            $self->_set_new_track($data);
             $self->_set_playing;
+            $self->_set_new_track($data);
             $self->_emit_begin_of_track_event(\@user_args);
         } else {
-            $self->_update_passed_time if ($self->state == 1);
-            $self->_set_playing;
+            $self->_set_playing if ($self->state == 0);
             $self->_emit_resume_track_event(\@user_args);
         }
         return;
@@ -70,23 +80,27 @@ sub play {
     die "this should not happen: invalid state in PlayerStateMachine.";
 }
 
-# Shift state machine into "paused" state. This is illegal if state is stopped/never played. If the transition is
-# from "playing", the times will be updated. If this event involves a track change, "end of track" and "begin of
-# track" events will be fired.
+# Shift state machine into "paused" state. If the transition is # from "playing", the times will be updated. If this
+# event involves a track change, "end of track" and "begin of track" events will be fired.
 sub pause {
     my $self = shift;
     my $data = shift;
     my @user_args = @_;
-
-    die "Illegal state for transition to pause" if ($self->state == - 1);
 
     if ($self->state == 1) {
         # transition: playing -> pause
         $self->_update_passed_time;
         $self->_set_paused;
     } elsif ($self->state == 0) {
-        # do nothing?
+        # transition: paused -> paused
+        # do nothing
+    } elsif ($self->state == -1) {
+        # transition: stopped -> paused
+        $self->_set_paused;
+    } else {
+        die "this should not happen: invalid state in PlayerStateMachine.";
     }
+
 
     if ($self->_track_changed($data)) {
         $self->_emit_end_of_track_event(\@user_args);
@@ -97,6 +111,10 @@ sub pause {
         return;
     }
     die "this should not happen";
+}
+
+sub stop {
+    die "unsupported.";
 }
 
 # update the passed time using the moment "now" and the start time of the playing period. This function is NOT
