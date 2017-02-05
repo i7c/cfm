@@ -6,17 +6,8 @@ use Moo;
 
 use Data::Dumper;
 
-# list of artists of the currently played song
-has artist => (is => 'rw');
-
-# played title
-has title => (is => 'rw');
-
-# played album
-has album => (is => 'rw');
-
-# length of the title in seconds
-has length => (is => 'rw');
+# track meta data
+has metadata => (is => 'rw');
 
 # -1: stopped/neverplayed; 0: pause; 1: playing
 has state => (is => 'rw');
@@ -45,13 +36,15 @@ has cb_playback_resumed => (is => 'rw');
 sub BUILD {
     my ($self) = @_;
 
+    $self->metadata({
+        artists => [],
+        title => "",
+        album => "",
+        length => -1,
+    });
     $self->state(- 1);
     $self->threshold(0.5);
     $self->passed_time(0);
-    $self->artist([ ]);
-    $self->title("");
-    $self->album("");
-    $self->length(- 1);
 }
 
 # Moves the machine into "playing" state. If the transition is from "stopped", a "begin of track" event will be fired
@@ -62,6 +55,7 @@ sub BUILD {
 sub play {
     my $self = shift;
     my $data = shift;
+    my $metadata = shift;
     my @user_args = @_;
 
     if ($self->state == - 1) {
@@ -151,15 +145,17 @@ sub _set_paused {
 sub _track_changed {
     my ($self, $data) = @_;
 
-    return 1 if (_arrays_differ($self->artist, $data->{artist})
-        || ($self->title ne $data->{title})
-        || ($self->album ne $data->{album}));
+    return 1 if (_arrays_differ($self->metadata->{artist}, $data->{artist})
+        || ($self->metadata->{title} ne $data->{title})
+        || ($self->metadata->{album} ne $data->{album}));
     return 0;
 }
 
 sub _arrays_differ {
     my ($a1, $a2) = @_;
 
+    return 1 if (defined $a1 xor defined $a2);
+    return 0 if (!defined $a1 && !defined $a2);
     return 1 if (scalar @$a1 != scalar @$a2);
 
     for (my $i = 0; $i < scalar @$a1; $i++) {
@@ -173,10 +169,7 @@ sub _set_new_track {
     my ($self, $data) = @_;
 
     $self->passed_time(0);
-    $self->artist($data->{artist});
-    $self->title($data->{title});
-    $self->album($data->{album});
-    $self->length($data->{length});
+    $self->metadata($data);
 }
 
 # emits an event for a track that is not played anymore; depending on the actual passed time this might result in a
@@ -184,23 +177,13 @@ sub _set_new_track {
 sub _emit_end_of_track_event {
     my ($self, $user_args) = @_;
 
-    if (($self->passed_time / $self->length) >= $self->threshold) {
+    if (($self->passed_time / $self->metadata->{length}) >= $self->threshold) {
         if (defined $self->cb_playback_completed) {
-            $self->cb_playback_completed->($self->artist,
-                $self->title,
-                $self->album,
-                $self->length,
-                $self->passed_time,
-                @$user_args)
+            $self->cb_playback_completed->($self->metadata, $self->passed_time, @$user_args)
         }
     } else {
         if (defined $self->cb_playback_canceled) {
-            $self->cb_playback_canceled->($self->artist,
-                $self->title,
-                $self->album,
-                $self->length,
-                $self->passed_time,
-                @$user_args)
+            $self->cb_playback_canceled->($self->metadata, $self->passed_time, @$user_args)
         }
     }
 }
@@ -210,12 +193,7 @@ sub _emit_begin_of_track_event {
     my ($self, $user_args) = @_;
 
     if (defined $self->cb_playback_started) {
-        $self->cb_playback_started->($self->artist,
-            $self->title,
-            $self->album,
-            $self->length,
-            $self->passed_time,
-            @$user_args)
+        $self->cb_playback_started->($self->metadata, $self->passed_time, @$user_args);
     }
 }
 
@@ -225,12 +203,7 @@ sub _emit_resume_track_event {
     my ($self, $user_args) = @_;
 
     if (defined $self->cb_playback_resumed) {
-        $self->cb_playback_resumed->($self->artist,
-            $self->title,
-            $self->album,
-            $self->length,
-            $self->passed_time,
-            @$user_args)
+        $self->cb_playback_resumed->($self->metadata, $self->passed_time, @$user_args);
     }
 }
 
