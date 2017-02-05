@@ -1,4 +1,4 @@
-package Cfm::SpotifyConnector;
+package Cfm::Mpris2Connector;
 use strict;
 use warnings FATAL => 'all';
 
@@ -24,11 +24,13 @@ has psm => (
 
 has client => (is => 'ro');
 
+has dbus_name => (is => 'ro');
+
 sub listen {
     my ($self) = @_;
 
     my $bus = Net::DBus->session;
-    my $spotify_service = $bus->get_service("org.mpris.MediaPlayer2.spotify");
+    my $spotify_service = $bus->get_service($self->dbus_name);
     my $mpris_interface = $spotify_service->get_object("/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties");
     $mpris_interface->connect_to_signal("PropertiesChanged", sub {
             my ($source, $rawdata) = @_;

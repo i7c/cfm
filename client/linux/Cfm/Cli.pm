@@ -9,18 +9,20 @@ use Config::Simple;
 use Cfm::Client;
 use Cfm::Playback;
 use Cfm::PrettyFormatter;
+use Cfm::Mpris2Connector;
 
 my %command_mapping = (
     artists   => \&cmd_artists,
     playback  => \&cmd_playback,
-    playbacks => \&cmd_playbacks
+    playbacks => \&cmd_playbacks,
+    record    => \&cmd_record
 );
 
 my %help_mapping = (
     artists   => \&help_artists,
     playback  => \&help_playback,
-    playbacks => \&help_playbacks
-
+    playbacks => \&help_playbacks,
+    record    => \&help_record
 );
 
 my @config_locations = (
@@ -60,7 +62,8 @@ sub run {
         "help|h",
         "artist|a=s",
         "title|t=s",
-        "album|A=s"
+        "album|A=s",
+        "player=s"
     );
     $self->options(\%options, $command);
     $self->load_config;
@@ -212,6 +215,33 @@ sub help_playbacks {
     print 'Prints your playbacks.
 
     Usage: playbacks
+';
+}
+
+sub cmd_record {
+    my ($self) = @_;
+
+    my $player = $self->require_option("player");
+    if ($player eq "spotify") {
+        my $connector = Cfm::Mpris2Connector->new(
+            client => $self->client,
+            dbus_name => "org.mpris.MediaPlayer2.spotify"
+        );
+        print "Initialising Spotify Connector ...\n";
+        $connector->listen;
+    } else {
+        die "Unknown player: $player";
+    }
+
+}
+
+sub help_record {
+    print 'Starts a process that will record tracks played on one of the supported players.
+
+Usage: record --player=<player>
+
+Supported players:
+  spotify
 ';
 }
 
