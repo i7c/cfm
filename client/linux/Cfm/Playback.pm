@@ -10,8 +10,6 @@ use Cfm::ReleaseGroup;
 extends "Cfm::Resource";
 
 my @mandatory = (
-    "recording",
-    "releaseGroup",
     "time",
     "userRef",
     "identifier"

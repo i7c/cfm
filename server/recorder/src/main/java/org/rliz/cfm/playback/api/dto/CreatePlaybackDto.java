@@ -26,7 +26,6 @@ public class CreatePlaybackDto {
 
     private Long playTime;
 
-
     public UUID getMbTrackId() {
         return mbTrackId;
     }

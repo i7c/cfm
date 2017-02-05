@@ -172,11 +172,20 @@ sub _set_new_track {
     $self->metadata($data);
 }
 
+# returns true if state machine is not yet in a consistent state
+sub _preinitialised {
+    my ($self) = @_;
+
+    return 1 if ($self->metadata->{length} < 0);
+    return 0;
+}
+
 # emits an event for a track that is not played anymore; depending on the actual passed time this might result in a
 # "completed" event or a "canceled" event.
 sub _emit_end_of_track_event {
     my ($self, $user_args) = @_;
 
+    return if $self->_preinitialised;
     if (($self->passed_time / $self->metadata->{length}) >= $self->threshold) {
         if (defined $self->cb_playback_completed) {
             $self->cb_playback_completed->($self->metadata, $self->passed_time, @$user_args)
@@ -192,6 +201,7 @@ sub _emit_end_of_track_event {
 sub _emit_begin_of_track_event {
     my ($self, $user_args) = @_;
 
+    return if $self->_preinitialised;
     if (defined $self->cb_playback_started) {
         $self->cb_playback_started->($self->metadata, $self->passed_time, @$user_args);
     }
@@ -202,6 +212,7 @@ sub _emit_begin_of_track_event {
 sub _emit_resume_track_event {
     my ($self, $user_args) = @_;
 
+    return if $self->_preinitialised;
     if (defined $self->cb_playback_resumed) {
         $self->cb_playback_resumed->($self->metadata, $self->passed_time, @$user_args);
     }

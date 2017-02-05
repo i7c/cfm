@@ -52,10 +52,27 @@ sub playback_list {
     my $table = Text::ASCIITable->new({ headingText => "Playbacks" });
     $table->setCols("Identifier", "Time", "Artist", "Title", "Album");
     for my $pb (@{$pbl->elements}) {
+        my ($artist_list, $title, $album);
+
+        if (defined $pb->recording) {
+            $artist_list = $self->name_list($pb->recording->artists);
+            $title = $pb->recording->title;
+        } else {
+            $artist_list = "?";
+            $title = "?";
+        }
+
+        if (defined $pb->releaseGroup) {
+            $album = $pb->releaseGroup->title;
+        } else {
+            $album = "?";
+        }
+
+
         $table->addRow($pb->identifier, $pb->time,
-            $self->name_list($pb->recording->artists),
-            $pb->recording->title,
-            $pb->releaseGroup->title);
+            $artist_list,
+            $title,
+            $album);
     }
     print $table;
 }

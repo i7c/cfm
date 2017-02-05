@@ -9,6 +9,8 @@ import org.rliz.cfm.release.api.dto.factory.ReleaseGroupDtoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.Objects;
+
 /**
  * Creates {@link PlaybackDto}s.
  */
@@ -28,8 +30,15 @@ public class PlaybackDtoFactory {
     }
 
     public PlaybackDto build(Playback playback) {
-        RecordingDto recordingDto = recordingDtoFactory.build(playback.getRecording());
-        ReleaseGroupDto releaseGroupDto = releaseGroupDtoFactory.build(playback.getReleaseGroup());
+        RecordingDto recordingDto = null;
+        ReleaseGroupDto releaseGroupDto = null;
+
+        if (Objects.nonNull(playback.getRecording())) {
+             recordingDto = recordingDtoFactory.build(playback.getRecording());
+        }
+        if (Objects.nonNull(playback.getReleaseGroup())) {
+            releaseGroupDto = releaseGroupDtoFactory.build(playback.getReleaseGroup());
+        }
         PlaybackDto dto = new PlaybackDto(playback, recordingDto, releaseGroupDto);
         return dto;
     }

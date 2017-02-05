@@ -90,8 +90,10 @@ sub completed {
         p($create_playback);
     }
 
-    $self->client->create_playback($create_playback);
     print "Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)\n";
+    print "Sending playback to server ... \n";
+    $self->client->create_playback($create_playback);
+    print "OK\n";
 }
 
 sub canceled {

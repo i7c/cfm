@@ -1,5 +1,7 @@
 package org.rliz.cfm.playback.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.rliz.cfm.common.api.dto.AbstractDto;
 import org.rliz.cfm.common.api.dto.Reference;
 import org.rliz.cfm.playback.model.Playback;
@@ -12,6 +14,7 @@ import java.util.Date;
 /**
  * Represents a {@link Playback} on the wire.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlaybackDto extends AbstractDto<Playback> {
 
     private RecordingDto recording;

@@ -10,6 +10,7 @@ import org.rliz.cfm.musicbrainz.api.dto.MbRecordingListDto;
 import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
+import org.rliz.cfm.playback.model.PlaybackOriginalData;
 import org.rliz.cfm.playback.repository.PlaybackRepository;
 import org.rliz.cfm.recording.boundary.RecordingBoundaryService;
 import org.rliz.cfm.recording.model.Recording;
@@ -59,22 +60,25 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     public Playback createPlayback(CreatePlaybackDto dto) {
         User currentUser = SecurityContextHelper.getCurrentUser();
 
+        Playback createdPlayback;
         if (Objects.nonNull(dto.getMbTrackId()) && Objects.nonNull(dto.getMbReleaseGroupId())) {
-            return createPlaybackWithMbids(currentUser, dto.getMbTrackId(), dto.getMbReleaseGroupId());
+            createdPlayback = createPlaybackWithMbids(currentUser, dto.getMbTrackId(), dto.getMbReleaseGroupId());
         } else if (!CollectionUtils.isEmpty(dto.getArtists())
                 && Objects.nonNull(dto.getTitle()) && Objects.nonNull(dto.getAlbum())) {
-            return createPlaybackWithNames(currentUser, dto.getArtists(), dto.getTitle(), dto.getAlbum());
+            createdPlayback = createPlaybackWithNames(currentUser, dto.getArtists(), dto.getTitle(), dto.getAlbum());
         } else {
             throw new ApiArgumentsInvalidException("Insufficient data to create a playback.", ErrorCodes.EC_002);
         }
+        createdPlayback.setOriginalData(PlaybackOriginalData.fromCreatePlaybackDto(dto));
+        createdPlayback.setIdentifier(UUID.randomUUID());
+        return playbackRepository.save(createdPlayback);
     }
 
     private Playback createPlaybackWithMbids(User currentUser, UUID trackId, UUID releaseGroupId) {
         Recording recording = recordingBoundaryService.findOrCreateRecordingWithMbid(trackId);
         ReleaseGroup releaseGroup = releaseGroupBoundaryService.findOrCreateReleaseGroupWithMusicbrainz(releaseGroupId);
         Playback playback = new Playback(recording, releaseGroup, currentUser, Date.from(Instant.now()));
-        playback.setIdentifier(UUID.randomUUID());
-        return playbackRepository.save(playback);
+        return playback;
     }
 
     private Playback createPlaybackWithNames(User currentUser, List<String> artists, String title, String album) {
@@ -86,7 +90,8 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
         MbRecordingListDto recordingListDto = musicbrainzRestClient.searchForRecordings(queryString,
                 MusicbrainzRestClient.FORMAT_JSON);
         if (recordingListDto.getCount() < 1) {
-            throw new ApiArgumentsInvalidException("Could not find recording with given details", ErrorCodes.EC_003);
+            // create "broken" playback instead.
+            return new Playback(null, null, currentUser, Date.from(Instant.now()));
         }
         MbRecordingDto recordingDto = recordingListDto.getRecordings().get(0);
         Recording recording = recordingBoundaryService
@@ -97,8 +102,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
                         recordingDto.getReleases().get(0).getReleaseGroupReference().getMbid());
 
         Playback playback = new Playback(recording, releaseGroup, currentUser, Date.from(Instant.now()));
-        playback.setIdentifier(UUID.randomUUID());
-        return playbackRepository.save(playback);
+        return playback;
     }
 
     @Override

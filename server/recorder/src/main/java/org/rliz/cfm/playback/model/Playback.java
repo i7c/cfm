@@ -16,7 +16,7 @@ import java.util.Date;
 @Entity
 public class Playback extends AbstractEntity {
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "FK_playback_recording"))
     private Recording recording;
 
@@ -32,6 +32,9 @@ public class Playback extends AbstractEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @NotNull
     private Date time;
+
+    @Embedded
+    private PlaybackOriginalData originalData;
 
     /**
      * Default constructor.
@@ -84,6 +87,14 @@ public class Playback extends AbstractEntity {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    public PlaybackOriginalData getOriginalData() {
+        return originalData;
+    }
+
+    public void setOriginalData(PlaybackOriginalData originalData) {
+        this.originalData = originalData;
     }
 
     @Override
