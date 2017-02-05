@@ -7,6 +7,7 @@ import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
 import org.rliz.cfm.musicbrainz.api.QueryStringBuilder;
 import org.rliz.cfm.musicbrainz.api.dto.MbRecordingDto;
 import org.rliz.cfm.musicbrainz.api.dto.MbRecordingListDto;
+import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.playback.repository.PlaybackRepository;
@@ -55,16 +56,17 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Playback createPlayback(UUID trackId, UUID releaseGroupId, List<String> artists, String title,
-                                   String album) {
+    public Playback createPlayback(CreatePlaybackDto dto) {
         User currentUser = SecurityContextHelper.getCurrentUser();
 
-        if (Objects.nonNull(trackId) && Objects.nonNull(releaseGroupId)) {
-            return createPlaybackWithMbids(currentUser, trackId, releaseGroupId);
-        } else if (!CollectionUtils.isEmpty(artists) && Objects.nonNull(title) && Objects.nonNull(album)) {
-            return createPlaybackWithNames(currentUser, artists, title, album);
+        if (Objects.nonNull(dto.getMbTrackId()) && Objects.nonNull(dto.getMbReleaseGroupId())) {
+            return createPlaybackWithMbids(currentUser, dto.getMbTrackId(), dto.getMbReleaseGroupId());
+        } else if (!CollectionUtils.isEmpty(dto.getArtists())
+                && Objects.nonNull(dto.getTitle()) && Objects.nonNull(dto.getAlbum())) {
+            return createPlaybackWithNames(currentUser, dto.getArtists(), dto.getTitle(), dto.getAlbum());
+        } else {
+            throw new ApiArgumentsInvalidException("Insufficient data to create a playback.", ErrorCodes.EC_002);
         }
-        return null;
     }
 
     private Playback createPlaybackWithMbids(User currentUser, UUID trackId, UUID releaseGroupId) {
