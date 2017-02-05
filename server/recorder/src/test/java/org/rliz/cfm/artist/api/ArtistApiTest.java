@@ -3,19 +3,27 @@ package org.rliz.cfm.artist.api;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.rliz.cfm.artist.api.dto.ArtistDto;
+import org.rliz.cfm.artist.api.dto.factory.ArtistDtoFactory;
+import org.rliz.cfm.artist.api.dto.factory.ArtistListDtoFactory;
+import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
 import org.rliz.cfm.artist.builder.ArtistBuilder;
 import org.rliz.cfm.artist.model.Artist;
 import org.rliz.cfm.artist.repository.ArtistRepository;
 import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -31,21 +39,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests the {@link ArtistController} on REST level.
  */
+@WebMvcTest(ArtistController.class)
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ArtistApiIntegrationConfig.class)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ContextConfiguration(classes =  {ArtistDtoFactory.class, ArtistListDtoFactory.class, ArtistController.class})
 @WithMockUser("somebody")
-public class ArtistApiIntegrationTest {
+@EnableSpringDataWebSupport
+public class ArtistApiTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private ArtistRepository artistRepository;
-
-    @MockBean
-    MusicbrainzRestClient musicbrainzRestClient;
+    private ArtistBoundaryService artistBoundaryService;
 
     /**
      * Verifies that GET on the artist resource gets a paged list of artists.
@@ -71,7 +76,7 @@ public class ArtistApiIntegrationTest {
                 .withIdentifier(artist2Identifier)
                 .build();
         PageRequest pageRequest = new PageRequest(0, 20);
-        when(artistRepository.findAll(pageRequest))
+        when(artistBoundaryService.findAllArtists(pageRequest))
                 .thenReturn(new PageImpl<Artist>(Lists.newArrayList(artist1, artist2), pageRequest, 2));
 
         mockMvc.perform(get(ArtistController.MAPPING_PATH)
@@ -115,7 +120,7 @@ public class ArtistApiIntegrationTest {
                 .withIdentifier(artistIdentifier)
                 .withMbid(artistMbid)
                 .build();
-        when(artistRepository.findOneByIdentifier(artistIdentifier))
+        when(artistBoundaryService.findOneByIdentifier(artistIdentifier))
                 .thenReturn(artist);
 
         mockMvc.perform(get(ArtistController.MAPPING_PATH + "/" + String.valueOf(artistIdentifier))
