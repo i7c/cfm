@@ -5,21 +5,23 @@ use warnings;
 use Moo;
 use Carp;
 
-has mbTrackId => (is => 'rw');
+has mbTrackId => (is => 'ro');
 
-has mbReleaseGroupId => (is => 'rw');
+has mbReleaseGroupId => (is => 'ro');
 
-has artists => (is => 'rw');
+has artists => (is => 'ro');
 
-has title => (is => 'rw');
+has title => (is => 'ro');
 
-has album => (is => 'rw');
+has album => (is => 'ro');
 
-has length => (is => 'rw');
+has length => (is => 'ro');
 
-has discNumber => (is => 'rw');
+has discNumber => (is => 'ro');
 
-has trackNumber => (is => 'rw');
+has trackNumber => (is => 'ro');
+
+has playTime => (is => 'ro');
 
 # Returns the wire representation of this object to send to the server
 sub dto {
@@ -35,6 +37,7 @@ sub dto {
         $result{length} = $self->length if defined $self->length;
         $result{discNumber} = $self->discNumber if defined $self->discNumber;
         $result{trackNumber} = $self->trackNumber if defined $self->trackNumber;
+        $result{playTime} = $self->playTime if defined $self->playTime;
 
         return \%result;
     } else {
