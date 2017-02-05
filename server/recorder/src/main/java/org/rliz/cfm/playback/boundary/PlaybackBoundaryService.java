@@ -4,6 +4,7 @@ import org.rliz.cfm.playback.model.Playback;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -16,12 +17,12 @@ public interface PlaybackBoundaryService {
      *
      * @param trackId        the musicbrainz track ID
      * @param releaseGroupId musicbrainz release group ID
-     * @param artist         name of the artist
+     * @param artists        list of artist names of the played recording
      * @param title          title of the recording
      * @param album          album name
      * @return persisted playback event
      */
-    Playback createPlayback(UUID trackId, UUID releaseGroupId, String artist, String title, String album);
+    Playback createPlayback(UUID trackId, UUID releaseGroupId, List<String> artists, String title, String album);
 
     /**
      * Gets a list of {@link Playback}s regardless of the user.

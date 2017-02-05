@@ -19,11 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Implementation of {@link PlaybackBoundaryServiceImpl}.
@@ -56,13 +55,14 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Playback createPlayback(UUID trackId, UUID releaseGroupId, String artist, String title, String album) {
+    public Playback createPlayback(UUID trackId, UUID releaseGroupId, List<String> artists, String title,
+                                   String album) {
         User currentUser = SecurityContextHelper.getCurrentUser();
 
         if (Objects.nonNull(trackId) && Objects.nonNull(releaseGroupId)) {
             return createPlaybackWithMbids(currentUser, trackId, releaseGroupId);
-        } else if (Objects.nonNull(artist) && Objects.nonNull(title) && Objects.nonNull(album)) {
-            return createPlaybackWithNames(currentUser, artist, title, album);
+        } else if (!CollectionUtils.isEmpty(artists) && Objects.nonNull(title) && Objects.nonNull(album)) {
+            return createPlaybackWithNames(currentUser, artists, title, album);
         }
         return null;
     }
@@ -75,9 +75,9 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
         return playbackRepository.save(playback);
     }
 
-    private Playback createPlaybackWithNames(User currentUser, String artist, String title, String album) {
+    private Playback createPlaybackWithNames(User currentUser, List<String> artists, String title, String album) {
         String queryString = QueryStringBuilder.queryString()
-                .withArtist(artist)
+                .withArtists(artists)
                 .withTitle(title)
                 .withAlbum(album)
                 .build();

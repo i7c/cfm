@@ -57,7 +57,7 @@ public class PlaybackController {
         Playback playback = playbackBoundaryService.createPlayback(
                 body.getMbTrackId(),
                 body.getMbReleaseGroupId(),
-                body.getArtist(),
+                body.getArtists(),
                 body.getTitle(),
                 body.getAlbum());
         return playbackDtoFactory.build(playback);

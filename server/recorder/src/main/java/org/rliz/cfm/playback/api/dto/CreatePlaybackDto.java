@@ -1,5 +1,6 @@
 package org.rliz.cfm.playback.api.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -11,7 +12,7 @@ public class CreatePlaybackDto  {
 
     private UUID mbReleaseGroupId;
 
-    private String artist;
+    private List<String> artists;
 
     private String title;
 
@@ -25,8 +26,8 @@ public class CreatePlaybackDto  {
         return mbReleaseGroupId;
     }
 
-    public String getArtist() {
-        return artist;
+    public List<String> getArtists() {
+        return artists;
     }
 
     public String getTitle() {
