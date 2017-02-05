@@ -1,5 +1,6 @@
 package org.rliz.cfm.musicbrainz.api;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -32,6 +33,18 @@ public class QueryStringBuilderTest {
 
         assertEquals("artistname:\"Artist 1\" AND artistname:\"Artist 2\" AND recording:\"Title title\"~2 " +
                         "AND release:\"ALBUM\"~2",
+                queryString);
+    }
+
+    @Test
+    public void multipleArtistsAtOnce() {
+        String queryString = QueryStringBuilder.queryString()
+                .withArtists(Lists.newArrayList("Hodor", "Bran feat. Bron"))
+                .withTitle("X")
+                .withAlbum("A")
+                .build();
+        assertEquals("artistname:\"Hodor\" AND artistname:\"Bran\" AND artistname:\"Bron\"" +
+                        " AND recording:\"X\"~2 AND release:\"A\"~2",
                 queryString);
     }
 }
