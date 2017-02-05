@@ -8,6 +8,7 @@ use Net::DBus::Reactor;
 use Data::Dumper;
 
 use Cfm::PlayerStateMachine;
+use Cfm::CreatePlayback;
 
 has psm => (
         is      => 'rw',
@@ -34,47 +35,61 @@ sub listen {
 
             my $metadata = $rawdata->{Metadata};
             my $data = {
-                artist => $metadata->{"xesam:artist"},
+                artists => $metadata->{"xesam:artist"},
                 title  => $metadata->{"xesam:title"},
                 album  => $metadata->{"xesam:album"},
-                length => $metadata->{"mpris:length"} / 1000000 # in seconds
+                length => $metadata->{"mpris:length"} / 1000000, # in seconds
+                trackNumber => $metadata->{"xesam:trackNumber"},
+                discNumber => $metadata->{"xesam:discNumber"},
+                rawdata => $metadata
             };
 
             if ($rawdata->{PlaybackStatus} eq "Playing") {
-                $self->psm->play($data, $self, $metadata);
+                $self->psm->play($data, $metadata, $self);
             } elsif ($rawdata->{PlaybackStatus} eq "Paused") {
-                $self->psm->pause($data, $self, $metadata);
+                $self->psm->pause($data, $metadata, $self);
             }
         });
+    print "Listening.\n";
     my $reactor = Net::DBus::Reactor->main();
     $reactor->run();
 }
 
 sub started {
-    my ($artists, $title, $album, $length, $passed_time, $self, $metadata) = @_;
-    my $artist = join(", ", @$artists);
+    my ($metadata, $passed_time, $self) = @_;
+    my $artist = join(", ", @{$metadata->{artists}});
 
-    print "Started: $artist - $title\n";
+    print "Started: $artist - $metadata->{title}\n";
 }
 
 sub completed {
-    my ($artists, $title, $album, $length, $passed_time, $self, $metadata) = @_;
-    my $artist = join(", ", @$artists);
+    my ($metadata, $passed_time, $self) = @_;
+    my $artist = join(", ", @{$metadata->{artists}});
 
-    print "Completed: $artist - $title ($passed_time of $length seconds)\n";
+    my $create_playback = Cfm::CreatePlayback->new(
+        title   => $metadata->{title},
+        artists => $metadata->{artists},
+        album   => $metadata->{album},
+        length  => $metadata->{length},
+        trackNumber  => $metadata->{trackNumber},
+        discNumber  => $metadata->{discNumber},
+    );
+
+    $self->client->create_playback($create_playback);
+    print "Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} seconds)\n";
 }
 
 sub canceled {
-    my ($artists, $title, $album, $length, $passed_time, $self, $metadata) = @_;
-    my $artist = join(", ", @$artists);
+    my ($metadata, $passed_time, $self) = @_;
+    my $artist = join(", ", @{$metadata->{artists}});
 
-    print "Canceled: $artist - $title ($passed_time of $length seconds)\n";
+    print "Canceled: $artist - $metadata->{title} ($passed_time of $metadata->{length} seconds)\n";
 }
 
 sub resumed {
-    my ($artists, $title, $album, $length, $passed_time, $self, $metadata) = @_;
-    my $artist = join(", ", @$artists);
-
+    my ($metadata, $passed_time, $self) = @_;
+    my $artist = join(", ", @{$metadata->{artists}});
+    print "Resumed: $artist - $metadata->{title} ($passed_time of $metadata->{length} seconds)\n";
 }
 
 1;
