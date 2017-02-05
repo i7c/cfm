@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * DTO that represents creation of a playback.
  */
-public class CreatePlaybackDto  {
+public class CreatePlaybackDto {
 
     private UUID mbTrackId;
 
@@ -17,6 +17,15 @@ public class CreatePlaybackDto  {
     private String title;
 
     private String album;
+
+    private Long length;
+
+    private Integer discNumber;
+
+    private Integer trackNumber;
+
+    private Long playTime;
+
 
     public UUID getMbTrackId() {
         return mbTrackId;
@@ -36,5 +45,21 @@ public class CreatePlaybackDto  {
 
     public String getAlbum() {
         return album;
+    }
+
+    public Long getLength() {
+        return length;
+    }
+
+    public Integer getDiscNumber() {
+        return discNumber;
+    }
+
+    public Integer getTrackNumber() {
+        return trackNumber;
+    }
+
+    public Long getPlayTime() {
+        return playTime;
     }
 }
