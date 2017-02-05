@@ -5,6 +5,7 @@ use warnings FATAL => 'all';
 use Moo;
 
 use Data::Dumper;
+use Time::HiRes qw/time/;
 
 # track meta data
 has metadata => (is => 'rw');
@@ -55,7 +56,6 @@ sub BUILD {
 sub play {
     my $self = shift;
     my $data = shift;
-    my $metadata = shift;
     my @user_args = @_;
 
     if ($self->state == - 1) {
@@ -122,7 +122,7 @@ sub stop {
 sub _update_passed_time {
     my ($self) = @_;
 
-    my $now = time();
+    my $now = time() * 1000;
     $self->passed_time($self->passed_time + ($now - $self->start_time));
 }
 
@@ -130,7 +130,7 @@ sub _update_passed_time {
 sub _set_playing {
     my ($self) = @_;
 
-    $self->start_time(time());
+    $self->start_time(time() * 1000);
     $self->state(1);
 }
 

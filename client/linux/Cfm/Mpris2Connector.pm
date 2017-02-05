@@ -6,6 +6,7 @@ use Moo;
 use Net::DBus;
 use Net::DBus::Reactor;
 use Data::Dumper;
+use Data::Printer;
 
 use Cfm::PlayerStateMachine;
 use Cfm::CreatePlayback;
@@ -26,6 +27,8 @@ has client => (is => 'ro');
 
 has dbus_name => (is => 'ro');
 
+has debug => (is => 'ro');
+
 sub listen {
     my ($self) = @_;
 
@@ -40,16 +43,16 @@ sub listen {
                 artists => $metadata->{"xesam:artist"},
                 title  => $metadata->{"xesam:title"},
                 album  => $metadata->{"xesam:album"},
-                length => $metadata->{"mpris:length"} / 1000000, # in seconds
+                length => $metadata->{"mpris:length"} / 1000, # in ms
                 trackNumber => $metadata->{"xesam:trackNumber"},
                 discNumber => $metadata->{"xesam:discNumber"},
                 rawdata => $metadata
             };
 
             if ($rawdata->{PlaybackStatus} eq "Playing") {
-                $self->psm->play($data, $metadata, $self);
+                $self->psm->play($data, $self);
             } elsif ($rawdata->{PlaybackStatus} eq "Paused") {
-                $self->psm->pause($data, $metadata, $self);
+                $self->psm->pause($data, $self);
             }
         });
     print "Listening.\n";
@@ -61,6 +64,10 @@ sub started {
     my ($metadata, $passed_time, $self) = @_;
     my $artist = join(", ", @{$metadata->{artists}});
 
+    if ($self->debug) {
+        p($metadata);
+        p($passed_time);
+    }
     print "Started: $artist - $metadata->{title}\n";
 }
 
@@ -77,21 +84,36 @@ sub completed {
         discNumber  => $metadata->{discNumber},
     );
 
+    if ($self->debug) {
+        p($metadata);
+        p($passed_time);
+        p($create_playback);
+    }
+
     $self->client->create_playback($create_playback);
-    print "Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} seconds)\n";
+    print "Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)\n";
 }
 
 sub canceled {
     my ($metadata, $passed_time, $self) = @_;
     my $artist = join(", ", @{$metadata->{artists}});
 
-    print "Canceled: $artist - $metadata->{title} ($passed_time of $metadata->{length} seconds)\n";
+    if ($self->debug) {
+        p($metadata);
+        p($passed_time);
+    }
+    print "Canceled: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)\n";
 }
 
 sub resumed {
     my ($metadata, $passed_time, $self) = @_;
     my $artist = join(", ", @{$metadata->{artists}});
-    print "Resumed: $artist - $metadata->{title} ($passed_time of $metadata->{length} seconds)\n";
+
+    if ($self->debug) {
+        p($metadata);
+        p($passed_time);
+    }
+    print "Resumed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)\n";
 }
 
 1;

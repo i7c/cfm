@@ -63,7 +63,8 @@ sub run {
         "artist|a=s",
         "title|t=s",
         "album|A=s",
-        "player=s"
+        "player=s",
+        "debug",
     );
     $self->options(\%options, $command);
     $self->load_config;
@@ -225,9 +226,10 @@ sub cmd_record {
     if ($player eq "spotify") {
         my $connector = Cfm::Mpris2Connector->new(
             client => $self->client,
-            dbus_name => "org.mpris.MediaPlayer2.spotify"
+            dbus_name => "org.mpris.MediaPlayer2.spotify",
+            debug => $self->has_option("debug")
         );
-        print "Initialising Spotify Connector ...\n";
+        print "Initialising MPRIS2 Connector ...\n";
         $connector->listen;
     } else {
         die "Unknown player: $player";
