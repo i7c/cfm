@@ -18,12 +18,23 @@ public class ListDto<T extends AbstractDto> extends ResourceSupport {
     private final Integer pageSize;
     private List<T> elements;
 
+    public ListDto(List<T> elements) {
+        this(elements, null);
+    }
+
     public ListDto(List<T> elements, Page<?> page) {
         this.elements = elements;
-        this.pageNumber = page.getNumber();
-        this.totalPages = page.getTotalPages();
-        this.totalElements = page.getTotalElements();
-        this.pageSize = page.getSize();
+        if (page != null) {
+            this.pageNumber = page.getNumber();
+            this.totalPages = page.getTotalPages();
+            this.totalElements = page.getTotalElements();
+            this.pageSize = page.getSize();
+        } else {
+            this.pageNumber = null;
+            this.totalPages = null;
+            this.totalElements = null;
+            this.pageSize = null;
+        }
     }
 
     public List<T> getElements() {
