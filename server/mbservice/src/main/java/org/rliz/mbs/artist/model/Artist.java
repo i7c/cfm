@@ -4,6 +4,7 @@ import org.rliz.mbs.common.model.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
@@ -12,7 +13,13 @@ import java.util.UUID;
  * An Artist as stored in the musicbrainz db.
  */
 @Entity
-@Table(name = "artist")
+@Table(
+        name = "artist",
+        indexes = {
+                @Index(name = "ix_artist_name", columnList = "name"),
+                @Index(name = "ix_artist_gid", columnList = "gid")
+        }
+)
 public class Artist extends AbstractEntity {
 
 
