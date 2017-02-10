@@ -1,12 +1,10 @@
 package org.rliz.mbs.recording.model;
 
 import org.rliz.mbs.artist.model.ArtistCredit;
-import org.rliz.mbs.common.model.AbstractEntity;
+import org.rliz.mbs.common.model.FirstClassEntity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Represents a musicbrainz Recording.
@@ -18,11 +16,7 @@ import java.util.UUID;
                 @Index(name = "ix_recording_artistcredit", columnList = "artist_credit")
         }
 )
-public class Recording extends AbstractEntity {
-
-    @NotNull
-    @Column(name = "gid")
-    private UUID identifier;
+public class Recording extends FirstClassEntity {
 
     @Column(name = "name")
     private String name;
@@ -46,14 +40,6 @@ public class Recording extends AbstractEntity {
 //    Not mapped yet:
 //    edits_pending | integer
 
-
-    public UUID getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(UUID identifier) {
-        this.identifier = identifier;
-    }
 
     public String getName() {
         return name;

@@ -2,11 +2,10 @@ package org.rliz.mbs.artist.model;
 
 import org.rliz.mbs.common.model.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents artist credit.
@@ -14,7 +13,6 @@ import java.util.Date;
 @Entity
 @Table(name = "artist_credit")
 public class ArtistCredit extends AbstractEntity implements Serializable {
-
 
     @Column(name = "name")
     private String name;
@@ -27,6 +25,9 @@ public class ArtistCredit extends AbstractEntity implements Serializable {
 
     @Column(name = "created")
     private Date created;
+
+    @OneToMany(mappedBy = "artistCredit", fetch = FetchType.LAZY)
+    private List<ArtistCreditName> artistCreditName;
 
     public String getName() {
         return name;
@@ -58,5 +59,13 @@ public class ArtistCredit extends AbstractEntity implements Serializable {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public List<ArtistCreditName> getArtistCreditName() {
+        return artistCreditName;
+    }
+
+    public void setArtistCreditName(List<ArtistCreditName> artistCreditName) {
+        this.artistCreditName = artistCreditName;
     }
 }

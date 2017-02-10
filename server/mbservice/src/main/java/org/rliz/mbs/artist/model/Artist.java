@@ -1,13 +1,11 @@
 package org.rliz.mbs.artist.model;
 
-import org.rliz.mbs.common.model.AbstractEntity;
+import org.rliz.mbs.common.model.FirstClassEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 /**
  * An Artist as stored in the musicbrainz db.
@@ -20,12 +18,7 @@ import java.util.UUID;
                 @Index(name = "ix_artist_gid", columnList = "gid")
         }
 )
-public class Artist extends AbstractEntity {
-
-
-    @NotNull
-    @Column(name = "gid")
-    private UUID identifier;
+public class Artist extends FirstClassEntity {
 
     @Column(name = "name")
     private String name;
@@ -81,14 +74,6 @@ public class Artist extends AbstractEntity {
                 ", ended=" + ended +
                 ", comment='" + comment + '\'' +
                 '}';
-    }
-
-    public UUID getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(UUID identifier) {
-        this.identifier = identifier;
     }
 
     public String getName() {
