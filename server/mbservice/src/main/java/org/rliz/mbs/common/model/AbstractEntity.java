@@ -17,15 +17,8 @@ public class AbstractEntity {
     @Column(name = "id")
     private Long oid;
 
-    @NotNull
-    @Column(name = "gid")
-    private UUID identifier;
-
     public Long getOid() {
         return oid;
     }
 
-    public UUID getIdentifier() {
-        return identifier;
-    }
 }

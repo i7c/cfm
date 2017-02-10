@@ -1,18 +1,23 @@
 package org.rliz.mbs.recording.model;
 
+import org.rliz.mbs.artist.model.ArtistCredit;
 import org.rliz.mbs.common.model.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.UUID;
 
 /**
- * Created by cmw on 09/02/17.
+ * Represents a musicbrainz Recording.
  */
 @Entity
 @Table(name = "recording")
 public class Recording extends AbstractEntity {
+
+    @NotNull
+    @Column(name = "gid")
+    private UUID identifier;
 
     @Column(name = "name")
     private String name;
@@ -29,8 +34,11 @@ public class Recording extends AbstractEntity {
     @Column(name = "video")
     public Boolean video;
 
+    @ManyToOne
+    @JoinColumn(name = "artist_credit", referencedColumnName = "id")
+    public ArtistCredit artistCredit;
+
 //    Not mapped yet:
-//    artist_credit | integer
 //    edits_pending | integer
 
 }

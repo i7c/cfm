@@ -5,6 +5,8 @@ import org.rliz.mbs.common.model.AbstractEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
  * An Artist as stored in the musicbrainz db.
@@ -12,6 +14,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "artist")
 public class Artist extends AbstractEntity {
+
+
+    @NotNull
+    @Column(name = "gid")
+    private UUID identifier;
 
     @Column(name = "name")
     private String name;
@@ -67,6 +74,14 @@ public class Artist extends AbstractEntity {
                 ", ended=" + ended +
                 ", comment='" + comment + '\'' +
                 '}';
+    }
+
+    public UUID getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(UUID identifier) {
+        this.identifier = identifier;
     }
 
     public String getName() {
