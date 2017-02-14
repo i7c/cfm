@@ -14,6 +14,7 @@ import javax.persistence.Table;
 @Table(
         name = "artist",
         indexes = {
+                @Index(name = "ix_artist_id", columnList = "id"),
                 @Index(name = "ix_artist_name", columnList = "name"),
                 @Index(name = "ix_artist_gid", columnList = "gid")
         }

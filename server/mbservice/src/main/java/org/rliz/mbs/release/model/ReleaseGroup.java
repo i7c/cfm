@@ -3,22 +3,22 @@ package org.rliz.mbs.release.model;
 import org.rliz.mbs.artist.model.ArtistCredit;
 import org.rliz.mbs.common.model.FirstClassEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Represents a group of {@link Release}s.
  */
 @Entity
+@Table(name = "release_group", indexes = {
+        @Index(name = "ix_releasegroup_id", columnList = "id")
+})
 public class ReleaseGroup extends FirstClassEntity {
 
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_credit")
     private ArtistCredit artistCredit;
 

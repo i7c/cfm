@@ -3,6 +3,7 @@ package org.rliz.mbs.rating.service.impl;
 import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.rating.service.RatingService;
 import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.release.model.Release;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 public class RatingServiceImpl implements RatingService {
 
 
-    public static final String SPLIT_REGEX = "[\\s!?,:\"'«»“”(){}\\[\\]<>^]+";
+    private static final String REMOVE_REGEX = "[']+";
+    private static final String SPLIT_REGEX = "[\\s!?,:\"«»“”(){}\\[\\]<>^.]+";
 
     @Override
     public List<Rated<Recording>> rateRecordings(List<Recording> recordings, String title) {
@@ -28,6 +30,17 @@ public class RatingServiceImpl implements RatingService {
                 .collect(Collectors.toList());
         Collections.sort(ratedRecordings);
         return ratedRecordings;
+    }
+
+    @Override
+    public List<Rated<Release>> rateReleases(List<Release> releases, String title) {
+        String[] titleWords = splitMeaningfulWords(title);
+
+        List<Rated<Release>> ratedReleases = releases.stream()
+                .map(release -> rateRelease(release, titleWords))
+                .collect(Collectors.toList());
+        Collections.sort(ratedReleases);
+        return ratedReleases;
     }
 
     /**
@@ -46,13 +59,28 @@ public class RatingServiceImpl implements RatingService {
     }
 
     /**
+     * Rate a single release.
+     *
+     * @param release     a release
+     * @param searchWords search words for the title
+     * @return a rated release
+     */
+    private Rated<Release> rateRelease(Release release, String[] searchWords) {
+        String[] titleWords = splitMeaningfulWords(release.getName());
+
+        List<String> lcs = longestCommonSubsequence(titleWords, searchWords);
+        int rating = (int) ((double) lcs.size() / titleWords.length * 100);
+        return new Rated<>(release, rating);
+    }
+
+    /**
      * Splits string into a set of words removing certain special characters.
      *
      * @param phrase a string with words
      * @return the cleaned set of words of the phrase
      */
     private String[] splitMeaningfulWords(String phrase) {
-        return phrase.toLowerCase().split(SPLIT_REGEX);
+        return phrase.replaceAll(REMOVE_REGEX, "").toLowerCase().split(SPLIT_REGEX);
     }
 
 

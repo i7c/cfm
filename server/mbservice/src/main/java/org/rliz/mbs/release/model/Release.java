@@ -1,37 +1,38 @@
 package org.rliz.mbs.release.model;
 
 import org.rliz.mbs.artist.model.ArtistCredit;
-import org.rliz.mbs.common.model.AbstractEntity;
 import org.rliz.mbs.common.model.FirstClassEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Represents a single release.
  */
 @Entity
+@Table(name = "release", indexes = {
+        @Index(name = "ix_release_id", columnList = "id"),
+        @Index(name = "ix_release_artistcredit", columnList = "artist_credit")
+})
 public class Release extends FirstClassEntity {
 
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_credit")
     private ArtistCredit artistCredit;
-
 
     @Column(name = "comment")
     private String comment;
 
-
     @Column(name = "last_updated")
     private Date lastUpdated;
 
-//    release_group
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "release_group")
+    private ReleaseGroup releaseGroup;
+
 //    status        | integer
 //    packaging     | integer
 //    language      | integer
@@ -54,5 +55,9 @@ public class Release extends FirstClassEntity {
 
     public Date getLastUpdated() {
         return lastUpdated;
+    }
+
+    public ReleaseGroup getReleaseGroup() {
+        return releaseGroup;
     }
 }

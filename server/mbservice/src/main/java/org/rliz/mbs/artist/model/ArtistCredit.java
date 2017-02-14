@@ -6,12 +6,15 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents artist credit.
  */
 @Entity
-@Table(name = "artist_credit")
+@Table(name = "artist_credit", indexes = {
+        @Index(name = "ix_artistcredit_id", columnList = "id")
+})
 public class ArtistCredit extends AbstractEntity implements Serializable {
 
     @Column(name = "name")
@@ -27,45 +30,26 @@ public class ArtistCredit extends AbstractEntity implements Serializable {
     private Date created;
 
     @OneToMany(mappedBy = "artistCredit", fetch = FetchType.LAZY)
-    private List<ArtistCreditName> artistCreditName;
+    private Set<ArtistCreditName> artistCreditName;
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Integer getArtistCount() {
         return artistCount;
     }
 
-    public void setArtistCount(Integer artistCount) {
-        this.artistCount = artistCount;
-    }
-
     public Integer getRefCount() {
         return refCount;
-    }
-
-    public void setRefCount(Integer refCount) {
-        this.refCount = refCount;
     }
 
     public Date getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public List<ArtistCreditName> getArtistCreditName() {
+    public Set<ArtistCreditName> getArtistCreditName() {
         return artistCreditName;
     }
 
-    public void setArtistCreditName(List<ArtistCreditName> artistCreditName) {
-        this.artistCreditName = artistCreditName;
-    }
 }

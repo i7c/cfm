@@ -11,7 +11,8 @@ import java.io.Serializable;
         name = "artist_credit_name",
         indexes = {
                 @Index(name = "ix_acn_acp", columnList = "artist_credit, position"),
-                @Index(name = "ix_acn_artist", columnList = "artist")
+                @Index(name = "ix_acn_artist", columnList = "artist"),
+                @Index(name = "ix_acn_artistcredit", columnList = "artist_credit")
         }
 )
 public class ArtistCreditName implements Serializable {
