@@ -45,47 +45,24 @@ public class Recording extends FirstClassEntity {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Long getLength() {
         return length;
-    }
-
-    public void setLength(Long length) {
-        this.length = length;
     }
 
     public String getComment() {
         return comment;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public Date getLastUpdated() {
         return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 
     public Boolean getVideo() {
         return video;
     }
 
-    public void setVideo(Boolean video) {
-        this.video = video;
-    }
-
     public ArtistCredit getArtistCredit() {
         return artistCredit;
     }
 
-    public void setArtistCredit(ArtistCredit artistCredit) {
-        this.artistCredit = artistCredit;
-    }
 }
