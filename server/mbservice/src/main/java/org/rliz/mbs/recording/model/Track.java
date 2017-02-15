@@ -36,7 +36,7 @@ public class Track extends FirstClassEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "artist_credit")
+    @JoinColumn(name = "artist_credit")
     private ArtistCredit artistCredit;
 
     @Column(name = "length")

@@ -35,9 +35,11 @@ public class Recording extends FirstClassEntity {
     @JoinColumn(name = "artist_credit", referencedColumnName = "id")
     private ArtistCredit artistCredit;
 
+    @OneToMany(mappedBy = "recording", fetch = FetchType.LAZY)
+    private Set<Track> track;
+
 //    Not mapped yet:
 //    edits_pending | integer
-
 
     public String getName() {
         return name;
@@ -61,6 +63,10 @@ public class Recording extends FirstClassEntity {
 
     public ArtistCredit getArtistCredit() {
         return artistCredit;
+    }
+
+    public Set<Track> getTrack() {
+        return track;
     }
 
     @Override
