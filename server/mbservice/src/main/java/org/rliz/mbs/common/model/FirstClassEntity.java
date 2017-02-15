@@ -9,7 +9,7 @@ import java.util.UUID;
  * Represents an entity that has a {@link UUID}.
  */
 @MappedSuperclass
-public class FirstClassEntity extends AbstractEntity {
+public abstract class FirstClassEntity extends AbstractEntity {
 
     @NotNull
     @Column(name = "gid")
@@ -22,4 +22,7 @@ public class FirstClassEntity extends AbstractEntity {
     public void setIdentifier(UUID identifier) {
         this.identifier = identifier;
     }
+
+    public abstract String getDisplayName();
+
 }

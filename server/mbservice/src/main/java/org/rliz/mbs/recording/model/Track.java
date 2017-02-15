@@ -86,4 +86,9 @@ public class Track extends FirstClassEntity {
     public Boolean getDataTrack() {
         return isDataTrack;
     }
+
+    @Override
+    public String getDisplayName() {
+        return getName();
+    }
 }

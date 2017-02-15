@@ -11,7 +11,7 @@ import java.util.UUID;
  * Common base class for entities in the musicbrainz database.
  */
 @MappedSuperclass
-public class AbstractEntity {
+public abstract class AbstractEntity {
 
     @Id
     @Column(name = "id")
@@ -20,5 +20,4 @@ public class AbstractEntity {
     public Long getOid() {
         return oid;
     }
-
 }

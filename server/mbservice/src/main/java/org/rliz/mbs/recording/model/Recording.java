@@ -5,17 +5,15 @@ import org.rliz.mbs.common.model.FirstClassEntity;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Represents a musicbrainz Recording.
  */
 @Entity
-@Table(
-        name = "recording",
-        indexes = {
-                @Index(name = "ix_recording_artistcredit", columnList = "artist_credit")
-        }
-)
+@Table(name = "recording", indexes = {
+        @Index(name = "ix_recording_artistcredit", columnList = "artist_credit")
+})
 public class Recording extends FirstClassEntity {
 
     @Column(name = "name")
@@ -65,4 +63,8 @@ public class Recording extends FirstClassEntity {
         return artistCredit;
     }
 
+    @Override
+    public String getDisplayName() {
+        return getName();
+    }
 }

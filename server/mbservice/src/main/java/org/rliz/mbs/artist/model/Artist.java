@@ -116,4 +116,9 @@ public class Artist extends FirstClassEntity {
     public String getComment() {
         return comment;
     }
+
+    @Override
+    public String getDisplayName() {
+        return getName();
+    }
 }

@@ -20,4 +20,8 @@ public class Reference<T extends FirstClassEntity> {
         return data.getIdentifier();
     }
 
+    public String getDisplayName() {
+        return data.getDisplayName();
+    }
+
 }

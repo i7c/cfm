@@ -46,4 +46,9 @@ public class ReleaseGroup extends FirstClassEntity {
     public Date getLastUpdated() {
         return lastUpdated;
     }
+
+    @Override
+    public String getDisplayName() {
+        return getName();
+    }
 }

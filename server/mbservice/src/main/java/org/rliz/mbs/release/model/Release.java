@@ -60,4 +60,9 @@ public class Release extends FirstClassEntity {
     public ReleaseGroup getReleaseGroup() {
         return releaseGroup;
     }
+
+    @Override
+    public String getDisplayName() {
+        return getName();
+    }
 }
