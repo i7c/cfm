@@ -52,8 +52,4 @@ public class ArtistCredit extends AbstractEntity implements Serializable {
         return artistCreditName;
     }
 
-    @Override
-    public String getDisplayName() {
-        return getName();
-    }
 }

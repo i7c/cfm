@@ -55,8 +55,4 @@ public class Medium extends AbstractEntity {
         return trackCount;
     }
 
-    @Override
-    public String getDisplayName() {
-        return getName();
-    }
 }
