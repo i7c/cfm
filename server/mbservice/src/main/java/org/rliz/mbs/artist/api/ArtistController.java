@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 /**
- * API endpoint for artists.
+ * API endpoint for {@link Artist}s.
  */
 @RestController
 @RequestMapping(value = "/api/v1/artists")
@@ -35,12 +35,25 @@ public class ArtistController {
         this.artistListDtoFactory = artistListDtoFactory;
     }
 
+    /**
+     * Retrieves a single {@link Artist} by its unique identifier.
+     *
+     * @param identifier the UUID
+     * @return the artist
+     */
     @RequestMapping(value = "/{identifier}")
     public ArtistDto getArtistByIdentifier(@PathVariable(name = "identifier") UUID identifier) {
         Artist artist = this.artistBoundaryService.getSingleArtistByIdentifier(identifier);
         return artistDtoFactory.build(artist);
     }
 
+    /**
+     * Retrieves a page of artists matching the given name.
+     *
+     * @param name     search name
+     * @param pageable page request
+     * @return list of matching artists
+     */
     @RequestMapping(method = RequestMethod.GET)
     public ListDto<ArtistDto> findArtistByName(@RequestParam(name = "name") String name, Pageable pageable) {
         Page<Artist> foundArtists = artistBoundaryService.findArtistsByName(name, pageable);
