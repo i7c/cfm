@@ -30,7 +30,8 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
     public Artist getSingleArtistByIdentifier(UUID identifier) {
         Artist foundArtist = this.artistRepository.findOneByIdentifier(identifier);
         if (foundArtist == null) {
-            throw new MbEntityNotFoundException(String.format("No artist with UUID %s", identifier), ErrorCodes.EC_001);
+            throw new MbEntityNotFoundException(String.format("No artist found with UUID %s.", identifier),
+                    ErrorCodes.EC_001);
         }
         return foundArtist;
     }
