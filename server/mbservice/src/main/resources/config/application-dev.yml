@@ -9,3 +9,5 @@ spring:
     properties:
       hibernate:
         default_schema: musicbrainz
+
+logging.level.org.hibernate.SQL: DEBUG

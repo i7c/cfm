@@ -3,8 +3,8 @@ package org.rliz.cfm.artist.boundary.impl;
 import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
 import org.rliz.cfm.artist.model.Artist;
 import org.rliz.cfm.artist.repository.ArtistRepository;
-import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
-import org.rliz.cfm.musicbrainz.api.dto.MbArtistDto;
+import org.rliz.cfm.mbs.dto.MbArtistDto;
+import org.rliz.cfm.mbs.service.MbsRestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +23,14 @@ import java.util.stream.Collectors;
 public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
 
     private ArtistRepository artistRepository;
-    private MusicbrainzRestClient musicbrainzRestClient;
+
+    private MbsRestClient mbsRestClient;
 
     @Autowired
-    public ArtistBoundaryServiceImpl(ArtistRepository artistRepository, MusicbrainzRestClient musicbrainzRestClient) {
+    public ArtistBoundaryServiceImpl(ArtistRepository artistRepository,
+                                     MbsRestClient mbsRestClient) {
         this.artistRepository = artistRepository;
-        this.musicbrainzRestClient = musicbrainzRestClient;
+        this.mbsRestClient = mbsRestClient;
     }
 
     @Override
@@ -48,10 +50,10 @@ public class ArtistBoundaryServiceImpl implements ArtistBoundaryService {
         foundArtists.stream().forEach(artist -> unmatchedIdentifiers.remove(artist.getMbid()));
 
         List<MbArtistDto> mbArtists = unmatchedIdentifiers.stream()
-                .map(mbid -> musicbrainzRestClient.getArtist(mbid, "json"))
+                .map(mbsRestClient::getArtistByIdentifier)
                 .collect(Collectors.toList());
         List<Artist> persistedArtists = mbArtists.stream().map(mbArtist -> {
-            Artist createdArtist = new Artist(mbArtist.getMbid(), mbArtist.getName());
+            Artist createdArtist = new Artist(mbArtist.getIdentifier(), mbArtist.getName());
             createdArtist.setIdentifier(UUID.randomUUID());
             return artistRepository.save(createdArtist);
         }).collect(Collectors.toList());

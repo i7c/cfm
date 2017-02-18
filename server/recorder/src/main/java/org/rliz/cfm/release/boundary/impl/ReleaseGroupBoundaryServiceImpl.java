@@ -2,10 +2,9 @@ package org.rliz.cfm.release.boundary.impl;
 
 import org.rliz.cfm.artist.boundary.ArtistBoundaryService;
 import org.rliz.cfm.artist.model.Artist;
-import org.rliz.cfm.common.exception.ErrorCodes;
-import org.rliz.cfm.common.exception.ThirdPartyApiException;
-import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
-import org.rliz.cfm.musicbrainz.api.dto.MbReleaseGroupDto;
+import org.rliz.cfm.mbs.dto.MbReference;
+import org.rliz.cfm.mbs.dto.MbReleaseGroupDto;
+import org.rliz.cfm.mbs.service.MbsRestClient;
 import org.rliz.cfm.release.boundary.ReleaseGroupBoundaryService;
 import org.rliz.cfm.release.model.ReleaseGroup;
 import org.rliz.cfm.release.repository.ReleaseGroupRepository;
@@ -24,21 +23,24 @@ import java.util.stream.Collectors;
 public class ReleaseGroupBoundaryServiceImpl implements ReleaseGroupBoundaryService {
 
     private ReleaseGroupRepository releaseGroupRepository;
-    private MusicbrainzRestClient musicbrainzRestClient;
+
     private ArtistBoundaryService artistBoundaryService;
+
+    private MbsRestClient mbsRestClient;
 
     /**
      * Constructor.
      *
      * @param releaseGroupRepository release group repo
-     * @param musicbrainzRestClient  REST client for musicbrainz API
      * @param artistBoundaryService  service for artists
+     * @param mbsRestClient          client to query MBS
      */
     @Autowired
-    public ReleaseGroupBoundaryServiceImpl(ReleaseGroupRepository releaseGroupRepository, MusicbrainzRestClient musicbrainzRestClient, ArtistBoundaryService artistBoundaryService) {
+    public ReleaseGroupBoundaryServiceImpl(ReleaseGroupRepository releaseGroupRepository,
+                                           ArtistBoundaryService artistBoundaryService, MbsRestClient mbsRestClient) {
         this.releaseGroupRepository = releaseGroupRepository;
-        this.musicbrainzRestClient = musicbrainzRestClient;
         this.artistBoundaryService = artistBoundaryService;
+        this.mbsRestClient = mbsRestClient;
     }
 
     @Override
@@ -47,17 +49,13 @@ public class ReleaseGroupBoundaryServiceImpl implements ReleaseGroupBoundaryServ
         if (foundRg != null) {
             return foundRg;
         }
-        MbReleaseGroupDto mbReleaseGroup = musicbrainzRestClient.getReleaseGroup(mbid, "artist-credits",
-                MusicbrainzRestClient.FORMAT_JSON);
-        if (mbReleaseGroup.getArtistCredits() == null) {
-            throw new ThirdPartyApiException("Release group did not contain artist credits", ErrorCodes.EC_001);
-        }
-        List<UUID> artistMbids = mbReleaseGroup.getArtistCredits().stream()
-                .map(credit -> credit.getArtist().getMbid())
+        MbReleaseGroupDto mbReleaseGroup = mbsRestClient.getReleaseGroupByIdentifier(mbid);
+        List<UUID> artistMbids = mbReleaseGroup.getArtistReferences().stream()
+                .map(MbReference::getIdentifier)
                 .collect(Collectors.toList());
         List<Artist> creditedArtists = artistBoundaryService.getOrCreateArtistsWithMusicbrainz(artistMbids);
 
-        ReleaseGroup createdRg = new ReleaseGroup(mbReleaseGroup.getMbid(), mbReleaseGroup.getTitle(),
+        ReleaseGroup createdRg = new ReleaseGroup(mbReleaseGroup.getIdentifier(), mbReleaseGroup.getName(),
                 new HashSet<>(creditedArtists));
         createdRg.setIdentifier(UUID.randomUUID());
         return releaseGroupRepository.save(createdRg);

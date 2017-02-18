@@ -41,11 +41,11 @@ public class PlaybackDetailsDto {
         return new Reference<ReleaseGroup>(release.getReleaseGroup());
     }
 
-    public Reference<Recording> getRecordingIdentifier() {
+    public Reference<Recording> getRecordingReference() {
         return new Reference<>(recording);
     }
 
-    public List<Reference<Artist>> getRecordingArtistReferences() {
+    public List<Reference<Artist>> getRecordingArtistsReferences() {
         return recording.getArtistCredit().getArtistCreditName().stream()
                 .map(ArtistCreditName::getArtist).map(Reference::new)
                 .collect(Collectors.toList());

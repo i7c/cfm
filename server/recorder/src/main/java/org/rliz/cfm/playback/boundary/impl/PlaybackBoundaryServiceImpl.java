@@ -3,10 +3,8 @@ package org.rliz.cfm.playback.boundary.impl;
 import org.rliz.cfm.common.exception.ApiArgumentsInvalidException;
 import org.rliz.cfm.common.exception.ErrorCodes;
 import org.rliz.cfm.common.security.SecurityContextHelper;
-import org.rliz.cfm.musicbrainz.api.MusicbrainzRestClient;
-import org.rliz.cfm.musicbrainz.api.QueryStringBuilder;
-import org.rliz.cfm.musicbrainz.api.dto.MbRecordingDto;
-import org.rliz.cfm.musicbrainz.api.dto.MbRecordingListDto;
+import org.rliz.cfm.mbs.dto.MbPlaybackDetailsDto;
+import org.rliz.cfm.mbs.service.MbsRestClient;
 import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
@@ -24,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Implementation of {@link PlaybackBoundaryServiceImpl}.
@@ -35,7 +36,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     private RecordingBoundaryService recordingBoundaryService;
     private ReleaseGroupBoundaryService releaseGroupBoundaryService;
     private PlaybackRepository playbackRepository;
-    private MusicbrainzRestClient musicbrainzRestClient;
+    private MbsRestClient mbsRestClient;
 
     /**
      * Constructor.
@@ -43,17 +44,17 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
      * @param recordingBoundaryService    recording service
      * @param releaseGroupBoundaryService release group service
      * @param playbackRepository          repo for playbacks
-     * @param musicbrainzRestClient       REST client to query mb
+     * @param mbsRestClient               REST client to query MBS
      */
     @Autowired
     public PlaybackBoundaryServiceImpl(RecordingBoundaryService recordingBoundaryService,
                                        ReleaseGroupBoundaryService releaseGroupBoundaryService,
-                                       PlaybackRepository playbackRepository, MusicbrainzRestClient
-                                               musicbrainzRestClient) {
+                                       PlaybackRepository playbackRepository,
+                                       MbsRestClient mbsRestClient) {
         this.recordingBoundaryService = recordingBoundaryService;
         this.releaseGroupBoundaryService = releaseGroupBoundaryService;
         this.playbackRepository = playbackRepository;
-        this.musicbrainzRestClient = musicbrainzRestClient;
+        this.mbsRestClient = mbsRestClient;
     }
 
     @Override
@@ -82,24 +83,18 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     private Playback createPlaybackWithNames(User currentUser, List<String> artists, String title, String album) {
-        String queryString = QueryStringBuilder.queryString()
-                .withArtists(artists)
-                .withTitle(title)
-                .withAlbum(album)
-                .build();
-        MbRecordingListDto recordingListDto = musicbrainzRestClient.searchForRecordings(queryString,
-                MusicbrainzRestClient.FORMAT_JSON);
-        if (recordingListDto.getCount() < 1) {
-            // create "broken" playback instead.
+        MbPlaybackDetailsDto playbackDetailsDto;
+        try {
+            playbackDetailsDto = mbsRestClient.identifyPlaybackWithNames(artists, title, album);
+        } catch (Exception ex) {
             return new Playback(null, null, currentUser, Date.from(Instant.now()));
         }
-        MbRecordingDto recordingDto = recordingListDto.getRecordings().get(0);
-        Recording recording = recordingBoundaryService
-                .findOrCreateRecordingWithMbid(recordingDto.getMbid());
 
-        ReleaseGroup releaseGroup = releaseGroupBoundaryService
-                .findOrCreateReleaseGroupWithMusicbrainz(
-                        recordingDto.getReleases().get(0).getReleaseGroupReference().getMbid());
+        Recording recording = recordingBoundaryService.findOrCreateRecordingWithMbid(
+                playbackDetailsDto.getRecordingReference().getIdentifier());
+
+        ReleaseGroup releaseGroup = releaseGroupBoundaryService.findOrCreateReleaseGroupWithMusicbrainz(
+                playbackDetailsDto.getReleaseGroupReference().getIdentifier());
 
         Playback playback = new Playback(recording, releaseGroup, currentUser, Date.from(Instant.now()));
         return playback;
