@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of {@link RecordingBoundaryService}.
@@ -42,6 +43,16 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
         } else {
             throw new MbEntityNotFoundException("Recording not found.", ErrorCodes.EC_001);
         }
+    }
+
+    @Override
+    public Recording findByIdentifier(UUID identifier) {
+        Recording foundRecording = recordingRepository.findByIdentifier(identifier);
+        if (foundRecording == null) {
+            throw new MbEntityNotFoundException(String.format("No recording for identifier %s.", identifier),
+                    ErrorCodes.EC_001);
+        }
+        return foundRecording;
     }
 }
 

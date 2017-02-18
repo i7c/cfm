@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service for {@link Recording}s.
@@ -20,4 +21,12 @@ public interface RecordingBoundaryService {
      * @return the identified recording
      */
     Recording identifyRecording(Release release, String title);
+
+    /**
+     * Retrieve single {@link Recording} by identifier.
+     *
+     * @param identifier unique identifier
+     * @return the found {@link Recording}
+     */
+    Recording findByIdentifier(UUID identifier);
 }

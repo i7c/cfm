@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Repo for {@link Recording}s.
@@ -21,4 +22,12 @@ public interface RecordingRepository extends JpaRepository<Recording, Long> {
     @EntityGraph(attributePaths = {"artistCredit.artistCreditName.artist", "track.medium.release.releaseGroup"})
     List<Recording> findAllByReleaseGroup(@Param("releaseGroup") ReleaseGroup rg);
 
+    /**
+     * Retrieve single {@link Recording} by identifier.
+     *
+     * @param identifier unique identifier
+     * @return the {@link Recording}
+     */
+    @EntityGraph(attributePaths = "artistCredit.artistCreditName.artist")
+    Recording findByIdentifier(UUID identifier);
 }

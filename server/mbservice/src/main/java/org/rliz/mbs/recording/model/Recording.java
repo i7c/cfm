@@ -12,7 +12,9 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "recording", indexes = {
-        @Index(name = "ix_recording_artistcredit", columnList = "artist_credit")
+        @Index(name = "ix_recording_artistcredit", columnList = "artist_credit"),
+        @Index(name = "ix_recording_id", columnList = "id"),
+        @Index(name = "ix_recording_gid", columnList = "gid")
 })
 public class Recording extends FirstClassEntity {
 
