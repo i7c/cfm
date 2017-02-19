@@ -14,7 +14,7 @@ public class ErrorDto {
         this.message = message;
     }
 
-    public static <T extends MBServiceException> ErrorDto fromException(T ex) {
+    public static <T extends MbServiceException> ErrorDto fromException(T ex) {
         return new ErrorDto(ex.getErrorCode(), ex.getMessage());
     }
 

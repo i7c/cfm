@@ -1,6 +1,5 @@
 package org.rliz.mbs.release.boundary.impl;
 
-import org.rliz.mbs.common.exception.ErrorCodes;
 import org.rliz.mbs.common.exception.MbEntityNotFoundException;
 import org.rliz.mbs.release.boundary.ReleaseGroupBoundaryService;
 import org.rliz.mbs.release.model.ReleaseGroup;
@@ -27,8 +26,8 @@ public class ReleaseGroupBoundaryServiceImpl implements ReleaseGroupBoundaryServ
     public ReleaseGroup findByIdentifier(UUID identifier) {
         ReleaseGroup foundReleaseGroup = releaseGroupRepository.findByIdentifier(identifier);
         if (foundReleaseGroup == null) {
-            throw new MbEntityNotFoundException(String.format("No release group for identifier %s.", identifier),
-                    ErrorCodes.EC_001);
+            throw new MbEntityNotFoundException(MbEntityNotFoundException.EC_NO_SUCH_UUID,
+                    "No release group found for UUID %s.", identifier);
         }
         return foundReleaseGroup;
     }

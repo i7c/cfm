@@ -3,12 +3,12 @@ package org.rliz.mbs.common.exception;
 /**
  * Exception base class.
  */
-public abstract class MBServiceException extends RuntimeException {
+public abstract class MbServiceException extends RuntimeException {
 
     private String errorCode;
 
-    public MBServiceException(String s, String errorCode) {
-        super(s);
+    public MbServiceException(String errorCode, String message, Object... args) {
+        super(String.format(message, args));
         this.errorCode = errorCode;
     }
 
