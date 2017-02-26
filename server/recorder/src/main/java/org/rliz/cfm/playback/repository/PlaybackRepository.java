@@ -19,7 +19,7 @@ public interface PlaybackRepository extends JpaRepository<Playback, Long> {
      * @param pageable pageable from the request
      * @return a page of playbacks for this user
      */
-    @EntityGraph(attributePaths = {"recording.artists", "releaseGroup"})
+    @EntityGraph(attributePaths = {"recording.artists", "releaseGroup", "originalArtists"})
     Page<Playback> findByUser(User user, Pageable pageable);
 
 }

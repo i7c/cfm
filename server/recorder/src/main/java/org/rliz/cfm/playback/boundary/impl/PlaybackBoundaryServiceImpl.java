@@ -8,7 +8,6 @@ import org.rliz.cfm.mbs.service.MbsRestClient;
 import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
-import org.rliz.cfm.playback.model.PlaybackOriginalData;
 import org.rliz.cfm.playback.repository.PlaybackRepository;
 import org.rliz.cfm.recording.boundary.RecordingBoundaryService;
 import org.rliz.cfm.recording.model.Recording;
@@ -70,7 +69,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
         } else {
             throw new ApiArgumentsInvalidException("Insufficient data to create a playback.", ErrorCodes.EC_002);
         }
-        createdPlayback.setOriginalData(PlaybackOriginalData.fromCreatePlaybackDto(dto));
+        createdPlayback.setOriginalDataFromDto(dto);
         createdPlayback.setIdentifier(UUID.randomUUID());
         return playbackRepository.save(createdPlayback);
     }
