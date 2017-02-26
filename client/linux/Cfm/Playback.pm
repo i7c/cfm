@@ -28,6 +28,12 @@ has time => (is => 'ro');
 
 has identifier => (is => 'ro');
 
+has originalTitle => (is => 'ro');
+
+has originalAlbum => (is => 'ro');
+
+has originalArtists => (is => 'ro');
+
 sub _ds_recording {
     my ($content) = @_;
 

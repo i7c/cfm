@@ -1,6 +1,5 @@
 package org.rliz.cfm.playback.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.rliz.cfm.common.api.dto.AbstractDto;
 import org.rliz.cfm.common.api.dto.Reference;
@@ -10,6 +9,7 @@ import org.rliz.cfm.release.api.dto.ReleaseGroupDto;
 import org.rliz.cfm.user.model.User;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a {@link Playback} on the wire.
@@ -41,5 +41,21 @@ public class PlaybackDto extends AbstractDto<Playback> {
 
     public Reference<User> getUserRef() {
         return new Reference<>(data.getUser());
+    }
+
+    public String getOriginalTitle() {
+        return data.getOriginalTitle();
+    }
+
+    public String getOriginalAlbum() {
+        return data.getOriginalAlbum();
+    }
+
+    public List<String> getOriginalArtists() {
+        return data.getOriginalArtists();
+    }
+
+    public Long getPlayTime() {
+        return data.getPlayTime();
     }
 }
