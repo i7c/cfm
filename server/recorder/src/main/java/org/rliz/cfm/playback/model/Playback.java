@@ -18,6 +18,9 @@ import java.util.UUID;
  * such that no data is lost.
  */
 @Entity
+@Table(
+        indexes = @Index(name = "ix_playback_user", columnList = "user_oid")
+)
 public class Playback extends AbstractEntity {
 
     @ManyToOne
