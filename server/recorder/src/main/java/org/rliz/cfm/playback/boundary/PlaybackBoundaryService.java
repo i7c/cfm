@@ -32,8 +32,9 @@ public interface PlaybackBoundaryService {
     /**
      * Gets a page of {@link Playback}s for the current user.
      *
-     * @param pageable pageable from the request
+     * @param onlyBroken only include broken playbacks
+     * @param pageable   pageable from the request
      * @return page of playbacks
      */
-    Page<Playback> findAllForCurrentUser(Pageable pageable);
+    Page<Playback> findAllForCurrentUser(boolean onlyBroken, Pageable pageable);
 }

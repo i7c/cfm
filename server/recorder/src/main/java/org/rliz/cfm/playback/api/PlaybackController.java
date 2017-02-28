@@ -13,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for playbacks.
@@ -74,14 +71,17 @@ public class PlaybackController {
     /**
      * Requests own playbacks
      *
-     * @param pageable page params
+     * @param onlyBroken if true only broken playbacks will be included
+     * @param pageable   page params
      * @return a list of playbacks
      */
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "/mine")
-    public ListDto<PlaybackDto> getPlaybacksForUser(@PageableDefault(sort = "time", direction = Sort.Direction.DESC)
-                                                            Pageable pageable) {
-        Page<Playback> playbackPage = playbackBoundaryService.findAllForCurrentUser(pageable);
+    public ListDto<PlaybackDto> getPlaybacksForUser(
+            @RequestParam(name = "onlyBroken", required = false) boolean onlyBroken,
+            @PageableDefault(sort = "time", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<Playback> playbackPage = playbackBoundaryService.findAllForCurrentUser(onlyBroken, pageable);
         return playbackListDtoFactory.build(playbackPage);
     }
 }

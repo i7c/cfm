@@ -64,6 +64,7 @@ sub run {
         "title|t=s",
         "album|A=s",
         "player=s",
+        "broken",
         "debug",
     );
     $self->options(\%options, $command);
@@ -207,7 +208,7 @@ Options:
 sub cmd_playbacks {
     my ($self) = @_;
 
-    my $pbl = $self->client->my_playbacks;
+    my $pbl = $self->client->my_playbacks($self->has_option("broken"));
     $self->formatter->playback_list($pbl);
     return;
 }

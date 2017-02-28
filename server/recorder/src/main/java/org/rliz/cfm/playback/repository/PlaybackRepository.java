@@ -1,6 +1,7 @@
 package org.rliz.cfm.playback.repository;
 
 import org.rliz.cfm.playback.model.Playback;
+import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,14 @@ public interface PlaybackRepository extends JpaRepository<Playback, Long> {
     @EntityGraph(attributePaths = {"recording.artists", "releaseGroup", "originalArtists", "user"})
     Page<Playback> findByUser(User user, Pageable pageable);
 
+
+    /**
+     * Finds all playbacks of given user that refer to the specified recording.
+     *
+     * @param user      a user
+     * @param recording a recording
+     * @param pageable  page request
+     * @return the playbacks
+     */
+    Page<Playback> findByUserAndRecording(User user, Recording recording, Pageable pageable);
 }

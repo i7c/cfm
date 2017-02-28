@@ -7,6 +7,7 @@ use HTTP::Request;
 use Carp;
 use JSON;
 use Data::Dumper;
+use URI;
 
 use Cfm::Artist;
 use Cfm::ArtistList;
@@ -45,23 +46,26 @@ sub BUILD {
 
 # Perform GET request on given path and return decoded content
 sub _plain_get {
-    my ($self, $path) = @_;
+    my ($self, $path, $params) = @_;
 
-    my $abspath = $self->cfm_url.$path;
-    my $request = HTTP::Request->new('GET', $abspath, $self->headers);
+    my $uri = URI->new($self->cfm_url);
+    $uri->path($path);
+    $uri->query_form(@$params);
+
+    my $request = HTTP::Request->new('GET', $uri, $self->headers);
     my $resp = $self->agent->request($request);
     if ($resp->is_success) {
         return $resp->decoded_content;
     } else {
-        croak $resp->status_line.": ".$abspath;
+        croak $resp->status_line.": ".$uri;
     }
 }
 
 # Perform GET request on given path and return response as hash
 sub _get {
-    my ($self, $path) = @_;
+    my ($self, $path, $params) = @_;
 
-    return JSON::decode_json($self->_plain_get($path));
+    return JSON::decode_json($self->_plain_get($path, $params));
 }
 
 # Perform POST request on given path with content and return response
@@ -91,7 +95,7 @@ sub _post {
 sub artists {
     my ($self) = @_;
 
-    my $artists_resource = $self->_get("/artists");
+    my $artists_resource = $self->_get("/api/v1/artists");
     my $result = Cfm::ArtistList->from_hash($artists_resource);
     return $result;
 }
@@ -100,7 +104,7 @@ sub artists {
 sub artist {
     my ($self, $identifier) = @_;
 
-    my $artist_resource = $self->_get("/artists/$identifier");
+    my $artist_resource = $self->_get("/api/v1/artists/$identifier");
     return Cfm::Artist->from_hash($artist_resource);
 }
 
@@ -108,15 +112,20 @@ sub artist {
 sub create_playback {
     my ($self, $create_playback) = @_;
 
-    my $response = $self->_post("/playbacks", $create_playback->dto);
+    my $response = $self->_post("/api/v1/playbacks", $create_playback->dto);
     return Cfm::Playback->from_hash($response);
 }
 
 # Get playback list
 sub my_playbacks {
-    my ($self) = @_;
+    my ($self, $only_broken) = @_;
 
-    my $response = $self->_get("/playbacks/mine");
+    my @params = ();
+    if ($only_broken) {
+        push @params, onlyBroken => "true";
+    }
+
+    my $response = $self->_get("/api/v1/playbacks/mine", \@params);
     return  Cfm::PlaybackList->from_hash($response);
 }
 

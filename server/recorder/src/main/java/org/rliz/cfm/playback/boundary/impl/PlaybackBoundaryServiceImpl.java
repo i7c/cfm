@@ -105,10 +105,13 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Page<Playback> findAllForCurrentUser(Pageable pageable) {
+    public Page<Playback> findAllForCurrentUser(boolean onlyBroken, Pageable pageable) {
         User currentUser = SecurityContextHelper.getCurrentUser();
-        return playbackRepository.findByUser(currentUser, pageable);
+        if (onlyBroken) {
+            return playbackRepository.findByUserAndRecording(currentUser, null, pageable);
+        } else {
+            return playbackRepository.findByUser(currentUser, pageable);
+        }
     }
-
 
 }
