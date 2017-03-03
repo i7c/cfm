@@ -1,3 +1,4 @@
+set schema 'musicbrainz';
 CREATE INDEX ix_acn_acp ON artist_credit_name USING btree (artist_credit, "position");
 CREATE INDEX ix_acn_artist ON artist_credit_name USING btree (artist);
 CREATE INDEX ix_acn_artistcredit ON artist_credit_name USING btree (artist_credit);

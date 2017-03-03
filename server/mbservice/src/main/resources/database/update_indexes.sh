@@ -12,5 +12,6 @@ ifile="$1";
  exit 2;
 }
 
-grep -e '^CREATE INDEX' $ifile > mbdb_indexes.sql
+echo "set schema 'musicbrainz';" > mbdb_indexes.sql
+grep -e '^CREATE INDEX' $ifile >> mbdb_indexes.sql
 exit 0;
