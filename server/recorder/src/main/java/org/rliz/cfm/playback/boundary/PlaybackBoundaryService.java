@@ -2,6 +2,7 @@ package org.rliz.cfm.playback.boundary;
 
 import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
 import org.rliz.cfm.playback.model.Playback;
+import org.rliz.cfm.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -37,4 +38,13 @@ public interface PlaybackBoundaryService {
      * @return page of playbacks
      */
     Page<Playback> findAllForCurrentUser(boolean onlyBroken, Pageable pageable);
+
+    /**
+     * Deletes the playback with given identifier if the user is permitted to do so.
+     *
+     * @param identifier        identifier of the {@link Playback}
+     * @param authenticatedUser currently authenticated user
+     */
+    void deletePlayback(UUID identifier, User authenticatedUser);
+
 }

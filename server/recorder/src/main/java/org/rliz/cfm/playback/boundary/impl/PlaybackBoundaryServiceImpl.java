@@ -2,6 +2,7 @@ package org.rliz.cfm.playback.boundary.impl;
 
 import org.rliz.cfm.common.exception.ApiArgumentsInvalidException;
 import org.rliz.cfm.common.exception.ErrorCodes;
+import org.rliz.cfm.common.exception.UnauthorizedException;
 import org.rliz.cfm.common.security.SecurityContextHelper;
 import org.rliz.cfm.mbs.dto.MbPlaybackDetailsDto;
 import org.rliz.cfm.mbs.service.MbsRestClient;
@@ -17,9 +18,11 @@ import org.rliz.cfm.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -112,6 +115,21 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
         } else {
             return playbackRepository.findByUser(currentUser, pageable);
         }
+    }
+
+    @Override
+    public void deletePlayback(UUID identifier, User authenticatedUser) {
+        Playback playback = playbackRepository.findOneByIdentifier(identifier);
+        if (playback == null) {
+            throw new EntityNotFoundException("Playback not found.");
+        }
+
+        // TODO: do this permission check elsewhere
+        if (! authenticatedUser.equals(playback.getUser())) {
+            throw new UnauthorizedException("Not allowed to delete this playback.");
+        }
+
+        playbackRepository.delete(playback);
     }
 
 }

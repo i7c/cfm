@@ -19,7 +19,14 @@ import java.util.UUID;
  */
 @Entity
 @Table(
-        indexes = @Index(name = "ix_playback_user", columnList = "user_oid")
+        indexes = {
+                @Index(name = "ix_playback_oid", columnList = "oid"),
+                @Index(name = "ix_playback_identifier", columnList = "identifier"),
+                @Index(name = "ix_playback_user", columnList = "user_oid")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uc_playback_identifier", columnNames = "identifier")
+        }
 )
 public class Playback extends AbstractEntity {
 

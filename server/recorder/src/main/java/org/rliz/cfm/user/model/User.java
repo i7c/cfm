@@ -46,6 +46,21 @@ public class User extends AbstractEntity {
         this.apiKey = apiKey;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return getUsername().equals(user.getUsername());
+    }
+
+    @Override
+    public int hashCode() {
+        return getUsername().hashCode();
+    }
+
     public String getUsername() {
         return username;
     }

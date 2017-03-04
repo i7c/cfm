@@ -7,13 +7,18 @@ import org.rliz.cfm.playback.api.dto.factory.PlaybackDtoFactory;
 import org.rliz.cfm.playback.api.dto.factory.PlaybackListDtoFactory;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
+import org.rliz.cfm.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 /**
  * REST controller for playbacks.
@@ -83,5 +88,20 @@ public class PlaybackController {
 
         Page<Playback> playbackPage = playbackBoundaryService.findAllForCurrentUser(onlyBroken, pageable);
         return playbackListDtoFactory.build(playbackPage);
+    }
+
+    /**
+     * DELETE operation on a single {@link Playback} resource.
+     *
+     * @param identifier the identifier of the playback
+     * @param user       the authenticated user
+     * @return 204 upon success
+     */
+    @Transactional
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{identifier}")
+    public ResponseEntity<?> deletePlayback(@PathVariable(name = "identifier") UUID identifier,
+                                            @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
+        playbackBoundaryService.deletePlayback(identifier, user);
+        return ResponseEntity.noContent().build();
     }
 }
