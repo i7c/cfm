@@ -10,9 +10,8 @@ import java.io.Serializable;
 @Table(
         name = "artist_credit_name",
         indexes = {
-                @Index(name = "ix_acn_acp", columnList = "artist_credit, position"),
-                @Index(name = "ix_acn_artist", columnList = "artist"),
-                @Index(name = "ix_acn_artistcredit", columnList = "artist_credit")
+                @Index( name = "artist_credit_name_pkey", columnList = "artist_credit, position"),
+                @Index( name = "artist_credit_name_idx_artist", columnList = "artist")
         }
 )
 public class ArtistCreditName implements Serializable {
