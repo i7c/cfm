@@ -44,21 +44,32 @@ sub BUILD {
     $self->headers($headers);
 }
 
-# Perform GET request on given path and return decoded content
-sub _plain_get {
-    my ($self, $path, $params) = @_;
+sub _generic_request {
+    my ($self, $method, $path, $content, $params) = @_;
 
+    # set request path
     my $uri = URI->new($self->cfm_url);
     $uri->path($path);
+    # set query params
     $uri->query_form(@$params);
 
-    my $request = HTTP::Request->new('GET', $uri, $self->headers);
+    # build request
+    my $request = HTTP::Request->new($method, $uri, $self->headers);
+    # set body
+    $request->content($content);
+    # perform request
     my $resp = $self->agent->request($request);
     if ($resp->is_success) {
         return $resp->decoded_content;
     } else {
         croak $resp->status_line.": ".$uri;
     }
+}
+
+# Perform GET request on given path and return decoded content
+sub _plain_get {
+    my ($self, $path, $params) = @_;
+    return $self->_generic_request('GET', $path, \{}, $params);
 }
 
 # Perform GET request on given path and return response as hash
@@ -70,25 +81,26 @@ sub _get {
 
 # Perform POST request on given path with content and return response
 sub _plain_post {
-    my ($self, $path, $content) = @_;
-
-    my $abspath = $self->cfm_url.$path;
-
-    my $request = HTTP::Request->new('POST', $abspath, $self->headers);
-    $request->content($content);
-    my $response = $self->agent->request($request);
-    if ($response->is_success) {
-        return $response->decoded_content;
-    } else {
-        croak $response->status_line.": ".$abspath;
-    }
+    my ($self, $path, $content, $params) = @_;
+    $self->_generic_request('POST', $path, $content, $params);
 }
 
 # Perform POST request on path and return result as hash
 sub _post {
-    my ($self, $path, $content) = @_;
+    my ($self, $path, $content, $params) = @_;
     my $encoded = JSON::encode_json($content);
-    return JSON::decode_json($self->_plain_post($path, $encoded));
+    return JSON::decode_json($self->_plain_post($path, $encoded, $params));
+}
+
+sub _plain_delete {
+    my ($self, $path, $content, $params) = @_;
+    $self->_generic_request('DELETE', $path, $content, $params);
+}
+
+sub _delete {
+    my ($self, $path, $content, $params) = @_;
+    my $encoded = JSON::encode_json($content);
+    return JSON::decode_json($self->_plain_delete($path, $encoded, $params));
 }
 
 # Get artists
