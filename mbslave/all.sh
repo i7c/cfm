@@ -21,7 +21,7 @@ echo "----- STAGE 3 -----"
 echo "----- STAGE 4 -----"
 ./import_data.sh "$@" || exit 4;
 echo "----- STAGE 5 -----"
-./create_indexes.sh "$host" "$port" "$db" "$user" || exit 5;
+./create_indexes.sh || exit 5;
 
 echo "DONE"
 exit 0

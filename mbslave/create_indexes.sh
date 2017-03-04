@@ -1,14 +1,22 @@
 #!/bin/bash
 
-[[ ! $4 ]] && {
-	echo "Usage: $0 <host> <port> <dbname> <user>";
+dir="$HOME/git/mbslave"
+[ ! -d  "$dir" ] && {
+	echo "Missing mbslave. Maybe you have to run setup_ec2.sh first.";
 	exit 1;
 }
 
-host="$1"
-port="$2"
-db="$3"
-user="$4"
+cd "$dir" || { echo "Failed."; exit 2; }
 
-echo "Will prompt for database password ..."
-psql -h "$host" -p "$port" -U "$user" -f "$HOME/git/cfm/server/mbservice/src/main/resources/database/mbdb_indexes.sql" "$db"
+./mbslave-remap-schema.py <sql/CreatePrimaryKeys.sql | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/statistics/CreatePrimaryKeys.sql | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/caa/CreatePrimaryKeys.sql | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/wikidocs/CreatePrimaryKeys.sql | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/documentation/CreatePrimaryKeys.sql | ./mbslave-psql.py
+
+./mbslave-remap-schema.py <sql/CreateIndexes.sql | grep -v musicbrainz_collate | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/CreateSlaveIndexes.sql | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/statistics/CreateIndexes.sql | ./mbslave-psql.py
+./mbslave-remap-schema.py <sql/caa/CreateIndexes.sql | ./mbslave-psql.py
+
+./mbslave-remap-schema.py <sql/CreateViews.sql | ./mbslave-psql.py
