@@ -13,7 +13,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "artist_credit", indexes = {
-        @Index(name = "ix_artistcredit_id", columnList = "id")
+        @Index(name = "artist_credit_pkey", columnList = "id")
 })
 public class ArtistCredit extends AbstractEntity implements Serializable {
 

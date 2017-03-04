@@ -10,8 +10,9 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "medium", indexes = {
-        @Index(name = "ix_medium_id", columnList = "id"),
-        @Index(name = "ix_medium_release", columnList = "release")
+        @Index(name = "medium_pkey", columnList = "id"),
+        @Index(name = "medium_idx_release_position", columnList = "release, position"),
+        @Index(name = "medium_idx_track_count", columnList = "track_count"),
 })
 public class Medium extends AbstractEntity {
 

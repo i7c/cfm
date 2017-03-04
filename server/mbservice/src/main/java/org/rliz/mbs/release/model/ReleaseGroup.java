@@ -11,7 +11,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "release_group", indexes = {
-        @Index(name = "ix_releasegroup_id", columnList = "id")
+        @Index(name = "release_group_pkey", columnList = "id"),
+        @Index(name = "release_group_idx_gid", columnList = "gid"),
+        @Index(name = "release_group_idx_artist_credit", columnList = "artist_credit"),
+        @Index(name = "release_group_idx_name", columnList = "name")
 })
 public class ReleaseGroup extends FirstClassEntity {
 

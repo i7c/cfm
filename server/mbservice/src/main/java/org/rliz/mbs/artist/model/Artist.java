@@ -14,9 +14,15 @@ import javax.persistence.Table;
 @Table(
         name = "artist",
         indexes = {
-                @Index(name = "ix_artist_id", columnList = "id"),
-                @Index(name = "ix_artist_name", columnList = "name"),
-                @Index(name = "ix_artist_gid", columnList = "gid")
+                @Index(name = "artist_pkey", columnList = "id"),
+                @Index(name = "artist_idx_gid", columnList = "gid"),
+                @Index(name = "artist_idx_null_comment", columnList = "name"),
+                @Index(name = "artist_idx_uniq_name_comment", columnList = "name, comment"),
+//                @Index(name = "artist_idx_area", columnList = "area"),
+//                @Index(name = "artist_idx_begin_area", columnList = "begin_area"),
+//                @Index(name = "artist_idx_end_area", columnList = "end_area"),
+                @Index(name = "artist_idx_name", columnList = "name"),
+                @Index(name = "artist_idx_sort_name", columnList = "sort_name"),
         }
 )
 public class Artist extends FirstClassEntity {

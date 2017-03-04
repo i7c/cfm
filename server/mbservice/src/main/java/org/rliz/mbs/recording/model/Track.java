@@ -12,9 +12,13 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "track", indexes = {
-        @Index(name = "ix_track_id", columnList = "id"),
-        @Index(name = "ix_track_recording", columnList = "recording"),
-        @Index(name = "ix_track_medium", columnList = "medium")
+        @Index(name = "track_pkey", columnList = "id"),
+        @Index(name = "track_idx_gid", columnList = "gid"),
+        @Index(name = "track_idx_artist_credit", columnList = "artist_credit"),
+        @Index(name = "track_idx_medium_position", columnList = "medium, position"),
+        @Index(name = "track_idx_name", columnList = "name"),
+        @Index(name = "track_idx_recording", columnList = "recording"),
+
 })
 public class Track extends FirstClassEntity {
 
