@@ -15,7 +15,7 @@ import java.util.UUID;
 /**
  * REST client to query the Musicbrainz Service.
  */
-@FeignClient(name = "mbs", url = "http://127.0.0.1:1338/api/v1")
+@FeignClient(name = "mbsClient", url = "${cfm.mbs.url}")
 public interface MbsRestClient {
 
     @RequestMapping("/artists/{identifier}")
@@ -28,7 +28,7 @@ public interface MbsRestClient {
     MbReleaseGroupDto getReleaseGroupByIdentifier(@PathVariable("identifier") UUID identifier);
 
     @RequestMapping("/playbacks/identify")
-    MbPlaybackDetailsDto identifyPlaybackWithNames(@RequestParam("artist")List<String> artists,
+    MbPlaybackDetailsDto identifyPlaybackWithNames(@RequestParam("artist") List<String> artists,
                                                    @RequestParam("title") String title,
                                                    @RequestParam("release") String release);
 
