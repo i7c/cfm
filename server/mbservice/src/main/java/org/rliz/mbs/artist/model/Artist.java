@@ -12,7 +12,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(
-        name = "artist",
+        name = "artist_ci",
         indexes = {
                 @Index(name = "artist_pkey", columnList = "id"),
                 @Index(name = "artist_idx_gid", columnList = "gid"),
@@ -21,6 +21,7 @@ import javax.persistence.Table;
 //                @Index(name = "artist_idx_area", columnList = "area"),
 //                @Index(name = "artist_idx_begin_area", columnList = "begin_area"),
 //                @Index(name = "artist_idx_end_area", columnList = "end_area"),
+                @Index(name = "artist_idx_lower_name", columnList = "lower_name"),
                 @Index(name = "artist_idx_name", columnList = "name"),
                 @Index(name = "artist_idx_sort_name", columnList = "sort_name"),
         }
@@ -29,6 +30,9 @@ public class Artist extends FirstClassEntity {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "lower_name")
+    private String lowerName;
 
     @Column(name = "sort_name")
     private String sortName;
@@ -85,6 +89,10 @@ public class Artist extends FirstClassEntity {
 
     public String getName() {
         return name;
+    }
+
+    public String getLowerName() {
+        return lowerName;
     }
 
     public String getSortName() {
