@@ -3,9 +3,11 @@ package org.rliz.cfm.common.exception;
 /**
  * Thrown if the user is authenticated but does not have the required authorization to perform certain actions.
  */
-public class UnauthorizedException extends RuntimeException {
+public class UnauthorizedException extends ServiceException {
 
-    public UnauthorizedException(String s) {
-        super(s);
+    public static final String EC_PLAYBACK_DELETE = "rec.authorization.playbacks.delete";
+
+    public UnauthorizedException(String errorCode, String message, Object... args) {
+        super(errorCode, message, args);
     }
 }

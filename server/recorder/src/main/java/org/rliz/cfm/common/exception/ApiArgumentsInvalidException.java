@@ -3,13 +3,12 @@ package org.rliz.cfm.common.exception;
 /**
  * Thrown if the user provides semantically invalid arguments.
  */
-public class ApiArgumentsInvalidException extends RuntimeException {
+public class ApiArgumentsInvalidException extends ServiceException {
 
-    private String errorCode;
+    public static final String EC_ARGS_INSUFFICIENT = "rec.api.args.insufficient";
 
-    public ApiArgumentsInvalidException(String message, String errorCode) {
-        super(message);
-        this.errorCode = errorCode;
+    public ApiArgumentsInvalidException(String errorCode, String message, Object... args) {
+        super(errorCode, message, args);
     }
 
 }

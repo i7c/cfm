@@ -1,7 +1,7 @@
 package org.rliz.cfm.playback.boundary.impl;
 
 import org.rliz.cfm.common.exception.ApiArgumentsInvalidException;
-import org.rliz.cfm.common.exception.ErrorCodes;
+import org.rliz.cfm.common.exception.EntityNotFoundException;
 import org.rliz.cfm.common.exception.UnauthorizedException;
 import org.rliz.cfm.common.security.SecurityContextHelper;
 import org.rliz.cfm.mbs.dto.MbPlaybackDetailsDto;
@@ -18,11 +18,9 @@ import org.rliz.cfm.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +68,8 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
                 && Objects.nonNull(dto.getTitle()) && Objects.nonNull(dto.getAlbum())) {
             createdPlayback = createPlaybackWithNames(currentUser, dto.getArtists(), dto.getTitle(), dto.getAlbum());
         } else {
-            throw new ApiArgumentsInvalidException("Insufficient data to create a playback.", ErrorCodes.EC_002);
+            throw new ApiArgumentsInvalidException(ApiArgumentsInvalidException.EC_ARGS_INSUFFICIENT,
+                    "Insufficient data to create a playback.");
         }
         createdPlayback.setOriginalDataFromDto(dto);
         createdPlayback.setIdentifier(UUID.randomUUID());
@@ -121,15 +120,17 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     public void deletePlayback(UUID identifier, User authenticatedUser) {
         Playback playback = playbackRepository.findOneByIdentifier(identifier);
         if (playback == null) {
-            throw new EntityNotFoundException("Playback not found.");
+            throw new EntityNotFoundException(EntityNotFoundException.EC_UNKNOWN_IDENTIFIER,
+                    "No playback found for identifier {}.", identifier);
         }
 
         // TODO: do this permission check elsewhere
-        if (! authenticatedUser.equals(playback.getUser())) {
-            throw new UnauthorizedException("Not allowed to delete this playback.");
+        if (!authenticatedUser.equals(playback.getUser())) {
+            throw new UnauthorizedException(UnauthorizedException.EC_PLAYBACK_DELETE,
+                    "Not allowed to delete playback with ID {}. You can only delete your playbacks.",
+                    identifier);
         }
 
         playbackRepository.delete(playback);
     }
-
 }
