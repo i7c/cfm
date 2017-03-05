@@ -141,4 +141,11 @@ sub my_playbacks {
     return  Cfm::PlaybackList->from_hash($response);
 }
 
+# Delete a playback by UUID
+sub delete_playback {
+    my ($self, $uuid) = @_;
+
+    $self->_plain_delete("/api/v1/playbacks/$uuid");
+}
+
 1;

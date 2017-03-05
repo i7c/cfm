@@ -15,14 +15,16 @@ my %command_mapping = (
     artists   => \&cmd_artists,
     playback  => \&cmd_playback,
     playbacks => \&cmd_playbacks,
-    record    => \&cmd_record
+    record    => \&cmd_record,
+    del       => \&cmd_del,
 );
 
 my %help_mapping = (
     artists   => \&help_artists,
     playback  => \&help_playback,
     playbacks => \&help_playbacks,
-    record    => \&help_record
+    record    => \&help_record,
+    del       => \&help_del,
 );
 
 my @config_locations = (
@@ -65,6 +67,7 @@ sub run {
         "album|A=s",
         "player=s",
         "broken",
+        "id|i=s",
         "debug",
     );
     $self->options(\%options, $command);
@@ -246,6 +249,19 @@ Usage: record --player=<player>
 Supported players:
   spotify
 ';
+}
+
+sub cmd_del {
+    my ($self) = @_;
+
+    my $uuid = $self->require_option("id");
+    $self->client->delete_playback($uuid);
+}
+
+sub help_del {
+    print 'Delete a playback.
+
+Usage: del -i <uuid>';
 }
 
 1;
