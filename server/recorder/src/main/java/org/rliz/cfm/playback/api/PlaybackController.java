@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,5 +104,24 @@ public class PlaybackController {
                                             @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
         playbackBoundaryService.deletePlayback(identifier, user);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * PATCH operation on a {@link Playback} resource. The provided fields will be changed in the resource with given
+     * identifier.
+     *
+     * @param identifier identifier of the existing {@link Playback} resource
+     * @param body       body containing the update information. Only non-null fields will be applied.
+     * @param user       the currently authenticated user
+     * @return 200 and the updated resource
+     */
+    @Transactional
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{identifier}")
+    public ResponseEntity<PlaybackDto> fixPlayback(@PathVariable(name = "identifier") UUID identifier,
+                                                   @RequestBody SavePlaybackDto body,
+                                                   @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
+
+        Playback fixedPlayback = playbackBoundaryService.fixPlayback(identifier, body, user);
+        return new ResponseEntity<>(playbackDtoFactory.build(fixedPlayback), HttpStatus.OK);
     }
 }

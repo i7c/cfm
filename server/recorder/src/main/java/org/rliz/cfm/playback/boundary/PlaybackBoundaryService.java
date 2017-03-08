@@ -46,4 +46,14 @@ public interface PlaybackBoundaryService {
      */
     void deletePlayback(UUID identifier, User authenticatedUser);
 
+    /**
+     * Change details of a {@link Playback} accordingly. Null fields in the body will be ignored.
+     *
+     * @param identifier        identifier of the {@link Playback} to fix
+     * @param body              body containing the details
+     * @param authenticatedUser the authenticated user
+     * @return the updated {@link Playback}
+     */
+    Playback fixPlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser);
+
 }

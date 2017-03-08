@@ -7,6 +7,8 @@ public class UnauthorizedException extends ServiceException {
 
     public static final String EC_PLAYBACK_DELETE = "rec.authorization.playbacks.delete";
 
+    public static final String EC_PLAYBACK_FIX = "rec.authorization.playbacks.fix";
+
     public UnauthorizedException(String errorCode, String message, Object... args) {
         super(errorCode, message, args);
     }

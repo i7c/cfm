@@ -133,4 +133,53 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
 
         playbackRepository.delete(playback);
     }
+
+    @Override
+    public Playback fixPlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser) {
+        Playback playback = playbackRepository.findOneByIdentifier(identifier);
+
+        if (playback == null) {
+            throw new EntityNotFoundException(EntityNotFoundException.EC_UNKNOWN_IDENTIFIER,
+                    "No playback found for identifier {}", identifier);
+        }
+
+        // TODO: do this permission check elsewhere
+        if (!authenticatedUser.equals(playback.getUser())) {
+            throw new UnauthorizedException(UnauthorizedException.EC_PLAYBACK_FIX,
+                    "Not allowed to fix playback with ID {}. You can only fix your playbacks.",
+                    identifier);
+        }
+
+        if (body.getMbTrackId() != null) {
+            Recording foundRecording = recordingBoundaryService.findOrCreateRecordingWithMbid(body.getMbTrackId());
+            playback.setRecording(foundRecording);
+        }
+        if (body.getMbReleaseGroupId() != null) {
+            ReleaseGroup foundReleaseGroup = releaseGroupBoundaryService.findOrCreateReleaseGroupWithMusicbrainz(
+                    body.getMbReleaseGroupId());
+            playback.setReleaseGroup(foundReleaseGroup);
+        }
+        if (!CollectionUtils.isEmpty(body.getArtists())) {
+            playback.setOriginalArtists(body.getArtists());
+        }
+        if (body.getTitle() != null) {
+            playback.setOriginalTitle(body.getTitle());
+        }
+        if (body.getAlbum() != null) {
+            playback.setOriginalAlbum(body.getAlbum());
+        }
+        if (body.getLength() != null) {
+            playback.setOriginalLength(body.getLength());
+        }
+        if (body.getDiscNumber() != null) {
+            playback.setOriginalDiscNumber(body.getDiscNumber());
+        }
+        if (body.getTrackNumber() != null) {
+            playback.setOriginalTrackNumber(body.getTrackNumber());
+        }
+        if (body.getPlayTime() != null) {
+            playback.setPlayTime(body.getPlayTime());
+        }
+        return playbackRepository.save(playback);
+    }
 }

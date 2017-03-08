@@ -42,5 +42,6 @@ public interface PlaybackRepository extends JpaRepository<Playback, Long> {
      * @param identifier the uuid
      * @return the {@link Playback}
      */
+    @EntityGraph(attributePaths = {"recording.artists", "releaseGroup", "originalArtists", "user" })
     Playback findOneByIdentifier(UUID identifier);
 }
