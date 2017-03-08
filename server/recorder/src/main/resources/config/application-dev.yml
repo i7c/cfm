@@ -6,3 +6,4 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
+logging.level.org.hibernate.SQL: DEBUG
