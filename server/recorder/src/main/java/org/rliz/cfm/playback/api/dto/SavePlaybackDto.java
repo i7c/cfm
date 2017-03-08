@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * DTO that represents creation of a playback.
  */
-public class CreatePlaybackDto {
+public class SavePlaybackDto {
 
     private UUID mbTrackId;
 

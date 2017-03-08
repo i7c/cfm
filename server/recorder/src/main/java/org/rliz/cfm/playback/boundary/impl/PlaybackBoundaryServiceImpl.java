@@ -6,7 +6,7 @@ import org.rliz.cfm.common.exception.UnauthorizedException;
 import org.rliz.cfm.common.security.SecurityContextHelper;
 import org.rliz.cfm.mbs.dto.MbPlaybackDetailsDto;
 import org.rliz.cfm.mbs.service.MbsRestClient;
-import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
+import org.rliz.cfm.playback.api.dto.SavePlaybackDto;
 import org.rliz.cfm.playback.boundary.PlaybackBoundaryService;
 import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.playback.repository.PlaybackRepository;
@@ -58,7 +58,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Playback createPlayback(CreatePlaybackDto dto) {
+    public Playback createPlayback(SavePlaybackDto dto) {
         User currentUser = SecurityContextHelper.getCurrentUser();
 
         Playback createdPlayback;

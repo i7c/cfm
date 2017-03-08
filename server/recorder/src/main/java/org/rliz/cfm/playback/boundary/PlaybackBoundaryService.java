@@ -1,12 +1,11 @@
 package org.rliz.cfm.playback.boundary;
 
-import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
+import org.rliz.cfm.playback.api.dto.SavePlaybackDto;
 import org.rliz.cfm.playback.model.Playback;
 import org.rliz.cfm.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,7 +19,7 @@ public interface PlaybackBoundaryService {
      * @param dto the create playback resource
      * @return persisted playback event
      */
-    Playback createPlayback(CreatePlaybackDto dto);
+    Playback createPlayback(SavePlaybackDto dto);
 
     /**
      * Gets a list of {@link Playback}s regardless of the user.

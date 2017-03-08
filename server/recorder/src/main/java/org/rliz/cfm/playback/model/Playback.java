@@ -2,7 +2,7 @@ package org.rliz.cfm.playback.model;
 
 import org.hibernate.validator.constraints.Range;
 import org.rliz.cfm.common.model.AbstractEntity;
-import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
+import org.rliz.cfm.playback.api.dto.SavePlaybackDto;
 import org.rliz.cfm.recording.model.Recording;
 import org.rliz.cfm.release.model.ReleaseGroup;
 import org.rliz.cfm.user.model.User;
@@ -102,7 +102,7 @@ public class Playback extends AbstractEntity {
      *
      * @param dto the dto sent by the user
      */
-    public void setOriginalDataFromDto(CreatePlaybackDto dto) {
+    public void setOriginalDataFromDto(SavePlaybackDto dto) {
         this.setOriginalMbTrackId(dto.getMbTrackId());
         this.setOriginalMbReleaseGroupId(dto.getMbReleaseGroupId());
         this.setOriginalArtists(dto.getArtists());

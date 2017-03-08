@@ -1,7 +1,7 @@
 package org.rliz.cfm.playback.api;
 
 import org.rliz.cfm.common.api.dto.ListDto;
-import org.rliz.cfm.playback.api.dto.CreatePlaybackDto;
+import org.rliz.cfm.playback.api.dto.SavePlaybackDto;
 import org.rliz.cfm.playback.api.dto.PlaybackDto;
 import org.rliz.cfm.playback.api.dto.factory.PlaybackDtoFactory;
 import org.rliz.cfm.playback.api.dto.factory.PlaybackListDtoFactory;
@@ -55,7 +55,7 @@ public class PlaybackController {
      */
     @Transactional
     @RequestMapping(method = RequestMethod.POST)
-    public PlaybackDto createPlayback(@RequestBody CreatePlaybackDto body) {
+    public PlaybackDto createPlayback(@RequestBody SavePlaybackDto body) {
         Playback playback = playbackBoundaryService.createPlayback(body);
         return playbackDtoFactory.build(playback);
     }
