@@ -14,6 +14,7 @@ use Cfm::ArtistList;
 use Cfm::Playback;
 use Cfm::PlaybackList;
 
+my $logger = Log::Log4perl->get_logger("cfm");
 
 # URL of the back-end server
 has cfm_url => (is => 'ro');
@@ -58,18 +59,23 @@ sub _generic_request {
     # set body
     $request->content($content);
     # perform request
+    $logger->info("Request: $method $uri");
+    $logger->debug("Request body " . Dumper($content)) if defined $content;
     my $resp = $self->agent->request($request);
+    $logger->info("Response Code: " . $resp->code);
     if ($resp->is_success) {
+        $logger->debug("Response: " . $resp->decoded_content);
         return $resp->decoded_content;
     } else {
-        croak $resp->status_line.": ".$uri;
+        $logger->error($resp->status_line . ": " . $uri);
+        die;
     }
 }
 
 # Perform GET request on given path and return decoded content
 sub _plain_get {
     my ($self, $path, $params) = @_;
-    return $self->_generic_request('GET', $path, \{}, $params);
+    return $self->_generic_request('GET', $path, \{ }, $params);
 }
 
 # Perform GET request on given path and return response as hash
@@ -135,7 +141,7 @@ sub artist {
 sub create_playback {
     my ($self, $create_playback) = @_;
 
-    my $response = $self->_post("/api/v1/playbacks", $create_playback->dto);
+    my $response = $self->_post("/api/v1/playbacks", $create_playback->create_dto);
     return Cfm::Playback->from_hash($response);
 }
 
