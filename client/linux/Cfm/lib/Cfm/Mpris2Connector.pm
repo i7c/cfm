@@ -9,7 +9,7 @@ use Data::Dumper;
 use Data::Printer;
 
 use Cfm::PlayerStateMachine;
-use Cfm::CreatePlayback;
+use Cfm::SavePlaybackDto;
 
 has psm => (
         is      => 'rw',
@@ -80,7 +80,7 @@ sub completed {
     my ($metadata, $passed_time, $self) = @_;
     my $artist = join(", ", @{$metadata->{artists}});
 
-    my $create_playback = Cfm::CreatePlayback->new(
+    my $create_playback = Cfm::SavePlaybackDto->new(
         title   => $metadata->{title},
         artists => $metadata->{artists},
         album   => $metadata->{album},

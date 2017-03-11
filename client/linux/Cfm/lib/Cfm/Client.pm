@@ -103,6 +103,17 @@ sub _delete {
     return JSON::decode_json($self->_plain_delete($path, $encoded, $params));
 }
 
+sub _plain_patch {
+    my ($self, $path, $content, $params) = @_;
+    $self->_generic_request('PATCH', $path, $content, $params);
+}
+
+sub _patch {
+    my ($self, $path, $content, $params) = @_;
+    my $encoded = JSON::encode_json($content);
+    return JSON::decode_json($self->_plain_patch($path, $encoded, $params));
+}
+
 # Get artists
 sub artists {
     my ($self) = @_;
@@ -146,6 +157,13 @@ sub delete_playback {
     my ($self, $uuid) = @_;
 
     $self->_plain_delete("/api/v1/playbacks/$uuid");
+}
+
+sub fix_playback {
+    my ($self, $uuid, $create_playback) = @_;
+
+    my $playback = $self->_patch("/api/v1/playbacks/$uuid", $create_playback->_to_hash);
+    return Cfm::Playback->from_hash($playback);
 }
 
 1;

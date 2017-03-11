@@ -10,6 +10,7 @@ use Cfm::Client;
 use Cfm::Playback;
 use Cfm::PrettyFormatter;
 use Cfm::Mpris2Connector;
+use Cfm::SavePlaybackDto;
 
 my %command_mapping = (
     artists   => \&cmd_artists,
@@ -17,6 +18,7 @@ my %command_mapping = (
     playbacks => \&cmd_playbacks,
     record    => \&cmd_record,
     del       => \&cmd_del,
+    fix       => \&cmd_fix,
 );
 
 my %help_mapping = (
@@ -25,6 +27,7 @@ my %help_mapping = (
     playbacks => \&help_playbacks,
     record    => \&help_record,
     del       => \&help_del,
+    fix       => \&help_fix,
 );
 
 my @config_locations = (
@@ -179,7 +182,7 @@ sub cmd_playback {
     my $album = $self->get_option("album");
 
     if (($mb_track_id && $mb_release_group_id) || ($artist && $title && $album)) {
-        my $create_playback = Cfm::CreatePlayback->new(
+        my $create_playback = Cfm::SavePlaybackDto->new(
             mbTrackId        => $mb_track_id,
             mbReleaseGroupId => $mb_release_group_id,
             artist           => $artist,
@@ -229,9 +232,9 @@ sub cmd_record {
     my $player = $self->require_option("player");
     if ($player eq "spotify") {
         my $connector = Cfm::Mpris2Connector->new(
-            client => $self->client,
+            client    => $self->client,
             dbus_name => "org.mpris.MediaPlayer2.spotify",
-            debug => $self->has_option("debug")
+            debug     => $self->has_option("debug")
         );
         print "Initialising MPRIS2 Connector ...\n";
         $connector->listen;
@@ -262,6 +265,19 @@ sub help_del {
     print 'Delete a playback.
 
 Usage: del -i <uuid>';
+}
+
+sub cmd_fix {
+    my ($self) = @_;
+
+    my $uuid = $self->require_option("id");
+    my $create_playback = Cfm::SavePlaybackDto->new(
+        mbTrackId        => $self->require_option("mb-track"),
+        mbReleaseGroupId => $self->require_option("mb-release-group")
+    );
+    my $updated_playback = $self->client->fix_playback($uuid, $create_playback);
+    $self->formatter->playback($updated_playback);
+    return;
 }
 
 1;
