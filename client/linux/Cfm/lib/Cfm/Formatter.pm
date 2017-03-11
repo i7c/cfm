@@ -3,6 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 use Moo;
 use Carp;
+use Date::Format;
 
 # Format a list of resources into a list of their names
 sub name_list {
@@ -12,6 +13,12 @@ sub name_list {
         $_->name
     } @$objlist;
     return join(", ", @name_list);
+}
+
+sub time {
+    my ($self, $timestamp) = @_;
+
+    return time2str("%Y-%m-%d %H:%M:%S", $timestamp / 1000);
 }
 
 # Format a single artist

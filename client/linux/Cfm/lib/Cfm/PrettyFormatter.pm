@@ -3,14 +3,12 @@ use strict;
 use warnings FATAL => 'all';
 use Moo;
 use Text::ASCIITable;
-use Date::Format;
 
 use Cfm::Formatter;
 use Cfm::Artist;
 use Cfm::ArtistList;
 
 extends 'Cfm::Formatter';
-
 
 sub artist {
     my ($self, $artist) = @_;
@@ -44,7 +42,7 @@ sub playback {
     }
     $table->addRow("Release Group", $pb->releaseGroup->title);
     $table->addRow("Recording", $pb->recording->title);
-    $table->addRow("Time", time2str("%Y-%m-%d %H:%M:%S", $pb->time / 1000));
+    $table->addRow("Time", $self->time($pb->time));
     $table->addRow("RELEASE GROUP", $pb->releaseGroup->mbid);
     $table->addRow("RECORDING", $pb->recording->mbid);
     print $table;
@@ -74,7 +72,7 @@ sub playback_list {
             $album = $pb->originalAlbum;
         }
 
-        $table->addRow($sound, $pb->identifier, $pb->time,
+        $table->addRow($sound, $pb->identifier, $self->time($pb->time),
             $artist_list,
             $title,
             $album);
