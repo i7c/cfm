@@ -35,7 +35,7 @@ sub listen {
 
     $logger->debug("Get DBus session");
     my $bus = Net::DBus->session;
-    $logger->debug("Get DBus service ".$self->dbus_name);
+    $logger->debug("Get DBus service " . $self->dbus_name);
     my $spotify_service = $bus->get_service($self->dbus_name);
     $logger->debug("Get DBus interface");
     my $mpris_interface = $spotify_service->get_object("/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties");
@@ -59,7 +59,7 @@ sub listen {
                 discNumber  => $metadata->{"xesam:discNumber"},
                 rawdata     => $metadata
             };
-            $logger->debug("Extracted metadata: ".Dumper($data));
+            $logger->debug("Extracted metadata: " . Dumper($data));
 
             if ($rawdata->{PlaybackStatus} eq "Playing") {
                 $self->psm->play($data, $self);
@@ -96,7 +96,7 @@ sub completed {
 
     $logger->debug(Dumper($metadata));
     $logger->debug("Passed time: $passed_time");
-    $logger->debug("SavePlaybackDto: ".Dumper($create_playback->_to_hash));
+    $logger->debug("SavePlaybackDto: " . Dumper($create_playback->_to_hash));
 
     $logger->info("Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)");
     $logger->info("Sending playback to server ... ");
