@@ -5,6 +5,9 @@ use Getopt::Long;
 use Moo;
 use Carp;
 use Config::Simple;
+use Log::Log4perl;
+use Log::Log4perl::Level;
+use Data::Dumper;
 
 use Cfm::Client;
 use Cfm::Playback;
@@ -31,14 +34,16 @@ my %help_mapping = (
 );
 
 my @config_locations = (
-    $ENV{'HOME'}."/.cfm.conf",
-    $ENV{'HOME'}."/.config/cfm/config",
+    $ENV{'HOME'} . "/.cfm.conf",
+    $ENV{'HOME'} . "/.config/cfm/config",
     "/etc/cfm.conf"
 );
 
 my %conf_default = (
 
 );
+
+my $logger = Log::Log4perl->get_logger("cfm");
 
 has 'client' => (is => 'rw');
 
@@ -54,8 +59,9 @@ sub BUILD {
 
 sub run {
     my ($self) = @_;
-    my $command = shift @ARGV if $ARGV[0];
     my %options = ();
+
+    $logger->debug("Parse command line options ...");
     GetOptions(
         \%options,
         "cfm-url|h=s",
@@ -72,29 +78,80 @@ sub run {
         "broken",
         "id|i=s",
         "debug",
+        "log|L=s"
     );
-    $self->options(\%options, $command);
+    $self->options(\%options);
+    $self->set_log_level;
+    $logger->debug("Parsed options: " . Dumper(\%options));
+    $logger->debug("Remaining input: " . join(" ", @ARGV));
     $self->load_config;
-    return if $self->handle_help($command);
+    return if $self->handle_help; # if help was requested, exit afterwards
     $self->set_client;
     $self->set_formatter;
-    $command_mapping{$command}->($self);
+    $self->handle_command;
+}
+
+sub set_log_level {
+    my ($self) = @_;
+
+    my $level = $self->get_option("log");
+    if (defined $level) {
+        if ($level eq "info") {
+            $logger->level($INFO);
+            $logger->info("Reset log level to INFO");
+            return;
+        } elsif ($level eq "debug") {
+            $logger->level($DEBUG);
+            $logger->info("Reset log level to DEBUG");
+            return;
+        } elsif ($level eq "warn") {
+            $logger->level($WARN);
+            $logger->info("Reset log level to WARN");
+            return;
+        } elsif ($level eq "error") {
+            $logger->level($ERROR);
+            $logger->info("Reset log level to ERROR");
+            return;
+        } else {
+            $logger->warn("Unknown log level $level. Ignoring.");
+        }
+    }
 }
 
 sub handle_help {
-    my ($self, $command) = @_;
+    my ($self) = @_;
 
-    if ($self->has_option("help")) {
-        $help_mapping{$command}->($self);
-        return 1;
-    } elsif (!$command) {
-        print "Available Commands:\n";
+    if (!defined $ARGV[0]) {
+        print "Specify one of the following commands:\n";
         for my $available_command (keys %command_mapping) {
             print "    $available_command\n";
         }
-        return 1;
+        print "Help is available using the --help option.\n";
+    }
+
+    my $command = $ARGV[0];
+    if ($self->has_option("help")) {
+        if (defined $help_mapping{$command}) {
+            $help_mapping{$command}->($self);
+            return 1;
+        } else {
+            $logger->error("No help available for $command");
+            die;
+        }
     } else {
         return 0;
+    }
+}
+
+sub handle_command {
+    my ($self) = @_;
+
+    my $command = $ARGV[0];
+    if (defined $command_mapping{$command}) {
+        $command_mapping{$command}->($self);
+    } else {
+        $logger->error("Unknown command $command");
+        die;
     }
 }
 
@@ -102,12 +159,15 @@ sub load_config {
     my ($self) = @_;
 
     for my $conf_file (@config_locations) {
+        $logger->debug("Try location " . $conf_file);
         if (-f $conf_file) {
+            $logger->info("Found config file: $conf_file");
             my $conf = Config::Simple->new($conf_file);
             $self->conf($conf);
             return;
         }
     }
+    $logger->info("Ran out of config file locations. Proceed without configuration file.");
 }
 
 sub set_client {
@@ -117,6 +177,10 @@ sub set_client {
     my $user = $self->require_option("cfm-user");
     my $pw = $self->require_option("cfm-password");
 
+    $logger->info("Initialise cfm client ...");
+    $logger->debug("cfm endpoint: $url");
+    $logger->debug("cfm user: $user");
+    $logger->debug("cfm password is set") if defined $pw;
     $self->client(Cfm::Client->new(
         cfm_url      => $url,
         cfm_user     => $user,
@@ -150,7 +214,10 @@ sub require_option {
     my ($self, $option) = @_;
 
     my $result = $self->get_option($option);
-    croak "You must provide the $option option." unless $result;
+    if (!defined $result) {
+        $logger->error("You must provide the $option option.");
+        die;
+    }
     return $result;
 }
 
@@ -195,7 +262,8 @@ sub cmd_playback {
         }
         return;
     } else {
-        carp "Specify (--mb-track and --mb-release-group) or (--artist and --title and --album)."
+        $logger->error("Specify (--mb-track and --mb-release-group) or (--artist and --title and --album).");
+        die;
     }
 }
 
@@ -236,10 +304,11 @@ sub cmd_record {
             dbus_name => "org.mpris.MediaPlayer2.spotify",
             debug     => $self->has_option("debug")
         );
-        print "Initialising MPRIS2 Connector ...\n";
+        $logger->info("Initialising MPRIS2 Connector for player $player ...");
         $connector->listen;
     } else {
-        die "Unknown player: $player";
+        $logger->error("Unknown player $player");
+        die;
     }
 
 }
