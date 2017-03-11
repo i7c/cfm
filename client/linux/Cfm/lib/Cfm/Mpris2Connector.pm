@@ -19,7 +19,7 @@ has psm => (
         default => sub {
             Cfm::PlayerStateMachine->new(
                 cb_playback_started   => \&started,
-                cb_playback_canceled  => \&completed,
+                cb_playback_canceled  => \&canceled,
                 cb_playback_completed => \&completed,
                 cb_playback_resumed   => \&resumed
             );
