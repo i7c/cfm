@@ -50,6 +50,11 @@ sub listen {
             }
             utf8::decode($metadata->{"xesam:title"});
             utf8::decode($metadata->{"xesam:album"});
+            if ($metadata->{"xesam:title"} eq "" || $metadata->{"mpris:length"} == 0) {
+                $logger->warn("Ignoring bogus signal from spotify.");
+                $logger->debug(Dumper($metadata));
+                return;
+            }
             my $data = {
                 artists     => $metadata->{"xesam:artist"},
                 title       => $metadata->{"xesam:title"},
