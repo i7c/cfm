@@ -59,7 +59,7 @@ sub run {
         "mb-release-group=s",
         "quiet|q",
         "help|h",
-        "artist|a=s",
+        "artist|a=s@",
         "title|t=s",
         "album|A=s",
         "player=s",
@@ -231,18 +231,20 @@ sub cmd_playback {
 
     my $mb_track_id = $self->get_option("mb-track");
     my $mb_release_group_id = $self->get_option("mb-release-group");
-    my $artist = $self->get_option("artist");
+    my $artists = $self->get_option("artist");
     my $title = $self->get_option("title");
     my $album = $self->get_option("album");
 
-    if (($mb_track_id && $mb_release_group_id) || ($artist && $title && $album)) {
+    if ((defined $mb_track_id && defined $mb_release_group_id)
+        || (defined $artists && defined $title && defined $album)) {
         my $create_playback = Cfm::SavePlaybackDto->new(
             mbTrackId        => $mb_track_id,
             mbReleaseGroupId => $mb_release_group_id,
-            artist           => $artist,
+            artists          => $artists,
             title            => $title,
             album            => $album
         );
+        $logger->debug("SavePlaybackDto: " . Dumper($create_playback->_to_hash));
         my $playback = $self->client->create_playback($create_playback);
         if (!$self->has_option("quiet")) {
             $self->formatter->playback($playback);
