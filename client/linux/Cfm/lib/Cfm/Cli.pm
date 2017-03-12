@@ -21,14 +21,6 @@ my %command_mapping = (
     fix       => \&cmd_fix,
 );
 
-my %help_mapping = (
-    artists   => \&help_artists,
-    playback  => \&help_playback,
-    playbacks => \&help_playbacks,
-    record    => \&help_record,
-    del       => \&help_del,
-    fix       => \&help_fix,
-);
 
 my @config_locations = (
     $ENV{'HOME'} . "/.cfm.conf",
@@ -125,17 +117,13 @@ sub handle_help {
             print "    $available_command\n";
         }
         print "Help is available using the --help option.\n";
+        return 1;
     }
 
     my $command = $ARGV[0];
     if ($self->has_option("help")) {
-        if (defined $help_mapping{$command}) {
-            $help_mapping{$command}->($self);
-            return 1;
-        } else {
-            $logger->error("No help available for $command");
-            die;
-        }
+        require Cfm::CliHelp;
+        return Cfm::CliHelp::show_help($command);
     } else {
         return 0;
     }
@@ -239,16 +227,6 @@ sub cmd_artists {
     return;
 }
 
-sub help_artists {
-    print 'Lists the known artists
-
-Usage: artists
-
-Options:
-    --page | -P <n>     Request n-th page
-';
-}
-
 sub cmd_playback {
     my ($self) = @_;
 
@@ -277,18 +255,6 @@ sub cmd_playback {
     }
 }
 
-sub help_playback {
-    print 'Usage: playback [options]
-
-Creates a new playback on the server. If successful, the playback is returned.
-
-Options:
-    --mb-track           the musicbrainz id of the track
-    --mb-release-group   the musicbrainz id of the release group
-    --quiet              do not return anything in case of success
-';
-}
-
 sub cmd_playbacks {
     my ($self) = @_;
 
@@ -300,16 +266,6 @@ sub cmd_playbacks {
     my $pbl = $self->client->my_playbacks($self->has_option("broken"), $page - 1);
     $self->formatter->playback_list($pbl);
     return;
-}
-
-sub help_playbacks {
-    print 'Prints your playbacks.
-
-Usage: playbacks
-
-Options:
-    --page | -P <n>     Request n-th page
-';
 }
 
 sub cmd_record {
@@ -332,27 +288,11 @@ sub cmd_record {
 
 }
 
-sub help_record {
-    print 'Starts a process that will record tracks played on one of the supported players.
-
-Usage: record --player=<player>
-
-Supported players:
-  spotify
-';
-}
-
 sub cmd_del {
     my ($self) = @_;
 
     my $uuid = $self->require_option("id");
     $self->client->delete_playback($uuid);
-}
-
-sub help_del {
-    print 'Delete a playback.
-
-Usage: del -i <uuid>';
 }
 
 sub cmd_fix {
