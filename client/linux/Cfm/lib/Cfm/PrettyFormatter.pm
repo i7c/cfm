@@ -30,6 +30,7 @@ sub artist_list {
         $table->addRow($artist->name, $artist->identifier, $artist->mbid);
     }
     print $table;
+    print $self->list_details($list);
 }
 
 sub playback {
@@ -78,6 +79,7 @@ sub playback_list {
             $album);
     }
     print $table;
+    print $self->list_details($pbl);
 }
 
 

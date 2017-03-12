@@ -21,6 +21,12 @@ sub time {
     return time2str("%Y-%m-%d %H:%M:%S", $timestamp / 1000);
 }
 
+sub list_details {
+    my ($self, $list) = @_;
+    return sprintf "%d / %d (%d elements total)\n", $list->pageNumber  + 1, $list->totalPages,
+        $list->totalElements;
+}
+
 # Format a single artist
 sub artist {
     carp "not implemented";

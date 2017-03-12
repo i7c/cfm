@@ -3,10 +3,10 @@ use strict;
 use warnings FATAL => 'all';
 use Moo;
 
-use Cfm::Resource;
+use Cfm::List;
 use Cfm::Playback;
 
-extends 'Cfm::Resource';
+extends 'Cfm::List';
 
 # Mandatory fields
 my @mandatory = ("elements", "links");

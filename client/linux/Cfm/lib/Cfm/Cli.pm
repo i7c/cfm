@@ -229,8 +229,12 @@ sub has_option {
 sub cmd_artists {
     my ($self) = @_;
 
-    my $page = $self->get_option("page") // 0;
-    my $artist_list = $self->client->artists($page);
+    my $page = $self->get_option("page") // 1;
+    if ($page < 1) {
+        $logger->error("--page must be >= 1.");
+        die;
+    }
+    my $artist_list = $self->client->artists($page - 1);
     $self->formatter->artist_list($artist_list);
     return;
 }
@@ -288,8 +292,12 @@ Options:
 sub cmd_playbacks {
     my ($self) = @_;
 
-    my $page = $self->get_option("page") // 0;
-    my $pbl = $self->client->my_playbacks($self->has_option("broken"), $page);
+    my $page = $self->get_option("page") // 1;
+    if ($page < 1) {
+        $logger->error("--page must be >= 1.");
+        die;
+    }
+    my $pbl = $self->client->my_playbacks($self->has_option("broken"), $page - 1);
     $self->formatter->playback_list($pbl);
     return;
 }

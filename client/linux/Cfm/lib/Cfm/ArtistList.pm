@@ -2,9 +2,9 @@ package Cfm::ArtistList;
 
 use strict;
 use Moo;
-use Cfm::Resource;
+use Cfm::List;
 
-extends 'Cfm::Resource';
+extends 'Cfm::List';
 
 # Mandatory fields
 my @mandatory = ("elements", "links");
