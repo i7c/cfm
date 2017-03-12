@@ -13,14 +13,13 @@ use Cfm::PrettyFormatter;
 use Cfm::SavePlaybackDto;
 
 my %command_mapping = (
-    artists   => \&cmd_artists,
-    playback  => \&cmd_playback,
-    playbacks => \&cmd_playbacks,
-    record    => \&cmd_record,
-    del       => \&cmd_del,
-    fix       => \&cmd_fix,
+    artists  => \&cmd_artists,
+    playback => \&cmd_playback,
+    list     => \&cmd_list,
+    record   => \&cmd_record,
+    del      => \&cmd_del,
+    fix      => \&cmd_fix,
 );
-
 
 my @config_locations = (
     $ENV{'HOME'} . "/.cfm.conf",
@@ -255,7 +254,7 @@ sub cmd_playback {
     }
 }
 
-sub cmd_playbacks {
+sub cmd_list {
     my ($self) = @_;
 
     my $page = $self->get_option("page") // 1;

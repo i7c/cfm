@@ -6,12 +6,12 @@ use Log::Log4perl;
 my $logger = Log::Log4perl->get_logger("cfm");
 
 my %help_mapping = (
-    artists   => \&help_artists,
-    playback  => \&help_playback,
-    playbacks => \&help_playbacks,
-    record    => \&help_record,
-    del       => \&help_del,
-    fix       => \&help_fix,
+    artists  => \&help_artists,
+    playback => \&help_playback,
+    list     => \&help_list,
+    record   => \&help_record,
+    del      => \&help_del,
+    fix      => \&help_fix,
 );
 
 sub show_help {
@@ -48,13 +48,14 @@ Options:
 ';
 }
 
-sub help_playbacks {
-    print 'Prints your playbacks.
+sub help_list {
+    print 'Prints the list of playbacks.
 
-Usage: playbacks
+Usage: list
 
 Options:
     --page | -P <n>     Request n-th page
+    --broken            Only show "broken" playbacks
 ';
 }
 
