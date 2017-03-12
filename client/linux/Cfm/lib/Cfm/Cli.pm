@@ -3,16 +3,13 @@ use strict;
 use warnings FATAL => 'all';
 use Getopt::Long;
 use Moo;
-use Carp;
 use Config::Simple;
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Data::Dumper;
 
-use Cfm::Client;
 use Cfm::Playback;
 use Cfm::PrettyFormatter;
-use Cfm::Mpris2Connector;
 use Cfm::SavePlaybackDto;
 
 my %command_mapping = (
@@ -173,6 +170,7 @@ sub load_config {
 sub set_client {
     my ($self) = @_;
 
+    require Cfm::Client;
     my $url = $self->require_option("cfm-url");
     my $user = $self->require_option("cfm-user");
     my $pw = $self->require_option("cfm-password");
@@ -297,6 +295,7 @@ sub help_playbacks {
 sub cmd_record {
     my ($self) = @_;
 
+    require Cfm::Mpris2Connector;
     my $player = $self->require_option("player");
     if ($player eq "spotify") {
         my $connector = Cfm::Mpris2Connector->new(
