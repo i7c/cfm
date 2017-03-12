@@ -122,9 +122,13 @@ sub _patch {
 
 # Get artists
 sub artists {
-    my ($self) = @_;
+    my ($self, $page) = @_;
 
-    my $artists_resource = $self->_get("/api/v1/artists");
+    my @params = ();
+    if ($page > 0) {
+        push @params, page => $page;
+    }
+    my $artists_resource = $self->_get("/api/v1/artists", \@params);
     my $result = Cfm::ArtistList->from_hash($artists_resource);
     return $result;
 }
@@ -147,11 +151,14 @@ sub create_playback {
 
 # Get playback list
 sub my_playbacks {
-    my ($self, $only_broken) = @_;
+    my ($self, $only_broken, $page) = @_;
 
     my @params = ();
     if ($only_broken) {
         push @params, onlyBroken => "true";
+    }
+    if ($page > 0) {
+        push @params, page => $page;
     }
 
     my $response = $self->_get("/api/v1/playbacks/mine", \@params);

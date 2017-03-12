@@ -75,7 +75,8 @@ sub run {
         "broken",
         "id|i=s",
         "debug",
-        "log|L=s"
+        "log|L=s",
+        "page|P=n",
     );
     $self->options(\%options);
     $self->set_log_level;
@@ -228,13 +229,20 @@ sub has_option {
 sub cmd_artists {
     my ($self) = @_;
 
-    my $artist_list = $self->client->artists;
+    my $page = $self->get_option("page") // 0;
+    my $artist_list = $self->client->artists($page);
     $self->formatter->artist_list($artist_list);
     return;
 }
 
 sub help_artists {
-    print "Usage: artists\n";
+    print 'Lists the known artists
+
+Usage: artists
+
+Options:
+    --page | -P <n>     Request n-th page
+';
 }
 
 sub cmd_playback {
@@ -280,7 +288,8 @@ Options:
 sub cmd_playbacks {
     my ($self) = @_;
 
-    my $pbl = $self->client->my_playbacks($self->has_option("broken"));
+    my $page = $self->get_option("page") // 0;
+    my $pbl = $self->client->my_playbacks($self->has_option("broken"), $page);
     $self->formatter->playback_list($pbl);
     return;
 }
@@ -288,7 +297,10 @@ sub cmd_playbacks {
 sub help_playbacks {
     print 'Prints your playbacks.
 
-    Usage: playbacks
+Usage: playbacks
+
+Options:
+    --page | -P <n>     Request n-th page
 ';
 }
 
