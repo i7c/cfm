@@ -7,6 +7,8 @@ use Log::Log4perl::Level;
 
 use Cfm::Cli;
 
+binmode STDOUT, ":utf8";
+
 my $logger = Log::Log4perl->get_logger("cfm");
 my $layout = Log::Log4perl::Layout::PatternLayout->new("%d %r [%c] %C %L %m%n");
 my $stdout_appender;
