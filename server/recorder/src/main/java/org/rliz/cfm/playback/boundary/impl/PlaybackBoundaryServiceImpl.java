@@ -135,7 +135,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Playback fixPlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser) {
+    public Playback updatePlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser) {
         Playback playback = playbackRepository.findOneByIdentifier(identifier);
 
         if (playback == null) {

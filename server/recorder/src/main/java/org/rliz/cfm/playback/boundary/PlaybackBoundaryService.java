@@ -54,6 +54,6 @@ public interface PlaybackBoundaryService {
      * @param authenticatedUser the authenticated user
      * @return the updated {@link Playback}
      */
-    Playback fixPlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser);
+    Playback updatePlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser);
 
 }

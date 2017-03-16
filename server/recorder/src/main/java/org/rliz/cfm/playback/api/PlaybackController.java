@@ -117,11 +117,11 @@ public class PlaybackController {
      */
     @Transactional
     @RequestMapping(method = RequestMethod.PATCH, value = "/{identifier}")
-    public ResponseEntity<PlaybackDto> fixPlayback(@PathVariable(name = "identifier") UUID identifier,
-                                                   @RequestBody SavePlaybackDto body,
-                                                   @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
+    public ResponseEntity<PlaybackDto> updatePlayback(@PathVariable(name = "identifier") UUID identifier,
+                                                      @RequestBody SavePlaybackDto body,
+                                                      @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
 
-        Playback fixedPlayback = playbackBoundaryService.fixPlayback(identifier, body, user);
+        Playback fixedPlayback = playbackBoundaryService.updatePlayback(identifier, body, user);
         return new ResponseEntity<>(playbackDtoFactory.build(fixedPlayback), HttpStatus.OK);
     }
 }
