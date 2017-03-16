@@ -27,6 +27,13 @@ sub list_details {
         $list->totalElements;
 }
 
+sub boolean {
+    my ($self, $value) = @_;
+
+    return "true" if $value;
+    return "false";
+}
+
 # Format a single artist
 sub artist {
     carp "not implemented";

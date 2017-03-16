@@ -38,14 +38,29 @@ sub playback {
 
     my $table = Text::ASCIITable->new({ headingText => 'Playback' });
     $table->setCols("Field", "Value");
-    for my $artist (@{$pb->recording->artists}) {
-        $table->addRow("Artist", $artist->name);
+    if (defined $pb->recording) {
+        for my $artist (@{$pb->recording->artists}) {
+            $table->addRow("Artist", $artist->name);
+        }
+        $table->addRow("Recording", $pb->recording->title);
     }
-    $table->addRow("Release Group", $pb->releaseGroup->title);
-    $table->addRow("Recording", $pb->recording->title);
+    if (defined $pb->releaseGroup) {
+        $table->addRow("Release Group", $pb->releaseGroup->title);
+    }
     $table->addRow("Time", $self->time($pb->time));
-    $table->addRow("RELEASE GROUP", $pb->releaseGroup->mbid);
-    $table->addRow("RECORDING", $pb->recording->mbid);
+    if (defined $pb->releaseGroup) {
+        $table->addRow("RELEASE GROUP", $pb->releaseGroup->mbid);
+    }
+    if (defined $pb->recording) {
+        $table->addRow("RECORDING", $pb->recording->mbid);
+    }
+    for my $org_artist ($pb->originalArtists->@*) {
+        $table->addRow("Original Artist", $org_artist);
+    }
+    $table->addRow("Original Title", $pb->originalTitle);
+    $table->addRow("Original Album", $pb->originalAlbum);
+    $table->addRow("Broken",
+        $self->boolean(!(defined $pb->recording && defined $pb->releaseGroup)));
     print $table;
 }
 
