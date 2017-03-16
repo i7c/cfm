@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation for {@link ReleaseBoundaryService}.
@@ -30,7 +31,8 @@ public class ReleaseBoundaryServiceImpl implements ReleaseBoundaryService {
 
     @Override
     public Release identifyRelease(List<String> artists, String title) {
-        List<Release> foundReleases = releaseRepository.findReleaseByArtistNames(artists);
+        List<Release> foundReleases = releaseRepository
+                .findReleaseByArtistNames(artists.stream().map(String::toLowerCase).collect(Collectors.toList()));
 
         if (CollectionUtils.isEmpty(foundReleases)) {
             throw new MbLookupException(MbLookupException.EC_NO_RESULTS, "No releases were found for artists %s",
