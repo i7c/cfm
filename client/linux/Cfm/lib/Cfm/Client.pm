@@ -172,10 +172,17 @@ sub delete_playback {
     $self->_plain_delete("/api/v1/playbacks/$uuid");
 }
 
+# Fix a broken playback or change its details
 sub fix_playback {
-    my ($self, $uuid, $create_playback) = @_;
+    my ($self, $uuid, $create_playback, $auto) = @_;
 
-    my $playback = $self->_patch("/api/v1/playbacks/$uuid", $create_playback->_to_hash);
+    my $playback;
+    if ($auto) {
+        my $body = {};
+        $playback = $self->_patch("/api/v1/playbacks/$uuid", $body, [ auto => "true" ]);
+    } else {
+        $playback = $self->_patch("/api/v1/playbacks/$uuid", $create_playback->_to_hash);
+    }
     return Cfm::Playback->from_hash($playback);
 }
 

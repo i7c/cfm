@@ -112,6 +112,8 @@ public class PlaybackController {
      *
      * @param identifier identifier of the existing {@link Playback} resource
      * @param body       body containing the update information. Only non-null fields will be applied.
+     * @param auto       true if the service should try to update the mbid details automatically, the request body
+     *                   will be ignored then.
      * @param user       the currently authenticated user
      * @return 200 and the updated resource
      */
@@ -119,9 +121,14 @@ public class PlaybackController {
     @RequestMapping(method = RequestMethod.PATCH, value = "/{identifier}")
     public ResponseEntity<PlaybackDto> updatePlayback(@PathVariable(name = "identifier") UUID identifier,
                                                       @RequestBody SavePlaybackDto body,
+                                                      @RequestParam(name = "auto", required = false) Boolean auto,
                                                       @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
-
-        Playback fixedPlayback = playbackBoundaryService.updatePlayback(identifier, body, user);
+        Playback fixedPlayback = null;
+        if (auto != null && auto) {
+            fixedPlayback = playbackBoundaryService.detectAndUpdateMbDetails(identifier, user);
+        } else {
+            fixedPlayback = playbackBoundaryService.updatePlayback(identifier, body, user);
+        }
         return new ResponseEntity<>(playbackDtoFactory.build(fixedPlayback), HttpStatus.OK);
     }
 }

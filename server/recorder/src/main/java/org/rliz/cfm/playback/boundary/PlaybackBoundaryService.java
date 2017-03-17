@@ -56,4 +56,15 @@ public interface PlaybackBoundaryService {
      */
     Playback updatePlayback(UUID identifier, SavePlaybackDto body, User authenticatedUser);
 
+    /**
+     * Loads the {@link Playback} with given UUID from the database and tries to detect the musicbrainz IDs
+     * from the given original playback details. If they are detected, the IDs are updated accordingly. Otherwise the
+     * {@link Playback} is returned unchanged.
+     *
+     * @param identifier        identifier of the {@link Playback}.
+     * @param authenticatedUser currently authenticated user
+     * @return the updated {@link Playback}
+     */
+    Playback detectAndUpdateMbDetails(UUID identifier, User authenticatedUser);
+
 }

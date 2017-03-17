@@ -68,6 +68,7 @@ sub run {
         "debug",
         "log|L=s",
         "page|P=n",
+        "auto",
     );
     $self->options(\%options);
     $self->set_log_level;
@@ -213,6 +214,16 @@ sub has_option {
     return 0;
 }
 
+sub require_arg {
+    my ($self, $n, $name) = @_;
+
+    if (! defined $ARGV[$n]) {
+        $logger->error("Missing argument '$name'.");
+        exit 1;
+    }
+    return $ARGV[$n];
+}
+
 sub cmd_artists {
     my ($self) = @_;
 
@@ -299,12 +310,20 @@ sub cmd_del {
 sub cmd_fix {
     my ($self) = @_;
 
-    my $uuid = $self->require_option("id");
-    my $create_playback = Cfm::SavePlaybackDto->new(
-        mbTrackId        => $self->require_option("mb-track"),
-        mbReleaseGroupId => $self->require_option("mb-release-group")
-    );
-    my $updated_playback = $self->client->fix_playback($uuid, $create_playback);
+    my $uuid = $self->require_arg(1, "identifier");
+    my $auto = $self->has_option("auto");
+
+    #TODO: require mutually exclusivity of --auto and --set in the future
+    my $updated_playback;
+    if ($auto) {
+        $updated_playback = $self->client->fix_playback($uuid, \{ }, 1);
+    } else {
+        my $create_playback = Cfm::SavePlaybackDto->new(
+            mbTrackId        => $self->require_option("mb-track"),
+            mbReleaseGroupId => $self->require_option("mb-release-group")
+        );
+        $updated_playback = $self->client->fix_playback($uuid, $create_playback, 0);
+    }
     $self->formatter->playback($updated_playback);
     return;
 }

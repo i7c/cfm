@@ -1,5 +1,7 @@
 package org.rliz.cfm.playback.boundary.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.rliz.cfm.common.exception.ApiArgumentsInvalidException;
 import org.rliz.cfm.common.exception.EntityNotFoundException;
 import org.rliz.cfm.common.exception.UnauthorizedException;
@@ -32,6 +34,8 @@ import java.util.UUID;
  */
 @Service
 public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
+
+    protected final Log logger = LogFactory.getLog(getClass());
 
     private RecordingBoundaryService recordingBoundaryService;
     private ReleaseGroupBoundaryService releaseGroupBoundaryService;
@@ -181,5 +185,35 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
             playback.setPlayTime(body.getPlayTime());
         }
         return playbackRepository.save(playback);
+    }
+
+    @Override
+    public Playback detectAndUpdateMbDetails(UUID identifier, User authenticatedUser) {
+        Playback playback = playbackRepository.findOneByIdentifier(identifier);
+
+        if (playback == null) {
+            throw new EntityNotFoundException(EntityNotFoundException.EC_UNKNOWN_IDENTIFIER,
+                    "No playback found for identifier {}", identifier);
+        }
+
+        // TODO: do this permission check elsewhere
+        if (!authenticatedUser.equals(playback.getUser())) {
+            throw new UnauthorizedException(UnauthorizedException.EC_PLAYBACK_FIX,
+                    "Not allowed to fix playback with ID {}. You can only fix your playbacks.", identifier);
+        }
+
+        try {
+            MbPlaybackDetailsDto playbackDetailsDto = mbsRestClient.identifyPlaybackWithNames(
+                    playback.getOriginalArtists(), playback.getOriginalTitle(), playback.getOriginalAlbum());
+            Recording recording = recordingBoundaryService.findOrCreateRecordingWithMbid(
+                    playbackDetailsDto.getRecordingReference().getIdentifier());
+            ReleaseGroup releaseGroup = releaseGroupBoundaryService.findOrCreateReleaseGroupWithMusicbrainz(
+                    playbackDetailsDto.getReleaseGroupReference().getIdentifier());
+            playback.setRecording(recording);
+            playback.setReleaseGroup(releaseGroup);
+        } catch (Exception ex) {
+            logger.info(String.format("Tried to auto fix playback {} but an exception occurred.", identifier), ex);
+        }
+        return playback;
     }
 }
