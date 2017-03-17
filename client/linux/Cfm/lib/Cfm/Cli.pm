@@ -303,7 +303,7 @@ sub cmd_record {
 sub cmd_del {
     my ($self) = @_;
 
-    my $uuid = $self->require_option("id");
+    my $uuid = $self->require_arg(1, "identifier");
     $self->client->delete_playback($uuid);
 }
 
