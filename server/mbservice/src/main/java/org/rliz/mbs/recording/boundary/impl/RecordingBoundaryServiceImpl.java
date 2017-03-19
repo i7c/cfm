@@ -9,11 +9,16 @@ import org.rliz.mbs.recording.model.Recording;
 import org.rliz.mbs.recording.repository.RecordingRepository;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link RecordingBoundaryService}.
@@ -59,6 +64,26 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
                     "No recording found for UUID %s.", identifier);
         }
         return foundRecording;
+    }
+
+    @Override
+    public Page<Recording> findRecordingByReleaseGroupIdentifierAndName(UUID releaseGroupId, String name,
+                                                                        Pageable pageable) {
+        List<Recording> foundRecordings = recordingRepository.findAllByReleaseGroupIdentifier(releaseGroupId);
+
+        if (CollectionUtils.isEmpty(foundRecordings)) {
+            throw new MbLookupException(MbLookupException.EC_NO_RESULTS,
+                    "No recordings found for release group with UUID %s.", releaseGroupId);
+        }
+
+        List<Rated<Recording>> ratedRecordings = ratingService.rateRecordings(foundRecordings, name);
+        List<Recording> recordings = ratedRecordings.stream().map(Rated::getIt).collect(Collectors.toList());
+        if (pageable.getOffset() >= recordings.size()) {
+            return new PageImpl<>(new ArrayList<>(), pageable, recordings.size());
+        }
+        int first = pageable.getOffset();
+        int last = Math.min(first + pageable.getPageSize(), recordings.size());
+        return new PageImpl<Recording>(recordings.subList(first, last), pageable, recordings.size());
     }
 }
 

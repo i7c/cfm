@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 public interface RecordingRepository extends JpaRepository<Recording, Long> {
 
-    @Query("SELECT r FROM Recording r join r.track t join t.medium m join m.release re " +
+    @Query("SELECT DISTINCT r FROM Recording r join r.track t join t.medium m join m.release re " +
             "where re.releaseGroup = :releaseGroup")
     @EntityGraph(attributePaths = {"artistCredit.artistCreditName.artist", "track.medium.release.releaseGroup"})
     List<Recording> findAllByReleaseGroup(@Param("releaseGroup") ReleaseGroup rg);
@@ -30,4 +30,9 @@ public interface RecordingRepository extends JpaRepository<Recording, Long> {
      */
     @EntityGraph(attributePaths = "artistCredit.artistCreditName.artist")
     Recording findByIdentifier(UUID identifier);
+
+    @EntityGraph(attributePaths = {"artistCredit.artistCreditName.artist", "track.medium.release.releaseGroup"})
+    @Query("SELECT DISTINCT r FROM Recording r join r.track t join t.medium m join m.release re " +
+            "join re.releaseGroup rg where rg.identifier = :releaseGroupId")
+    List<Recording> findAllByReleaseGroupIdentifier(@Param("releaseGroupId") UUID identifier);
 }

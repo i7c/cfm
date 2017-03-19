@@ -66,7 +66,7 @@ public class RatingServiceImpl implements RatingService {
         String[] titleWords = splitMeaningfulWords(recording.getName());
 
         List<String> lcs = longestCommonSubsequence(titleWords, searchWords);
-        int rating = (int) ((double) lcs.size() / titleWords.length * 100);
+        int rating = (int) ((double) lcs.size() / titleWords.length * 100) + lcs.size();
         return new Rated<>(recording, rating);
     }
 
