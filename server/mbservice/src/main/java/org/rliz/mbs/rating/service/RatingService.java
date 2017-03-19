@@ -3,6 +3,7 @@ package org.rliz.mbs.rating.service;
 import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.recording.model.Recording;
 import org.rliz.mbs.release.model.Release;
+import org.rliz.mbs.release.model.ReleaseGroup;
 
 import java.util.List;
 
@@ -28,5 +29,14 @@ public interface RatingService {
      * @return a sorted list of releases, best match is the first entry
      */
     List<Rated<Release>> rateReleases(List<Release> releases, String title);
+
+    /**
+     * Rates {@link ReleaseGroup}s using a given title.
+     *
+     * @param releaseGroups the {@link ReleaseGroup}s to rate
+     * @param title         the title to match against
+     * @return a sorted list of release groups, best match first
+     */
+    List<Rated<ReleaseGroup>> rateReleaseGroups(List<ReleaseGroup> releaseGroups, String title);
 
 }

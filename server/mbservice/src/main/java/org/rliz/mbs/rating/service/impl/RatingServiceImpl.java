@@ -4,6 +4,7 @@ import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.rating.service.RatingService;
 import org.rliz.mbs.recording.model.Recording;
 import org.rliz.mbs.release.model.Release;
+import org.rliz.mbs.release.model.ReleaseGroup;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -43,6 +44,17 @@ public class RatingServiceImpl implements RatingService {
         return ratedReleases;
     }
 
+    @Override
+    public List<Rated<ReleaseGroup>> rateReleaseGroups(List<ReleaseGroup> releaseGroups, String title) {
+        String[] titleWords = splitMeaningfulWords(title);
+
+        List<Rated<ReleaseGroup>> ratedReleaseGroups = releaseGroups.stream()
+                .map(releaseGroup -> rateReleaseGroup(releaseGroup, titleWords))
+                .collect(Collectors.toList());
+        Collections.sort(ratedReleaseGroups);
+        return ratedReleaseGroups;
+    }
+
     /**
      * Rate a single recording.
      *
@@ -71,6 +83,21 @@ public class RatingServiceImpl implements RatingService {
         List<String> lcs = longestCommonSubsequence(titleWords, searchWords);
         int rating = (int) ((double) lcs.size() / titleWords.length * 100);
         return new Rated<>(release, rating);
+    }
+
+    /**
+     * Rate a single {@link ReleaseGroup}
+     *
+     * @param releaseGroup the release group
+     * @param searchWords  search words for the desired title
+     * @return the rated release group
+     */
+    private Rated<ReleaseGroup> rateReleaseGroup(ReleaseGroup releaseGroup, String[] searchWords) {
+        String[] titleWords = splitMeaningfulWords(releaseGroup.getName());
+
+        List<String> lcs = longestCommonSubsequence(titleWords, searchWords);
+        int rating = (int) ((double) lcs.size() / titleWords.length * 100) + lcs.size();
+        return new Rated<>(releaseGroup, rating);
     }
 
     /**
