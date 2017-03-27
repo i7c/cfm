@@ -1,2 +1,8 @@
-server:
-  port: 1337
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 5000

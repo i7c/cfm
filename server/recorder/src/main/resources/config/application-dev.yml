@@ -1,9 +1,3 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://cfmdb.ctk75bmimye1.eu-central-1.rds.amazonaws.com:5432/cfmdb
-    username: cfm
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    generate-ddl: true
+# Options specific for development stage
+
 logging.level.org.hibernate.SQL: DEBUG
