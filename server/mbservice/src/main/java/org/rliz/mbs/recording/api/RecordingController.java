@@ -18,7 +18,7 @@ import java.util.UUID;
  * REST API endpoint for {@link Recording}s.
  */
 @RestController
-@RequestMapping("/api/v1/recordings")
+@RequestMapping("/mbs/v1/recordings")
 public class RecordingController {
 
     private RecordingBoundaryService recordingBoundaryService;

@@ -19,7 +19,7 @@ import java.util.List;
  * additional information regarding the playback.
  */
 @RestController
-@RequestMapping("api/v1/playbacks")
+@RequestMapping("/mbs/v1/playbacks")
 public class PlaybackController {
 
     private PlaybackBoundaryService playbackBoundaryService;

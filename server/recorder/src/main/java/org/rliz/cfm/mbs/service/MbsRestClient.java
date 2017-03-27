@@ -18,16 +18,16 @@ import java.util.UUID;
 @FeignClient(name = "mbsClient", url = "${cfm.mbs.url}")
 public interface MbsRestClient {
 
-    @RequestMapping("/artists/{identifier}")
+    @RequestMapping("/mbs/v1/artists/{identifier}")
     MbArtistDto getArtistByIdentifier(@PathVariable("identifier") UUID identifier);
 
-    @RequestMapping("/recordings/{identifier}")
+    @RequestMapping("/mbs/v1/recordings/{identifier}")
     MbRecordingDto getRecordingByIdentifier(@PathVariable("identifier") UUID identifier);
 
-    @RequestMapping("/releasegroups/{identifier}")
+    @RequestMapping("/mbs/v1/releasegroups/{identifier}")
     MbReleaseGroupDto getReleaseGroupByIdentifier(@PathVariable("identifier") UUID identifier);
 
-    @RequestMapping("/playbacks/identify")
+    @RequestMapping("/mbs/v1/playbacks/identify")
     MbPlaybackDetailsDto identifyPlaybackWithNames(@RequestParam("artist") List<String> artists,
                                                    @RequestParam("title") String title,
                                                    @RequestParam("release") String release);

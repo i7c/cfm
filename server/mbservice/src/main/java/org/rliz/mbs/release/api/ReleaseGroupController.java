@@ -19,7 +19,7 @@ import java.util.UUID;
  * REST API endpoint for {@link ReleaseGroup}s.
  */
 @RestController
-@RequestMapping("/api/v1/releasegroups")
+@RequestMapping("/mbs/v1/releasegroups")
 public class ReleaseGroupController {
 
     private ReleaseGroupBoundaryService releaseGroupBoundaryService;

@@ -17,7 +17,7 @@ import java.util.UUID;
  * API endpoint for {@link Artist}s.
  */
 @RestController
-@RequestMapping(value = "/api/v1/artists")
+@RequestMapping(value = "/mbs/v1/artists")
 public class ArtistController {
 
     private ArtistBoundaryService artistBoundaryService;
