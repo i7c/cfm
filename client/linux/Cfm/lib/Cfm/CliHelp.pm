@@ -6,13 +6,14 @@ use Log::Log4perl;
 my $logger = Log::Log4perl->get_logger("cfm");
 
 my %help_mapping = (
-    artists     => \&help_artists,
-    playback    => \&help_playback,
-    list        => \&help_list,
-    record      => \&help_record,
-    del         => \&help_del,
-    fix         => \&help_fix,
-    "mbfind-rg" => \&help_mbfind_rg,
+    artists      => \&help_artists,
+    playback     => \&help_playback,
+    list         => \&help_list,
+    record       => \&help_record,
+    del          => \&help_del,
+    fix          => \&help_fix,
+    "mbfind-rg"  => \&help_mbfind_rg,
+    "mbfind-rec" => \&help_mbfind_rec,
 );
 
 sub show_help {
@@ -85,6 +86,17 @@ Options:
     --artist | -a <artist name>
     --title | -t <title of the release>
     --page | -P <page number>
+';
+}
+
+sub help_mbfind_rec {
+    print 'Lookup recordings on a specific release group in the musicbrainz database
+
+    Usage: mbfind-rec --rgid <uuid> -t \'Song title\'
+
+Options:
+    --rgid <release group id>
+    --title | -t <title of the recording>
 ';
 }
 
