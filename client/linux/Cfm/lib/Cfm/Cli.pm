@@ -116,8 +116,8 @@ sub handle_help {
 
     if (!defined $ARGV[0]) {
         print "Specify one of the following commands:\n";
-        for my $available_command (keys %command_mapping) {
-            print "    $available_command\n";
+        for my $available_command (sort keys %command_mapping) {
+            print " * $available_command\n";
         }
         print "Help is available using the --help option.\n";
         return 1;
