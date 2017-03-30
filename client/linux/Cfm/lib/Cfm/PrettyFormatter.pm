@@ -103,9 +103,9 @@ sub mb_releasegroup_list {
     my $counter = $rgs->pageNumber * $rgs->pageSize;
 
     my $table = Text::ASCIITable->new({ headingText => "Release Groups" });
-    $table->setCols("No", "Title", "Comment");
+    $table->setCols("No", "Identifier", "Title", "Comment");
     for my $rg ($rgs->elements->@*) {
-        $table->addRow($counter, $rg->name, $rg->comment);
+        $table->addRow($counter, $rg->identifier, $rg->name, $rg->comment);
         $counter++;
     }
     print $table;
