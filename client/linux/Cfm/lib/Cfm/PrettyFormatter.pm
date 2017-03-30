@@ -97,5 +97,20 @@ sub playback_list {
     print $self->list_details($pbl);
 }
 
+sub mb_releasegroup_list {
+    my ($self, $rgs) = @_;
+
+    my $counter = $rgs->pageNumber * $rgs->pageSize;
+
+    my $table = Text::ASCIITable->new({ headingText => "Release Groups" });
+    $table->setCols("No", "Title", "Comment");
+    for my $rg ($rgs->elements->@*) {
+        $table->addRow($counter, $rg->name, $rg->comment);
+        $counter++;
+    }
+    print $table;
+    print $self->list_details($rgs);
+}
+
 
 1;

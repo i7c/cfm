@@ -13,12 +13,13 @@ use Cfm::PrettyFormatter;
 use Cfm::SavePlaybackDto;
 
 my %command_mapping = (
-    artists  => \&cmd_artists,
-    playback => \&cmd_playback,
-    list     => \&cmd_list,
-    record   => \&cmd_record,
-    del      => \&cmd_del,
-    fix      => \&cmd_fix,
+    artists     => \&cmd_artists,
+    playback    => \&cmd_playback,
+    list        => \&cmd_list,
+    record      => \&cmd_record,
+    del         => \&cmd_del,
+    fix         => \&cmd_fix,
+    "mbfind-rg" => \&cmd_mbfind_rg,
 );
 
 my @config_locations = (
@@ -217,7 +218,7 @@ sub has_option {
 sub require_arg {
     my ($self, $n, $name) = @_;
 
-    if (! defined $ARGV[$n]) {
+    if (!defined $ARGV[$n]) {
         $logger->error("Missing argument '$name'.");
         exit 1;
     }
@@ -325,6 +326,22 @@ sub cmd_fix {
         $updated_playback = $self->client->fix_playback($uuid, $create_playback, 0);
     }
     $self->formatter->playback($updated_playback);
+    return;
+}
+
+sub cmd_mbfind_rg {
+    my ($self) = @_;
+
+    my $artists = $self->require_option("artist");
+    my $title = $self->require_option("title");
+    my $page = $self->get_option("page") // 1;
+    if ($page < 1) {
+        $logger->error("--page must be >= 1.");
+        die;
+    }
+
+    my $release_groups = $self->client->find_releasegroups($artists, $title, $page - 1);
+    $self->formatter->mb_releasegroup_list($release_groups);
     return;
 }
 

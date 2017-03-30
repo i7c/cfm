@@ -6,12 +6,13 @@ use Log::Log4perl;
 my $logger = Log::Log4perl->get_logger("cfm");
 
 my %help_mapping = (
-    artists  => \&help_artists,
-    playback => \&help_playback,
-    list     => \&help_list,
-    record   => \&help_record,
-    del      => \&help_del,
-    fix      => \&help_fix,
+    artists     => \&help_artists,
+    playback    => \&help_playback,
+    list        => \&help_list,
+    record      => \&help_record,
+    del         => \&help_del,
+    fix         => \&help_fix,
+    "mbfind-rg" => \&help_mbfind_rg,
 );
 
 sub show_help {
@@ -73,6 +74,18 @@ sub help_del {
     print 'Delete a playback.
 
 Usage: del -i <uuid>';
+}
+
+sub help_mbfind_rg {
+    print 'Lookup release groups in the musicbrainz database
+
+Usage: mbfind-rg -a \'My Artist\' -t \'Their Aweseome Release\'
+
+Options:
+    --artist | -a <artist name>
+    --title | -t <title of the release>
+    --page | -P <page number>
+';
 }
 
 1;

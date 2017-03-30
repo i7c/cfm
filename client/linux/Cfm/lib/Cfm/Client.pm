@@ -13,6 +13,7 @@ use Cfm::Artist;
 use Cfm::ArtistList;
 use Cfm::Playback;
 use Cfm::PlaybackList;
+use Cfm::Mb::ReleaseGroupList;
 
 my $logger = Log::Log4perl->get_logger("cfm");
 
@@ -184,6 +185,25 @@ sub fix_playback {
         $playback = $self->_patch("/api/v1/playbacks/$uuid", $create_playback->_to_hash);
     }
     return Cfm::Playback->from_hash($playback);
+}
+
+# Find release groups by artist and release name, ordered by rating
+sub find_releasegroups {
+    my ($self, $artists, $release, $page) = @_;
+
+    my @params = ();
+    for my $artist ($artists->@*) {
+        push @params, "artist";
+        push @params, $artist;
+    }
+    push @params, "release";
+    push @params, $release;
+    if (defined $page) {
+        push @params, "page";
+        push @params, $page;
+    }
+    my $response = $self->_get("/mbs/v1/releasegroups", \@params);
+    return Cfm::Mb::ReleaseGroupList->from_hash($response);
 }
 
 1;

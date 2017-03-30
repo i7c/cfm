@@ -54,4 +54,9 @@ sub playback_list {
     carp "not implemented";
 }
 
+# Format list of musicbrainz release gropus
+sub mb_releasegroup_list {
+    carp "not implemented";
+}
+
 1;
