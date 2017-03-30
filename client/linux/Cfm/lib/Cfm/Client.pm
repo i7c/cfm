@@ -14,6 +14,7 @@ use Cfm::ArtistList;
 use Cfm::Playback;
 use Cfm::PlaybackList;
 use Cfm::Mb::ReleaseGroupList;
+use Cfm::Mb::RecordingList;
 
 my $logger = Log::Log4perl->get_logger("cfm");
 
@@ -204,6 +205,18 @@ sub find_releasegroups {
     }
     my $response = $self->_get("/mbs/v1/releasegroups", \@params);
     return Cfm::Mb::ReleaseGroupList->from_hash($response);
+}
+
+# Find recordings by release group id and title
+sub find_recordings {
+    my ($self, $rgid, $title, $page) = @_;
+
+    my @params = ();
+    push @params, "releaseGroupId", $rgid;
+    push @params, "title", $title;
+    push @params, "page", $page;
+    my $response = $self->_get("/mbs/v1/recordings", \@params);
+    return Cfm::Mb::RecordingList->from_hash($response);
 }
 
 1;

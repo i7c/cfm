@@ -1,11 +1,10 @@
-package Cfm::Mb::ReleaseGroupList;
+package Cfm::Mb::RecordingList;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
 
 use Cfm::List;
-use Cfm::Mb::ReleaseGroup;
-
+use Cfm::Mb::Recording;
 
 extends 'Cfm::List';
 
@@ -22,10 +21,10 @@ has elements => (is => 'ro');
 sub _ds_elements {
     my ($content) = @_;
 
-    my @rgs = map {
-        Cfm::Mb::ReleaseGroup->from_hash($_)
+    my @recs = map {
+        Cfm::Mb::Recording->from_hash($_)
     } @$content;
-    return \@rgs;
+    return \@recs;
 }
 
 sub _mandatory_fields {

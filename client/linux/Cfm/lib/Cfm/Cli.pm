@@ -13,13 +13,14 @@ use Cfm::PrettyFormatter;
 use Cfm::SavePlaybackDto;
 
 my %command_mapping = (
-    artists     => \&cmd_artists,
-    playback    => \&cmd_playback,
-    list        => \&cmd_list,
-    record      => \&cmd_record,
-    del         => \&cmd_del,
-    fix         => \&cmd_fix,
-    "mbfind-rg" => \&cmd_mbfind_rg,
+    artists      => \&cmd_artists,
+    playback     => \&cmd_playback,
+    list         => \&cmd_list,
+    record       => \&cmd_record,
+    del          => \&cmd_del,
+    fix          => \&cmd_fix,
+    "mbfind-rg"  => \&cmd_mbfind_rg,
+    "mbfind-rec" => \&cmd_mbfind_rec,
 );
 
 my @config_locations = (
@@ -69,6 +70,7 @@ sub run {
         "debug",
         "log|L=s",
         "page|P=n",
+        "rgid=s",
         "auto",
     );
     $self->options(\%options);
@@ -343,6 +345,21 @@ sub cmd_mbfind_rg {
     my $release_groups = $self->client->find_releasegroups($artists, $title, $page - 1);
     $self->formatter->mb_releasegroup_list($release_groups);
     return;
+}
+
+sub cmd_mbfind_rec {
+    my ($self) = @_;
+
+    my $rgid = $self->require_option("rgid");
+    my $title = $self->require_option("title");
+    my $page = $self->get_option("page") // 1;
+    if ($page < 1) {
+        $logger->error("--page must be >= 1.");
+        die;
+    }
+
+    my $recordings = $self->client->find_recordings($rgid, $title, $page - 1);
+    $self->formatter->mb_recording_list($recordings);
 }
 
 1;

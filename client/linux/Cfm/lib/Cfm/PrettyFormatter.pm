@@ -112,5 +112,18 @@ sub mb_releasegroup_list {
     print $self->list_details($rgs);
 }
 
+sub mb_recording_list {
+    my ($self, $recs) = @_;
+
+    my $counter = $recs->pageNumber * $recs->pageSize;
+    my $table = Text::ASCIITable->new({ headingText => "Recordings" });
+    $table->setCols("No", "Identifier", "Title", "Length", "Comment");
+    for my $rec ($recs->elements->@*) {
+        $table->addRow($counter, $rec->identifier, $rec->name, $rec->length, $rec->comment);
+        $counter++;
+    }
+    print $table;
+    print $self->list_details($recs);
+}
 
 1;
