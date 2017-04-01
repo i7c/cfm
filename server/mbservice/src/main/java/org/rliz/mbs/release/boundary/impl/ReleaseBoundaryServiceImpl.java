@@ -30,7 +30,7 @@ public class ReleaseBoundaryServiceImpl implements ReleaseBoundaryService {
     }
 
     @Override
-    public Release identifyRelease(List<String> artists, String title) {
+    public Release identifyRelease(List<String> artists, String title, int threshold) {
         List<Release> foundReleases = releaseRepository
                 .findReleaseByArtistNames(artists.stream().map(String::toLowerCase).collect(Collectors.toList()));
 
@@ -42,7 +42,7 @@ public class ReleaseBoundaryServiceImpl implements ReleaseBoundaryService {
         List<Rated<Release>> ratedReleases = ratingService.rateReleases(foundReleases, title);
         Rated<Release> candidate = ratedReleases.get(0);
 
-        if (candidate.getRating() > 75) {
+        if (candidate.getRating() >= threshold) {
             return candidate.getIt();
         } else {
             throw new MbLookupException(MbLookupException.EC_LOW_RATING, "All results were rated below threshold.");

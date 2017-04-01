@@ -17,11 +17,12 @@ public interface RecordingBoundaryService {
     /**
      * Tries to identify a {@link Recording} using given release the recording appears on and title of the recording.
      *
-     * @param release release this recording was played from
-     * @param title   title of the recording
+     * @param release   release this recording was played from
+     * @param title     title of the recording
+     * @param threshold min score to consider the result a match
      * @return the identified recording
      */
-    Recording identifyRecording(Release release, String title);
+    Recording identifyRecording(Release release, String title, int threshold);
 
     /**
      * Retrieve single {@link Recording} by identifier.

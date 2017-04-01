@@ -36,16 +36,30 @@ public class PlaybackController {
     /**
      * Tries to identify a playback by the given information.
      *
-     * @param artists list of names of artists who are credited for the release
-     * @param title   the title of the recording
-     * @param release the release from which this recording is played
+     * @param artists   list of names of artists who are credited for the release
+     * @param title     the title of the recording
+     * @param release   the release from which this recording is played
+     * @param threshold threshold for matching release group and recording
+     * @param rgThres   threshold for matching release groups, overrides threshold
+     * @param recThres  threshold for matching recordings, overrides threshold
      * @return musicbrainz details about the recording and release
      */
     @RequestMapping(method = RequestMethod.GET, value = "/identify")
     public PlaybackDetailsDto identifyPlayback(@RequestParam("artist") List<String> artists,
                                                @RequestParam("title") String title,
-                                               @RequestParam("release") String release) {
-        Pair<Release, Recording> result = playbackBoundaryService.identifyPlayback(artists, title, release);
+                                               @RequestParam("release") String release,
+                                               @RequestParam(name = "thres", required = false, defaultValue = "50")
+                                                       Integer threshold,
+                                               @RequestParam(name = "rgthres", required = false) Integer rgThres,
+                                               @RequestParam(name = "recthres", required = false) Integer recThres) {
+        if (rgThres == null) {
+            rgThres = threshold;
+        }
+        if (recThres == null) {
+            recThres = threshold;
+        }
+        Pair<Release, Recording> result = playbackBoundaryService.identifyPlayback(artists, title, release, rgThres,
+                recThres);
         return playbackDetailsDtoFactory.build(result.getFirst(), result.getSecond());
     }
 

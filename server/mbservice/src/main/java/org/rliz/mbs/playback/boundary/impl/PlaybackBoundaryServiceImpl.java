@@ -29,9 +29,10 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Pair<Release, Recording> identifyPlayback(List<String> artists, String title, String release) {
-        Release identifiedRelease = releaseBoundaryService.identifyRelease(artists, release);
-        Recording identifiedRecording = recordingBoundaryService.identifyRecording(identifiedRelease, title);
+    public Pair<Release, Recording> identifyPlayback(List<String> artists, String title, String release, int rgthres,
+                                                     int recthres) {
+        Release identifiedRelease = releaseBoundaryService.identifyRelease(artists, release, rgthres);
+        Recording identifiedRecording = recordingBoundaryService.identifyRecording(identifiedRelease, title, recthres);
         return Pair.of(identifiedRelease, identifiedRecording);
     }
 }

@@ -38,7 +38,7 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
     }
 
     @Override
-    public Recording identifyRecording(Release release, String title) {
+    public Recording identifyRecording(Release release, String title, int threshold) {
         List<Recording> recordings = recordingRepository.findAllByReleaseGroup(release.getReleaseGroup());
 
         if (CollectionUtils.isEmpty(recordings)) {
@@ -48,7 +48,7 @@ public class RecordingBoundaryServiceImpl implements RecordingBoundaryService {
 
         List<Rated<Recording>> ratedRecordings = ratingService.rateRecordings(recordings, title);
         Rated<Recording> candidate = ratedRecordings.get(0);
-        if (candidate.getRating() >= 75) {
+        if (candidate.getRating() >= threshold) {
             return candidate.getIt();
         } else {
             throw new MbLookupException(MbLookupException.EC_LOW_RATING, "All found recordings were rated below " +
