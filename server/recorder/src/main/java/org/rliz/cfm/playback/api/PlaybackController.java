@@ -52,12 +52,15 @@ public class PlaybackController {
      * Makes a new {@link Playback} using the given information in the body.
      *
      * @param body playback data
+     * @param threshold  the minimum score for mbs services to consider a result a match
      * @return the new playback resource
      */
     @Transactional
     @RequestMapping(method = RequestMethod.POST)
-    public PlaybackDto createPlayback(@RequestBody SavePlaybackDto body) {
-        Playback playback = playbackBoundaryService.createPlayback(body);
+    public PlaybackDto createPlayback(@RequestBody SavePlaybackDto body,
+                                      @RequestParam(name = "threshold", required = false, defaultValue = "50")
+                                              Integer threshold) {
+        Playback playback = playbackBoundaryService.createPlayback(body, threshold);
         return playbackDtoFactory.build(playback);
     }
 
@@ -114,6 +117,7 @@ public class PlaybackController {
      * @param body       body containing the update information. Only non-null fields will be applied.
      * @param auto       true if the service should try to update the mbid details automatically, the request body
      *                   will be ignored then.
+     * @param threshold  the minimum score for mbs services to consider a result a match
      * @param user       the currently authenticated user
      * @return 200 and the updated resource
      */
@@ -122,10 +126,12 @@ public class PlaybackController {
     public ResponseEntity<PlaybackDto> updatePlayback(@PathVariable(name = "identifier") UUID identifier,
                                                       @RequestBody SavePlaybackDto body,
                                                       @RequestParam(name = "auto", required = false) Boolean auto,
+                                                      @RequestParam(name = "threshold", required = false,
+                                                              defaultValue = "50") Integer threshold,
                                                       @AuthenticationPrincipal(errorOnInvalidType = true) User user) {
         Playback fixedPlayback = null;
         if (auto != null && auto) {
-            fixedPlayback = playbackBoundaryService.detectAndUpdateMbDetails(identifier, user);
+            fixedPlayback = playbackBoundaryService.detectAndUpdateMbDetails(identifier, threshold, user);
         } else {
             fixedPlayback = playbackBoundaryService.updatePlayback(identifier, body, user);
         }

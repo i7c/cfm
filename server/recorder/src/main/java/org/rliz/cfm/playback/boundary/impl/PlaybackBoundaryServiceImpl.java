@@ -62,7 +62,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Playback createPlayback(SavePlaybackDto dto) {
+    public Playback createPlayback(SavePlaybackDto dto, int threshold) {
         User currentUser = SecurityContextHelper.getCurrentUser();
 
         Playback createdPlayback;
@@ -70,7 +70,8 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
             createdPlayback = createPlaybackWithMbids(currentUser, dto.getMbTrackId(), dto.getMbReleaseGroupId());
         } else if (!CollectionUtils.isEmpty(dto.getArtists())
                 && Objects.nonNull(dto.getTitle()) && Objects.nonNull(dto.getAlbum())) {
-            createdPlayback = createPlaybackWithNames(currentUser, dto.getArtists(), dto.getTitle(), dto.getAlbum());
+            createdPlayback = createPlaybackWithNames(currentUser, dto.getArtists(), dto.getTitle(), dto.getAlbum(),
+                    threshold);
         } else {
             throw new ApiArgumentsInvalidException(ApiArgumentsInvalidException.EC_ARGS_INSUFFICIENT,
                     "Insufficient data to create a playback.");
@@ -87,10 +88,11 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
         return playback;
     }
 
-    private Playback createPlaybackWithNames(User currentUser, List<String> artists, String title, String album) {
+    private Playback createPlaybackWithNames(User currentUser, List<String> artists, String title, String album,
+                                             int threshold) {
         MbPlaybackDetailsDto playbackDetailsDto;
         try {
-            playbackDetailsDto = mbsRestClient.identifyPlaybackWithNames(artists, title, album);
+            playbackDetailsDto = mbsRestClient.identifyPlaybackWithNames(artists, title, album, threshold);
         } catch (Exception ex) {
             return new Playback(null, null, currentUser, Date.from(Instant.now()));
         }
@@ -188,7 +190,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
     }
 
     @Override
-    public Playback detectAndUpdateMbDetails(UUID identifier, User authenticatedUser) {
+    public Playback detectAndUpdateMbDetails(UUID identifier, int threshold, User authenticatedUser) {
         Playback playback = playbackRepository.findOneByIdentifier(identifier);
 
         if (playback == null) {
@@ -204,7 +206,7 @@ public class PlaybackBoundaryServiceImpl implements PlaybackBoundaryService {
 
         try {
             MbPlaybackDetailsDto playbackDetailsDto = mbsRestClient.identifyPlaybackWithNames(
-                    playback.getOriginalArtists(), playback.getOriginalTitle(), playback.getOriginalAlbum());
+                    playback.getOriginalArtists(), playback.getOriginalTitle(), playback.getOriginalAlbum(), threshold);
             Recording recording = recordingBoundaryService.findOrCreateRecordingWithMbid(
                     playbackDetailsDto.getRecordingReference().getIdentifier());
             ReleaseGroup releaseGroup = releaseGroupBoundaryService.findOrCreateReleaseGroupWithMusicbrainz(

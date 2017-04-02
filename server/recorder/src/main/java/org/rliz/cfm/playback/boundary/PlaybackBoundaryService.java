@@ -16,10 +16,11 @@ public interface PlaybackBoundaryService {
     /**
      * Creates a new playback event using the musicbrainz track ID and release group ID.
      *
-     * @param dto the create playback resource
+     * @param dto       the create playback resource
+     * @param threshold minimum score for mbs to consider the result a match
      * @return persisted playback event
      */
-    Playback createPlayback(SavePlaybackDto dto);
+    Playback createPlayback(SavePlaybackDto dto, int threshold);
 
     /**
      * Gets a list of {@link Playback}s regardless of the user.
@@ -62,9 +63,10 @@ public interface PlaybackBoundaryService {
      * {@link Playback} is returned unchanged.
      *
      * @param identifier        identifier of the {@link Playback}.
+     * @param threshold         minimum score for mbs to consider a result a match
      * @param authenticatedUser currently authenticated user
      * @return the updated {@link Playback}
      */
-    Playback detectAndUpdateMbDetails(UUID identifier, User authenticatedUser);
+    Playback detectAndUpdateMbDetails(UUID identifier, int threshold, User authenticatedUser);
 
 }

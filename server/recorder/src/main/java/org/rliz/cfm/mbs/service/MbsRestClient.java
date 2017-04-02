@@ -30,6 +30,7 @@ public interface MbsRestClient {
     @RequestMapping("/mbs/v1/playbacks/identify")
     MbPlaybackDetailsDto identifyPlaybackWithNames(@RequestParam("artist") List<String> artists,
                                                    @RequestParam("title") String title,
-                                                   @RequestParam("release") String release);
+                                                   @RequestParam("release") String release,
+                                                   @RequestParam("thres") int thres);
 
 }
