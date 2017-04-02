@@ -71,6 +71,7 @@ sub run {
         "log|L=s",
         "page|P=n",
         "rgid=s",
+        "interactive|i",
         "auto",
     );
     $self->options(\%options);
@@ -313,6 +314,14 @@ sub cmd_del {
 sub cmd_fix {
     my ($self) = @_;
 
+    if ($self->has_option("interactive")) {
+        $logger->info("Fix in interactive mode, load playback fixer wizard");
+        require Cfm::Wizard::PlaybackFixer;
+        my $fixer = Cfm::Wizard::PlaybackFixer->new(client => $self->client);
+        $logger->info("Running wizard ...");
+        $fixer->run($self->has_option("broken"));
+        return;
+    }
     my $uuid = $self->require_arg(1, "identifier");
     my $auto = $self->has_option("auto");
 

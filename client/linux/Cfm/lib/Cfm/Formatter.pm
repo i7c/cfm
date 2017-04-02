@@ -34,6 +34,16 @@ sub boolean {
     return "false";
 }
 
+sub length {
+    my ($self, $value) = @_;
+
+    $value /= 1000;
+    my $secs = $value % 60;
+    $value /= 60;
+    my $mins = $value;
+    return sprintf "%02d:%02d", $mins, $secs;
+}
+
 # Format a single artist
 sub artist {
     carp "not implemented";
