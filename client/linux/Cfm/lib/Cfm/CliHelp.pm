@@ -42,10 +42,15 @@ sub help_playback {
     print 'Usage: playback [options]
 
 Creates a new playback on the server. If successful, the playback is returned.
+Either (--mb-track and --mb-release-group) or (--artist, --title and --album) must be specified.
+--artist must be specified at least once and can be specified multiple times for multiple artists.
 
 Options:
     --mb-track           the musicbrainz id of the track
     --mb-release-group   the musicbrainz id of the release group
+    --artist | -a        an artist of the recording, can be specified multiple times
+    --title | -t         the title of the recording
+    --album | -A         the album name on which the recording appears
     --quiet              do not return anything in case of success
 ';
 }
