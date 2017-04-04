@@ -25,7 +25,7 @@ sub run {
     my ($self, $broken) = @_;
 
     $logger->info("Start selector for playbacks");
-    my $playback = $self->selector->select_playback($broken);
+    my ($playback, undef) = $self->selector->select_playback($broken);
     if (!defined $playback) {
         print "No playback selected.\n";
         return undef;

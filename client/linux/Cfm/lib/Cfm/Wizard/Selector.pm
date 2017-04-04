@@ -34,9 +34,9 @@ sub _next_page {
 }
 
 sub select_playback {
-    my ($self, $broken) = @_;
+    my ($self, $broken, $initial_page) = @_;
 
-    my $page = 0;
+    my $page = $initial_page // 0;
     my $last_page = -1;
     my $playbacks;
     my $line;
@@ -57,12 +57,12 @@ sub select_playback {
             $page = _next_page($playbacks);
         } elsif ($line =~ /^[qQ]$/) {
             print "Cancel\n";
-            return undef;
+            return (undef, $page);
         } elsif ($line =~ /^[0-9]+$/) {
             my ($number) = $line =~ m/([0-9]+)/;
             $logger->debug("Selected playback with index $number");
             if ($number >= 1 && $number <= $playbacks->pageSize) {
-                return $playbacks->elements->[$number - 1];
+                return ($playbacks->elements->[$number - 1], $page);
             } else {
                 print "Pick number between 1 and " . ($playbacks->pageSize) . "\n";
             }
