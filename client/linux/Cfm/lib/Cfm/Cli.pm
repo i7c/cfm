@@ -307,6 +307,19 @@ sub cmd_record {
 sub cmd_del {
     my ($self) = @_;
 
+    if ($self->has_option("interactive")) {
+        require Cfm::Wizard::Selector;
+        my $selector = Cfm::Wizard::Selector->new(client => $self->client);
+        my $page = 0;
+        my $pb;
+        while (1) {
+            print "Select playback to delete ...\n";
+            ($pb, $page) = $selector->select_playback($self->has_option("broken"), $page);
+            return if (!defined $pb);
+            $self->client->delete_playback($pb->identifier);
+        }
+    }
+
     my $uuid = $self->require_arg(1, "identifier");
     $self->client->delete_playback($uuid);
 }
