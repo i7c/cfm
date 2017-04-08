@@ -2,10 +2,7 @@ package org.rliz.mbs.artist.model;
 
 import org.rliz.mbs.common.model.FirstClassEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * An Artist as stored in the musicbrainz db.
@@ -61,8 +58,11 @@ public class Artist extends FirstClassEntity {
     @Column(name = "comment")
     private String comment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type")
+    private ArtistType artistType;
+
     // Not mapped yet:
-//    type             | integer
 //    area             | integer
 //    gender           | integer
 //    edits_pending    | integer
@@ -129,6 +129,10 @@ public class Artist extends FirstClassEntity {
 
     public String getComment() {
         return comment;
+    }
+
+    public ArtistType getArtistType() {
+        return artistType;
     }
 
     @Override
