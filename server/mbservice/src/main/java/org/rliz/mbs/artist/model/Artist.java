@@ -4,6 +4,7 @@ import org.rliz.mbs.area.model.Area;
 import org.rliz.mbs.common.model.FirstClassEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * An Artist as stored in the musicbrainz db.
@@ -75,10 +76,13 @@ public class Artist extends FirstClassEntity {
     @JoinColumn(name = "end_area")
     private Area endArea;
 
-    // Not mapped yet:
+    @Column(name = "last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastUpdated;
+
+    // Not mapped:
 //    gender           | integer
 //    edits_pending    | integer
-//    last_updated     | timestamp with time zone
 
     @Override
     public String toString() {
@@ -154,6 +158,10 @@ public class Artist extends FirstClassEntity {
 
     public Area getEndArea() {
         return endArea;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
     }
 
     @Override

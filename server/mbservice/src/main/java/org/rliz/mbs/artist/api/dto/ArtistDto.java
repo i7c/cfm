@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.rliz.mbs.artist.model.Artist;
 import org.rliz.mbs.common.api.dto.AbstractDto;
 
+import java.util.Date;
+
 /**
  * DTO for {@link Artist}s.
  */
@@ -68,6 +70,10 @@ public class ArtistDto extends AbstractDto<Artist> {
         } else {
             return null;
         }
+    }
+
+    public Date getLastUpdated() {
+        return data.getLastUpdated();
     }
 
 }
