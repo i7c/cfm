@@ -1,4 +1,4 @@
-package Cfm::Mpris2Connector;
+package Cfm::Connector::Spotify;
 use strict;
 use warnings FATAL => 'all';
 
