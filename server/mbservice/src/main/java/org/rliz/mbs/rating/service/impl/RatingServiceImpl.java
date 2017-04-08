@@ -20,7 +20,7 @@ public class RatingServiceImpl implements RatingService {
 
 
     private static final String REMOVE_REGEX = "[']+";
-    private static final String SPLIT_REGEX = "[\\s!?,:\"«»“”(){}\\[\\]<>^.]+";
+    private static final String SPLIT_REGEX = "[\\s!?,:\"«»“”(){}\\[\\]<>^.-]+";
 
     @Override
     public List<Rated<Recording>> rateRecordings(List<Recording> recordings, String title) {
