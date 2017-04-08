@@ -1,5 +1,6 @@
 package org.rliz.mbs.artist.model;
 
+import org.rliz.mbs.area.model.Area;
 import org.rliz.mbs.common.model.FirstClassEntity;
 
 import javax.persistence.*;
@@ -15,9 +16,9 @@ import javax.persistence.*;
                 @Index(name = "artist_idx_gid", columnList = "gid"),
                 @Index(name = "artist_idx_null_comment", columnList = "name"),
                 @Index(name = "artist_idx_uniq_name_comment", columnList = "name, comment"),
-//                @Index(name = "artist_idx_area", columnList = "area"),
-//                @Index(name = "artist_idx_begin_area", columnList = "begin_area"),
-//                @Index(name = "artist_idx_end_area", columnList = "end_area"),
+                @Index(name = "artist_idx_area", columnList = "area"),
+                @Index(name = "artist_idx_begin_area", columnList = "begin_area"),
+                @Index(name = "artist_idx_end_area", columnList = "end_area"),
                 @Index(name = "artist_idx_lower_name", columnList = "lower_name"),
                 @Index(name = "artist_idx_name", columnList = "name"),
                 @Index(name = "artist_idx_sort_name", columnList = "sort_name"),
@@ -62,14 +63,22 @@ public class Artist extends FirstClassEntity {
     @JoinColumn(name = "type")
     private ArtistType artistType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area")
+    private Area area;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "begin_area")
+    private Area beginArea;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "end_area")
+    private Area endArea;
+
     // Not mapped yet:
-//    area             | integer
 //    gender           | integer
 //    edits_pending    | integer
 //    last_updated     | timestamp with time zone
-//    begin_area       | integer
-//    end_area         | integer
-
 
     @Override
     public String toString() {
@@ -133,6 +142,18 @@ public class Artist extends FirstClassEntity {
 
     public ArtistType getArtistType() {
         return artistType;
+    }
+
+    public Area getArea() {
+        return area;
+    }
+
+    public Area getBeginArea() {
+        return beginArea;
+    }
+
+    public Area getEndArea() {
+        return endArea;
     }
 
     @Override

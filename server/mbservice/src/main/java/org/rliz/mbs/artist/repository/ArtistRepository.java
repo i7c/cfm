@@ -20,7 +20,7 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
      * @param identifier a UUID
      * @return an artist or null if not found
      */
-    @EntityGraph(attributePaths = "artistType")
+    @EntityGraph(attributePaths = {"artistType", "area"})
     Artist findOneByIdentifier(UUID identifier);
 
     /**
@@ -30,6 +30,6 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
      * @param pageable page request
      * @return page of artists
      */
-    @EntityGraph(attributePaths = "artistType")
+    @EntityGraph(attributePaths = {"artistType", "area"})
     Page<Artist> findByName(String name, Pageable pageable);
 }
