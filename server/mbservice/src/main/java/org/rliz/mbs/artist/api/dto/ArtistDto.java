@@ -54,7 +54,13 @@ public class ArtistDto extends AbstractDto<Artist> {
         return data.getComment();
     }
 
-    public String getType() { return data.getArtistType().getName(); }
+    public String getTypeName() {
+        if (data.getArtistType() != null) {
+            return data.getArtistType().getName();
+        } else {
+            return null;
+        }
+    }
 
     public String getAreaName() {
         if (data.getArea() != null) {

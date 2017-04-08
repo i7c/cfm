@@ -31,7 +31,7 @@ public class ArtistType extends FirstClassEntity {
 
         @Override
         public String getDisplayName() {
-                return null;
+                return getName();
         }
 
         public String getName() {
