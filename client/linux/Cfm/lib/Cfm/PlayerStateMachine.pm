@@ -58,22 +58,24 @@ sub play {
     my $data = shift;
     my @user_args = @_;
 
+    my $now = time() * 1000;
+
     if ($self->state == - 1) {
         # transition: stopped -> playing
-        $self->_set_playing;
+        $self->_set_playing($now);
         $self->_set_new_track($data);
         $self->_emit_begin_of_track_event(\@user_args);
         return;
     } elsif ($self->state == 0 || $self->state == 1) {
         # transition: pause -> playing OR still playing
         if ($self->_track_changed($data)) {
-            $self->_update_passed_time if ($self->state == 1);
+            $self->_update_passed_time($now) if ($self->state == 1);
             $self->_emit_end_of_track_event(\@user_args);
-            $self->_set_playing;
+            $self->_set_playing($now);
             $self->_set_new_track($data);
             $self->_emit_begin_of_track_event(\@user_args);
         } else {
-            $self->_set_playing if ($self->state == 0);
+            $self->_set_playing($now) if ($self->state == 0);
             $self->_emit_resume_track_event(\@user_args);
         }
         return;
@@ -88,9 +90,11 @@ sub pause {
     my $data = shift;
     my @user_args = @_;
 
+    my $now = time() * 1000;
+
     if ($self->state == 1) {
         # transition: playing -> pause
-        $self->_update_passed_time;
+        $self->_update_passed_time($now);
         $self->_set_paused;
     } elsif ($self->state == 0) {
         # transition: paused -> paused
@@ -120,17 +124,16 @@ sub stop {
 # update the passed time using the moment "now" and the start time of the playing period. This function is NOT
 # idempotent. You must reset the start time afterwards.
 sub _update_passed_time {
-    my ($self) = @_;
+    my ($self, $now) = @_;
 
-    my $now = time() * 1000;
     $self->passed_time($self->passed_time + ($now - $self->start_time));
 }
 
 # sets internal state to "playing"; this involves setting the start time for the playing period.
 sub _set_playing {
-    my ($self) = @_;
+    my ($self, $now) = @_;
 
-    $self->start_time(time() * 1000);
+    $self->start_time($now);
     $self->state(1);
 }
 
@@ -188,6 +191,7 @@ sub _emit_end_of_track_event {
     return if $self->_preinitialised;
     if (($self->passed_time / $self->metadata->{length}) >= $self->threshold) {
         if (defined $self->cb_playback_completed) {
+            $self->passed_time($self->metadata->{length}) if ($self->passed_time > $self->metadata->{length});
             $self->cb_playback_completed->($self->metadata, $self->passed_time, @$user_args)
         }
     } else {
