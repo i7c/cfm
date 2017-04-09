@@ -11,7 +11,7 @@ import java.util.Date;
  */
 @Entity
 @Table(
-        name = "artist_ci",
+        name = "artist_ci2",
         indexes = {
                 @Index(name = "artist_pkey", columnList = "id"),
                 @Index(name = "artist_idx_gid", columnList = "gid"),
