@@ -64,6 +64,11 @@ sub listen {
                     $logger->warn(Dumper($metadata));
                     return;
                 }
+                for my $artist ($metadata->{"xesam:artist"}->@*) {
+                    utf8::decode($artist);
+                }
+                utf8::decode($metadata->{"xesam:title"});
+                utf8::decode($metadata->{"xesam:album"});
                 my $data = {
                     artists     => $metadata->{"xesam:artist"},
                     title       => $metadata->{"xesam:title"},
