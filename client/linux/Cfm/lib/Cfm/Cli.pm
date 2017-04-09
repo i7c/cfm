@@ -287,15 +287,24 @@ sub cmd_list {
 sub cmd_record {
     my ($self) = @_;
 
-    require Cfm::Connector::Spotify;
     my $player = $self->require_option("player");
     if ($player eq "spotify") {
+        require Cfm::Connector::Spotify;
         my $connector = Cfm::Connector::Spotify->new(
             client    => $self->client,
             dbus_name => "org.mpris.MediaPlayer2.spotify",
-            debug     => $self->has_option("debug")
         );
         $logger->info("Initialising Spotify Connector ...");
+        $connector->listen;
+    } elsif ($player =~ /mpris2:\w+/) {
+        require Cfm::Connector::Mpris2;
+        my ($mpris2_name) = $player =~ m/mpris2:(.*)/;
+        $logger->info("Mpris2 DBus name: $mpris2_name");
+        my $connector = Cfm::Connector::Mpris2->new(
+            client    => $self->client,
+            dbus_name => "org.mpris.MediaPlayer2.$mpris2_name",
+        );
+        $logger->info("Initialising generic mpris2 connector for player $mpris2_name");
         $connector->listen;
     } else {
         $logger->error("Unknown player $player");

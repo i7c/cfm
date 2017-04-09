@@ -72,7 +72,8 @@ sub help_record {
 Usage: record --player=<player>
 
 Supported players:
-  spotify
+  spotify                   Connects to spotify mpris2 interface
+  mpris2:<mpris2 name>      Generic mpris2 connector for player with given name (after the colon)
 ';
 }
 
