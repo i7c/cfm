@@ -1,12 +1,6 @@
 #!/bin/bash
 
-dir="$HOME/git/mbslave"
-[ ! -d  "$dir" ] && {
-	echo "Missing mbslave. Maybe you have to run setup_ec2.sh first.";
-	exit 1;
-}
-
-cd "$dir" || { echo "Failed."; exit 2; }
+cd "$mbsl" || { echo "Failed."; exit 2; }
 
 echo 'CREATE SCHEMA musicbrainz;' | ./mbslave-psql.py -S
 echo 'CREATE SCHEMA statistics;' | ./mbslave-psql.py -S

@@ -1,8 +1,7 @@
 #!/bin/bash
 
-dir="$HOME/git/mbslave"
-[ ! -d  "$dir" ] && {
-	echo "Missing mbslave. Maybe you have to run setup_ec2.sh first.";
+[ ! -d  "$mbsl" ] && {
+	echo "Missing mbslave.";
 	exit 1;
 }
 
@@ -11,7 +10,7 @@ dir="$HOME/git/mbslave"
 	exit 2;
 }
 
-cd "$dir" || { echo "Failed."; exit 2; }
+cd "$mbsl" || { echo "Failed."; exit 3; }
 
 ./mbslave-import.py "$@"
 

@@ -1,12 +1,11 @@
 #!/bin/bash
 
-dir="$HOME/git/mbslave"
-[ ! -d  "$dir" ] && {
-	echo "Missing mbslave. Maybe you have to run setup_ec2.sh first.";
+[ ! -d  "$mbsl" ] && {
+	echo "Missing mbslave.";
 	exit 1;
 }
 
-cd "$dir" || { echo "Failed."; exit 2; }
+cd "$mbsl" || { echo "Failed."; exit 2; }
 
 ./mbslave-remap-schema.py <sql/CreatePrimaryKeys.sql | ./mbslave-psql.py
 ./mbslave-remap-schema.py <sql/statistics/CreatePrimaryKeys.sql | ./mbslave-psql.py
