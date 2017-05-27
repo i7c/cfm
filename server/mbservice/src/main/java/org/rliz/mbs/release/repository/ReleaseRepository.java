@@ -15,7 +15,7 @@ public interface ReleaseRepository extends JpaRepository<Release, Long> {
 
     @EntityGraph(attributePaths = {"artistCredit.artistCreditName.artist", "releaseGroup"})
     @Query("SELECT r FROM Release r join r.artistCredit ac join ac.artistCreditName acn join acn.artist a " +
-            "where a.lowerName in (:artistNames)")
+            "where lower(a.name) in (:artistNames)")
     List<Release> findReleaseByArtistNames(@Param("artistNames") List<String> artistNames);
 
 }
