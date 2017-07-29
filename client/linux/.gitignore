@@ -1,7 +1,6 @@
 .idea
 linux.iml
 fatlib
-cfm
 Cfm/MYMETA.json
 Cfm/MYMETA.yml
 Cfm/Makefile
