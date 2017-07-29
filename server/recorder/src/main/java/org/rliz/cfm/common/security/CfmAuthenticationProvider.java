@@ -44,7 +44,7 @@ public class CfmAuthenticationProvider implements AuthenticationProvider {
             logger.error("Authentication failed because username was not found in database.");
             throw new UsernameNotFoundException("User is not in the database.");
         }
-        if (passwordEncoder.matches(password, foundUser.getPassword())) {
+        if (passwordEncoder.matches(password, foundUser.password)) {
             return new UsernamePasswordAuthenticationToken(foundUser, password,
                     Lists.newArrayList(new SimpleGrantedAuthority("ROLE_USER"),
                             new SimpleGrantedAuthority("FULL_PASSWORD")));
