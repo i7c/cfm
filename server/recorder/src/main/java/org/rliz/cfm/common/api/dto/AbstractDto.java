@@ -8,6 +8,7 @@ import java.util.UUID;
 /**
  * Abstract base class for DTOs.
  */
+@Deprecated
 public abstract class AbstractDto<T extends AbstractEntity> extends ResourceSupport {
 
     protected T data;
