@@ -126,4 +126,10 @@ sub mb_recording_list {
     print $self->list_details($recs);
 }
 
+sub invite {
+    my ($self, $invite) = @_;
+
+    print "Invite ID: " . $invite->identifier . "\n";
+}
+
 1;

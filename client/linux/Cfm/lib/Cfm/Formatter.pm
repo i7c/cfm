@@ -74,4 +74,8 @@ sub mb_recording_list {
     carp "not implemented";
 }
 
+sub invite {
+    carp "not implemented";
+}
+
 1;

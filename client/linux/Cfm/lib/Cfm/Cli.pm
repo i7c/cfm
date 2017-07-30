@@ -21,6 +21,7 @@ my %command_mapping = (
     fix          => \&cmd_fix,
     "mbfind-rg"  => \&cmd_mbfind_rg,
     "mbfind-rec" => \&cmd_mbfind_rec,
+    invite       => \&cmd_invite,
 );
 
 my @config_locations = (
@@ -391,6 +392,13 @@ sub cmd_mbfind_rec {
 
     my $recordings = $self->client->find_recordings($rgid, $title, $page - 1);
     $self->formatter->mb_recording_list($recordings);
+}
+
+sub cmd_invite {
+    my ($self) = @_;
+
+    my $invite = $self->client->create_invite();
+    $self->formatter->invite($invite);
 }
 
 1;

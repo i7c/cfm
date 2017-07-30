@@ -14,6 +14,7 @@ my %help_mapping = (
     fix          => \&help_fix,
     "mbfind-rg"  => \&help_mbfind_rg,
     "mbfind-rec" => \&help_mbfind_rec,
+    invite       => \&help_invite,
 );
 
 sub show_help {
@@ -103,6 +104,13 @@ sub help_mbfind_rec {
 Options:
     --rgid <release group id>
     --title | -t <title of the recording>
+';
+}
+
+sub help_invite {
+   print 'Creates an invite that you can sent another user to join your cfm server.
+
+   Usage: invite
 ';
 }
 

@@ -15,6 +15,7 @@ use Cfm::Playback;
 use Cfm::PlaybackList;
 use Cfm::Mb::ReleaseGroupList;
 use Cfm::Mb::RecordingList;
+use Cfm::Dto::Invite;
 
 my $logger = Log::Log4perl->get_logger("cfm");
 
@@ -217,6 +218,15 @@ sub find_recordings {
     push @params, "page", $page;
     my $response = $self->_get("/mbs/v1/recordings", \@params);
     return Cfm::Mb::RecordingList->from_hash($response);
+}
+
+sub create_invite {
+    my ($self) = @_;
+
+    my $body = {};
+    my $params = ();
+    my $response = $self->_post("/api/v1/invites", $body, $params);
+    return Cfm::Dto::Invite->from_hash($response);
 }
 
 1;
