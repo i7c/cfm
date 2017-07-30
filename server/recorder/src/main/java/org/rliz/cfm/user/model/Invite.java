@@ -27,9 +27,18 @@ public class Invite extends AbstractEntity {
     @Column(nullable = false)
     public Date date;
 
+    @NotNull
+    @Column(nullable = false)
+    public boolean used;
+
+    public Invite() {
+        super();
+    }
+
     public Invite(User inviter, Date date) {
         this.inviter = inviter;
         this.date = date;
+        this.used = false;
     }
 
     @Override

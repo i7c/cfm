@@ -3,6 +3,7 @@ package org.rliz.cfm.user.model;
 import org.rliz.cfm.common.model.AbstractEntity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -12,7 +13,8 @@ import java.util.List;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"), name = "cfm_user")
 public class User extends AbstractEntity {
 
-    @Column(length = 128, name = "username")
+    @NotNull
+    @Column(length = 128, name = "username", nullable = false)
     public String username;
 
     @Column(length = 128)
@@ -21,6 +23,8 @@ public class User extends AbstractEntity {
     @OneToMany(mappedBy = "user")
     public List<ApiKey> apiKeys;
 
+    public boolean registered;
+
     public User() {
         // for JPA
     }
@@ -28,6 +32,7 @@ public class User extends AbstractEntity {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.registered = false;
     }
 
     @Override
