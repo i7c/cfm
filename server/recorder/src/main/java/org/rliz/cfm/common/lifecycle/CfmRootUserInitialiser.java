@@ -7,6 +7,8 @@ import org.rliz.cfm.user.model.User;
 import org.rliz.cfm.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,7 +77,8 @@ public class CfmRootUserInitialiser implements SmartLifecycle {
         if (user == null) {
             if (StringUtils.isNotEmpty(rootUser)) {
                 logger.info("Adding root user, because it was not found.");
-                user = new User(rootUser, rootPassword);
+                BCryptPasswordEncoder pwenc = new BCryptPasswordEncoder();
+                user = new User(rootUser, pwenc.encode(rootPassword));
                 user.setIdentifier(UUID.randomUUID());
                 userRepository.save(user);
             } else {

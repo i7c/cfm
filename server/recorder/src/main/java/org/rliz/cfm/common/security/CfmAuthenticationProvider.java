@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class CfmAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     public CfmAuthenticationProvider(UserBoundaryService userBoundaryService) {
         this.userBoundaryService = userBoundaryService;
-        this.passwordEncoder = NoOpPasswordEncoder.getInstance();
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
