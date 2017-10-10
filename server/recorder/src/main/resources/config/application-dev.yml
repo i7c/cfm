@@ -1,3 +1,0 @@
-# Options specific for development stage
-
-logging.level.org.hibernate.SQL: DEBUG
