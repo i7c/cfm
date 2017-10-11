@@ -1,3 +1,5 @@
 /.idea
 /.gradle
 /out
+/_recorder_old
+recorder/src/main/resources/config/application-db-dev.yml
