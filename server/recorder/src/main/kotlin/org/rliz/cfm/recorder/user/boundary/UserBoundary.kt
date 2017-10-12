@@ -26,4 +26,6 @@ class UserBoundary {
         return userRepo.save(user)
     }
 
+    fun findUserByName(name: String): User? = userRepo.findOneByName(name)
+
 }
