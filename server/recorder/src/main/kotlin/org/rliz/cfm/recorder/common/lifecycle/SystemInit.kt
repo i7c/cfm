@@ -47,8 +47,8 @@ class SystemInit : SmartLifecycle {
     override fun getPhase(): Int = PHASE_SYSTEM_INIT
 
     private fun systemUserInit() {
-        val systemUser = userBoundary.findUserByName(systemUserName)
-        if (systemUser == null) {
+        val foundUser = userBoundary.findUserByName(systemUserName)
+        if (foundUser == null) {
             userBoundary.createUser(systemUserName, systemPassword, UserState.ACTIVE)
         }
     }
