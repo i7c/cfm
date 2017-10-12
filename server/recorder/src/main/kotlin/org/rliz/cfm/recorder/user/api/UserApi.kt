@@ -23,7 +23,7 @@ class UserApi {
     fun createUser(@Valid @RequestBody body: UserRes): ResponseEntity<UserRes> = userBoundary.createUser(
             name = body.name!!,
             password = body.password!!,
-            state = body.state
+            state = body.state!!
     ).toRes(HttpStatus.OK)
 
 }
