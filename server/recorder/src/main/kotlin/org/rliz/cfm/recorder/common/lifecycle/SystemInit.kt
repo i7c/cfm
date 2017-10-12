@@ -49,7 +49,7 @@ class SystemInit : SmartLifecycle {
     private fun systemUserInit() {
         val foundUser = userBoundary.findUserByName(systemUserName)
         if (foundUser == null) {
-            userBoundary.createUser(systemUserName, systemPassword, UserState.ACTIVE)
+            userBoundary.createUser(systemUserName, systemPassword, UserState.ACTIVE, true)
         }
     }
 }
