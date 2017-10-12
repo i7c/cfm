@@ -50,6 +50,8 @@ class SystemInit : SmartLifecycle {
         val foundUser = userBoundary.findUserByName(systemUserName)
         if (foundUser == null) {
             userBoundary.createUser(systemUserName, systemPassword, UserState.ACTIVE, true)
+        } else if (!foundUser.systemUser) {
+            userBoundary.promoteToSystemUser(foundUser)
         }
     }
 }

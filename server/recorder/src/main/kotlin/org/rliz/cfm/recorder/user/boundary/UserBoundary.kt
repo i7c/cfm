@@ -28,4 +28,9 @@ class UserBoundary {
 
     fun findUserByName(name: String): User? = userRepo.findOneByName(name)
 
+    fun promoteToSystemUser(user: User): User {
+        user.systemUser = true;
+        return userRepo.save(user)
+    }
+
 }
