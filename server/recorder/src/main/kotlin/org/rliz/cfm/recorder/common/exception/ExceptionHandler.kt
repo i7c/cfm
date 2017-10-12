@@ -14,4 +14,7 @@ class ExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException::class)
     fun accessDenied(e: AccessDeniedException): ResponseEntity<String> = e.toRes(HttpStatus.FORBIDDEN)
+
+    @ExceptionHandler
+    fun defaultHandler(e: Exception): ResponseEntity<String> = e.toRes(HttpStatus.BAD_REQUEST)
 }
