@@ -18,13 +18,15 @@ class User : AbstractModel {
     @Enumerated(value = EnumType.STRING)
     var state: UserState? = null
 
+    var systemUser: Boolean = false
 
     constructor() : super()
 
-    constructor(name: String, password: String, state: UserState) : this() {
+    constructor(name: String, password: String, state: UserState, systemUser: Boolean) : this() {
         this.name = name
         this.password = password
         this.state = state
+        this.systemUser = systemUser
     }
 
 }

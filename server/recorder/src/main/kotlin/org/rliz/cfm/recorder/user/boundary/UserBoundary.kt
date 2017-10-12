@@ -20,8 +20,8 @@ class UserBoundary {
 
     private val encoder = BCryptPasswordEncoder()
 
-    fun createUser(name: String, password: String, state: UserState): User {
-        val user = User(name, encoder.encode(password), state)
+    fun createUser(name: String, password: String, state: UserState, systemUser: Boolean = false): User {
+        val user = User(name, encoder.encode(password), state, systemUser)
         user.uuid = idgen.generateId()
         return userRepo.save(user)
     }

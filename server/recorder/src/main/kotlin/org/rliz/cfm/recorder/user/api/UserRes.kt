@@ -9,6 +9,7 @@ data class UserRes(
         @field:NotNull @field:Size(min = 3, max = 128) val name: String? = null,
         @field:NotNull @field:Size(min = 8, max = 128) val password: String? = null,
         val state: UserState? = UserState.INACTIVE,
-        val uuid: UUID? = null
+        val uuid: UUID? = null,
+        val systemUser: Boolean = false
 )
 

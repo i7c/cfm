@@ -9,5 +9,6 @@ fun User.toRes(status: HttpStatus): ResponseEntity<UserRes> =
                 name = this.name,
                 password = null,
                 state = this.state,
-                uuid = this.uuid
+                uuid = this.uuid,
+                systemUser = this.systemUser
         ), status)
