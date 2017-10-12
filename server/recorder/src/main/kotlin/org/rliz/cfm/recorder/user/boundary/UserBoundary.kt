@@ -4,9 +4,9 @@ import org.rliz.cfm.recorder.user.data.User
 import org.rliz.cfm.recorder.user.data.UserRepo
 import org.rliz.cfm.recorder.user.data.UserState
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.util.IdGenerator
-import java.util.*
 
 
 @Service
@@ -18,8 +18,10 @@ class UserBoundary {
     @Autowired
     lateinit var idgen: IdGenerator
 
+    private val encoder = BCryptPasswordEncoder()
+
     fun createUser(name: String, password: String, state: UserState): User {
-        val user = User(name, password, state)
+        val user = User(name, encoder.encode(password), state)
         user.uuid = idgen.generateId()
         return userRepo.save(user)
     }
