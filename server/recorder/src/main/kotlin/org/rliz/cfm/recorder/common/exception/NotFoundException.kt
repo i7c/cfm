@@ -6,6 +6,6 @@ import kotlin.reflect.KClass
 class NotFoundException : RuntimeException {
 
     constructor(clazz: KClass<*> = AbstractModel::class, specifier: Any = "id")
-        : super("Could not find ${clazz.qualifiedName} identified by $specifier")
+        : super("Could not find ${clazz.simpleName} identified by $specifier")
 
 }
