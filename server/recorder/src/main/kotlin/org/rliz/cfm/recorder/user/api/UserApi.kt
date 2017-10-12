@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(path = arrayOf("/rec/v1/user"))
+@RequestMapping(path = arrayOf("/rec/v1/users"))
 class UserApi {
 
     @Autowired
