@@ -5,10 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.util.*
 import javax.validation.Valid
 
 @RestController
@@ -25,6 +23,13 @@ class UserApi {
             password = body.password!!,
             state = body.state!!
     ).toRes(HttpStatus.OK)
+
+    @Transactional(readOnly = true)
+    @RequestMapping(path = arrayOf("/current", "/{uuid}"))
+    fun getUser(@PathVariable(name = "uuid", required = false) uuid: UUID?): ResponseEntity<UserRes> =
+            (uuid?.let { userBoundary.getUser(uuid) }
+                    ?: userBoundary.getCurrentUser())
+                    .toRes(HttpStatus.OK)
 
 }
 
