@@ -1,6 +1,7 @@
 package org.rliz.cfm.recorder.common.security
 
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
+import org.rliz.cfm.recorder.user.data.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
@@ -34,8 +35,7 @@ class CfmAuthProvider : AuthenticationProvider {
     private fun regularUserLogin(name: String, password: String): Authentication {
         userBoundary.findUserByName(name)?.let {
             if (encoder.matches(password, it.password)) {
-                return UsernamePasswordAuthenticationToken(it, "removed",
-                        listOf(SimpleGrantedAuthority("ROLE_USER")))
+                return UsernamePasswordAuthenticationToken(it, "removed", determineRoles(it))
             }
         }
         throw BadCredentialsException("Bad credentials")
@@ -45,3 +45,6 @@ class CfmAuthProvider : AuthenticationProvider {
             authentication!!.isAssignableFrom(UsernamePasswordAuthenticationToken::class.java)
 
 }
+
+fun determineRoles(u: User) = (if (u.systemUser) listOf(SimpleGrantedAuthority("ROLE_ADMIN")) else emptyList())
+        .plus(SimpleGrantedAuthority("ROLE_USER"))
