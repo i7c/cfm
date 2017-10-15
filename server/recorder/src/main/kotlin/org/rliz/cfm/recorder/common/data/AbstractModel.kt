@@ -14,4 +14,10 @@ open class AbstractModel {
 
     @Column(nullable = false)
     var uuid: UUID? = null
+
+    constructor()
+
+    constructor(uuid: UUID) {
+        this.uuid = uuid
+    }
 }

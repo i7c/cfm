@@ -26,8 +26,7 @@ class UserBoundary {
 
     @AdminAuth
     fun createUser(name: String, password: String, state: UserState, systemUser: Boolean = false): User {
-        val user = User(name, encoder.encode(password), state, systemUser)
-        user.uuid = idgen.generateId()
+        val user = User(idgen.generateId(), name, encoder.encode(password), state, systemUser)
         return userRepo.save(user)
     }
 

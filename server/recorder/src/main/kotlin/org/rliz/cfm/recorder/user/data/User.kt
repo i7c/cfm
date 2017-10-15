@@ -1,6 +1,7 @@
 package org.rliz.cfm.recorder.user.data
 
 import org.rliz.cfm.recorder.common.data.AbstractModel
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -22,7 +23,7 @@ class User : AbstractModel {
 
     constructor() : super()
 
-    constructor(name: String, password: String, state: UserState, systemUser: Boolean) : this() {
+    constructor(uuid: UUID, name: String, password: String, state: UserState, systemUser: Boolean) : super(uuid) {
         this.name = name
         this.password = password
         this.state = state
