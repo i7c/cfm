@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(name = "cfm_user",
         uniqueConstraints = arrayOf(UniqueConstraint(name = "UC_User_name", columnNames = arrayOf("name")))
 )
-class User : AbstractModel {
+open class User : AbstractModel {
 
     @Column(length = 128, nullable = false)
     var name: String? = null
