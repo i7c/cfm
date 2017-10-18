@@ -20,21 +20,16 @@ class ArtistBoundary {
                         .map { (it.uuid ?: throw InvalidResourceException(Artist::uuid)) to it }
                         .toMap()
 
-        return artists.map { it to storedArtists[it.uuid] }.map {
-            if (it.second == null) {
-                it.first
-            } else {
-                val new: Artist = it.first
-                val existing: Artist = it.second!!
-
-                if (existing.lastUpdated!!.before(new.lastUpdated)) {
+        return artists.map { it to storedArtists[it.uuid] }.mapNotNull { (new, existing) ->
+            when {
+                existing == null -> new
+                existing.lastUpdated!!.before(new.lastUpdated) -> {
                     existing.name = new.name
                     existing.lastUpdated = new.lastUpdated
                     existing
-                } else {
-                    null
                 }
+                else -> null
             }
-        }.filterNotNull().toList().let { artistRepo.save(it) }
+        }.toList().let { artistRepo.save(it) }
     }
 }
