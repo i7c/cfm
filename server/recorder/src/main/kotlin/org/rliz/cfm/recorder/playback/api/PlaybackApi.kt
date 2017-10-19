@@ -1,7 +1,7 @@
 package org.rliz.cfm.recorder.playback.api
 
 import org.rliz.cfm.recorder.playback.boundary.PlaybackBoundary
-import org.rliz.cfm.recorder.playback.trans.toRes
+import org.rliz.cfm.recorder.playback.trans.toHttpResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,6 +31,6 @@ class PlaybackApi {
                     discNumber = body.discNumber,
                     trackNumber = body.trackNumber,
                     playbackTimestamp = body.timestamp
-            ).toRes(HttpStatus.CREATED)
+            ).toHttpResponse(HttpStatus.CREATED)
 }
 

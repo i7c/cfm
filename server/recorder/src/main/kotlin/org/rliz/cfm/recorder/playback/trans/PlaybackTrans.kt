@@ -6,7 +6,9 @@ import org.rliz.cfm.recorder.playback.data.Playback
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
-fun Playback.toRes(status: HttpStatus) = ResponseEntity<PlaybackRes>(
+fun Playback.toHttpResponse(status: HttpStatus) = ResponseEntity<PlaybackRes>(this.toRes(), status)
+
+private fun Playback.toRes(): PlaybackRes =
         PlaybackRes(
                 artists = if (this.recording != null)
                     this.recording!!.artists!!.mapNotNull(Artist::name).toList()
@@ -33,5 +35,5 @@ fun Playback.toRes(status: HttpStatus) = ResponseEntity<PlaybackRes>(
 
                 discNumber = this.originalData!!.discNumber,
                 trackNumber = this.originalData!!.trackNumber,
-                broken = (this.recording == null || this.releaseGroup == null)),
-        status)
+                broken = (this.recording == null || this.releaseGroup == null)
+        )
