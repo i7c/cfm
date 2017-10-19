@@ -49,9 +49,9 @@ class SystemInit : SmartLifecycle {
     private fun systemUserInit() {
         val foundUser = userBoundary.findUserByName(systemUserName)
         if (foundUser == null) {
-            userBoundary.createUser(systemUserName, systemPassword, UserState.ACTIVE, true)
+            userBoundary.createUserNoAuthCheck(systemUserName, systemPassword, UserState.ACTIVE, true)
         } else if (!foundUser.systemUser) {
-            userBoundary.promoteToSystemUser(foundUser)
+            userBoundary.promoteToSystemUserNoAuthCheck(foundUser)
         }
     }
 }

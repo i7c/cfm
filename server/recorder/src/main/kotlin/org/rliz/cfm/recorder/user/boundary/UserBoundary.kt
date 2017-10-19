@@ -43,4 +43,17 @@ class UserBoundary {
     fun getUser(uuid: UUID): User = findUser(uuid) ?: throw NotFoundException(User::class, "uuid $uuid")
 
     fun getCurrentUser(): User = findUser(currentUser().uuid!!) ?: throw NotFoundException(User::class, "self")
+
+    /**
+     * Same as createUser() but does not check any authorization.
+     * Use with care and only if you are certain that the calling piece of code is authorized.
+     */
+    fun createUserNoAuthCheck(name: String, password: String, state: UserState, systemUser: Boolean = false): User =
+            createUser(name, password, state, systemUser)
+
+    /**
+     * Same as promoteToSystemUser() but does not check any authorization.
+     * Use with care and only if you are certain that the calling piece of code is authorized.
+     */
+    fun promoteToSystemUserNoAuthCheck(user: User): User = this.promoteToSystemUser(user)
 }
