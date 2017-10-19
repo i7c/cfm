@@ -26,7 +26,7 @@ class Recording : AbstractModel {
 
     constructor() : super()
 
-    constructor(uuid: UUID, title: String, lastUpdated: Date, artists: List<Artist>?) : super(uuid) {
+    constructor(uuid: UUID, title: String, lastUpdated: Date, artists: List<Artist>) : super(uuid) {
         this.title = title
         this.lastUpdated = lastUpdated
         this.artists = artists
