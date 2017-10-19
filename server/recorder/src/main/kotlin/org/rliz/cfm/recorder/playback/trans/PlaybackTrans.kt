@@ -25,7 +25,12 @@ fun Playback.toRes(status: HttpStatus) = ResponseEntity<PlaybackRes>(
 
                 timestamp = this.timestamp,
                 playTime = this.playTime,
-                trackLength = this.originalData!!.length,
+
+                trackLength = if (this.recording != null)
+                    this.recording!!.length
+                else
+                    this.originalData!!.length,
+
                 discNumber = this.originalData!!.discNumber,
                 trackNumber = this.originalData!!.trackNumber,
                 broken = (this.recording == null || this.releaseGroup == null)),

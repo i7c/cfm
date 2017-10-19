@@ -49,7 +49,8 @@ fun MbsRecordingDto.toEntity(artists: List<Artist> = this.artists.map(MbsArtistD
                 uuid = this.identifier,
                 title = this.name,
                 lastUpdated = this.lastUpdated,
-                artists = artists
+                artists = artists,
+                length = this.length
         )
 
 fun MbsReleaseGroupDto.toEntity(artists: List<Artist> = this.artists.map(MbsArtistDto::toEntity)): ReleaseGroup =
