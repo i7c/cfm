@@ -8,6 +8,8 @@ import org.rliz.cfm.recorder.playback.data.RawPlaybackData
 import org.rliz.cfm.recorder.playback.data.RawPlaybackDataRepo
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.util.IdGenerator
 import java.time.Instant
@@ -64,4 +66,7 @@ class PlaybackBoundary {
         }
         return playbackRepo.save(playback)
     }
+
+    fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<Playback> =
+            playbackRepo.findPlaybacksForUser(userId, pageable)
 }

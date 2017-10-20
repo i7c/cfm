@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity
 
 fun Playback.toHttpResponse(status: HttpStatus) = ResponseEntity<PlaybackRes>(this.toRes(), status)
 
-private fun Playback.toRes(): PlaybackRes =
+fun Playback.toRes(): PlaybackRes =
         PlaybackRes(
                 artists = if (this.recording != null)
                     this.recording!!.artists!!.mapNotNull(Artist::name).toList()
