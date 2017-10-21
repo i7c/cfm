@@ -61,8 +61,8 @@ class PlaybackBoundary {
             playback.recording = recording
             playback.releaseGroup = releaseGroup
         } catch (e: MbsLookupFailedException) {
-            log.error("Failed to contact MBS. Recording information could not be retrieved.")
-            log.error(e.message)
+            log.info("Failed to lookup details via mbs service for new playback")
+            log.debug("Causing exception for failed lookup during create playback", e)
         }
         return playbackRepo.save(playback)
     }
