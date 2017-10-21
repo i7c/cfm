@@ -30,7 +30,7 @@ class ArtistBoundary {
                     existing.lastUpdated = new.lastUpdated
                     existing
                 }
-                else -> null
+                else -> existing
             }
         }.toList().let { artistRepo.save(it) }
     }
