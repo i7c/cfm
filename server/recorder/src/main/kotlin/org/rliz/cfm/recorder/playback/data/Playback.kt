@@ -18,8 +18,7 @@ open class Playback : AbstractModel {
     var user: User? = null
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    var timestamp: Date? = null
+    var timestamp: Long? = null
 
     var playTime: Long? = null
 
@@ -37,7 +36,7 @@ open class Playback : AbstractModel {
 
     constructor() : super()
 
-    constructor(uuid: UUID, user: User?, timestamp: Date? = Date.from(Instant.now()), playTime: Long? = null,
+    constructor(uuid: UUID, user: User?, timestamp: Long? = Instant.now().epochSecond, playTime: Long? = null,
                 originalData: RawPlaybackData? = null, recording: Recording? = null,
                 releaseGroup: ReleaseGroup? = null) : super(uuid) {
         this.user = user

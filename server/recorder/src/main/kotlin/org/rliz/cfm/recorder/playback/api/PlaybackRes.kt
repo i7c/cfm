@@ -8,7 +8,7 @@ data class PlaybackRes(
         @field:NotNull @field:Size(min = 1) val artists: List<String> = emptyList(),
         @field:NotNull @field:Size(min = 1) val recordingTitle: String = "",
         @field:NotNull @field:Size(min = 1) val releaseTitle: String = "",
-        val timestamp: Date? = null,
+        val timestamp: Long? = null,
         val playTime: Long? = null,
         val trackLength: Long? = null,
         val discNumber: Int? = null,
