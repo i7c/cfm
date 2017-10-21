@@ -13,9 +13,7 @@ class ReleaseGroup : AbstractModel {
     @Column(length = 511, nullable = false)
     var title: String? = null
 
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    var lastUpdated: Date? = null
+    var lastUpdated: Long? = null
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(foreignKey = ForeignKey(name = "FK_ReleaseGroup_Artists"),
@@ -24,7 +22,7 @@ class ReleaseGroup : AbstractModel {
 
     constructor() : super()
 
-    constructor(uuid: UUID, title: String, lastUpdated: Date, artists: List<Artist>) : super(uuid) {
+    constructor(uuid: UUID, title: String, lastUpdated: Long?, artists: List<Artist>) : super(uuid) {
         this.title = title
         this.lastUpdated = lastUpdated
         this.artists = artists

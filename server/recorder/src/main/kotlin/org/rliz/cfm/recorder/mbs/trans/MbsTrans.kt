@@ -16,7 +16,7 @@ fun MbsIdentifyRes.toDto(): MbsIdentifyDto =
 
 fun MbsRecordingRes.toDto(): MbsRecordingDto = MbsRecordingDto(
         identifier = nonNullField(this::identifier),
-        lastUpdated = nonNullField(this::lastUpdated),
+        lastUpdated = this.lastUpdated,
         length = nonNullField(this::length),
         name = nonNullField(this::name),
         comment = this.comment,
@@ -25,7 +25,7 @@ fun MbsRecordingRes.toDto(): MbsRecordingDto = MbsRecordingDto(
 
 fun MbsReleaseGroupRes.toDto(): MbsReleaseGroupDto = MbsReleaseGroupDto(
         identifier = nonNullField(this::identifier),
-        lastUpdated = nonNullField(this::lastUpdated),
+        lastUpdated = this.lastUpdated,
         comment = this.comment,
         name = nonNullField(this::name),
         artists = nonEmptyCollection(this::artists).map(MbsArtistRes::toDto)
@@ -39,7 +39,7 @@ fun MbsArtistRes.toDto(): MbsArtistDto = MbsArtistDto(
         identifier = nonNullField(this::identifier),
         sortName = this.sortName,
         beginDateYear = this.beginDateYear,
-        lastUpdated = nonNullField(this::lastUpdated),
+        lastUpdated = this.lastUpdated,
         areaName = this.areaName
 )
 

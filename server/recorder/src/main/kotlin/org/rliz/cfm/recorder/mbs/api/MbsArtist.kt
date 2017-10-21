@@ -10,7 +10,7 @@ data class MbsArtistRes(
         val identifier: UUID? = null,
         val sortName: String? = null,
         val beginDateYear: Int? = null,
-        val lastUpdated: Date? = null,
+        val lastUpdated: Long? = null,
         val areaName: String? = null
 )
 
@@ -22,6 +22,6 @@ data class MbsArtistDto(
         val identifier: UUID,
         val sortName: String? = null,
         val beginDateYear: Int? = null,
-        val lastUpdated: Date,
+        val lastUpdated: Long?,
         val areaName: String? = null
 )

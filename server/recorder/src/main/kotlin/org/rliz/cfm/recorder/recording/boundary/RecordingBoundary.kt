@@ -24,12 +24,16 @@ class RecordingBoundary {
                     .let { existing ->
                         when {
                             existing == null -> recordingRepo.save(new)
-                            existing.lastUpdated!!.before(new.lastUpdated) -> {
+
+                            (existing.lastUpdated == null && new.lastUpdated != null)
+                                    || (existing.lastUpdated != null && new.lastUpdated != null
+                                    && new.lastUpdated!! > existing.lastUpdated!!) -> {
                                 existing.artists = new.artists
                                 existing.title = new.title
                                 existing.lastUpdated = new.lastUpdated
                                 recordingRepo.save(existing)
                             }
+
                             else -> existing
                         }
                     }

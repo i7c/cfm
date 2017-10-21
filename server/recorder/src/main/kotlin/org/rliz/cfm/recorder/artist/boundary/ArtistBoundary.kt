@@ -23,7 +23,9 @@ class ArtistBoundary {
         return artists.map { it to storedArtists[it.uuid] }.mapNotNull { (new, existing) ->
             when {
                 existing == null -> new
-                existing.lastUpdated!!.before(new.lastUpdated) -> {
+                (existing.lastUpdated == null && new.lastUpdated != null)
+                        || (existing.lastUpdated != null && new.lastUpdated != null
+                        && new.lastUpdated!! > existing.lastUpdated!!) -> {
                     existing.name = new.name
                     existing.lastUpdated = new.lastUpdated
                     existing

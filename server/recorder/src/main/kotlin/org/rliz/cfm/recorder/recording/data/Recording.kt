@@ -14,9 +14,7 @@ class Recording : AbstractModel {
     @Column(length = 512, nullable = false)
     var title: String? = null
 
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    var lastUpdated: Date? = null
+    var lastUpdated: Long? = null
 
     @Size(min = 1)
     @ManyToMany(fetch = FetchType.LAZY)
@@ -29,7 +27,7 @@ class Recording : AbstractModel {
 
     constructor() : super()
 
-    constructor(uuid: UUID, title: String, lastUpdated: Date, artists: List<Artist>, length: Long) : super(uuid) {
+    constructor(uuid: UUID, title: String, lastUpdated: Long?, artists: List<Artist>, length: Long) : super(uuid) {
         this.title = title
         this.lastUpdated = lastUpdated
         this.artists = artists

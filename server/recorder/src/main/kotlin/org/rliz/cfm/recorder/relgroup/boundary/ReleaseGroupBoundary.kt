@@ -18,12 +18,16 @@ class ReleaseGroupBoundary {
                     .let { existing ->
                         when {
                             existing == null -> releaseGroupRepo.save(new)
-                            existing.lastUpdated!!.before(new.lastUpdated) -> {
+
+                            (existing.lastUpdated == null && new.lastUpdated != null)
+                                    || (existing.lastUpdated != null && new.lastUpdated != null
+                                    && new.lastUpdated!! > existing.lastUpdated!!) -> {
                                 existing.artists = new.artists
                                 existing.title = new.title
                                 existing.lastUpdated = new.lastUpdated
                                 releaseGroupRepo.save(existing)
                             }
+
                             else -> existing
                         }
                     }

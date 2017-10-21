@@ -15,13 +15,11 @@ class Artist : AbstractModel {
     @Size(min = 1)
     var name: String? = null
 
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    var lastUpdated: Date? = null
+    var lastUpdated: Long? = null
 
     constructor() : super()
 
-    constructor(uuid: UUID, name: String, lastUpdated: Date) : super(uuid) {
+    constructor(uuid: UUID, name: String, lastUpdated: Long?) : super(uuid) {
         this.name = name
         this.lastUpdated = lastUpdated
     }

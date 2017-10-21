@@ -4,7 +4,7 @@ import java.util.*
 
 data class MbsReleaseGroupRes(
         val identifier: UUID? = null,
-        val lastUpdated: Date? = null,
+        val lastUpdated: Long? = null,
         val comment: String? = null,
         val name: String? = null,
         val artists: List<MbsArtistRes>? = null
@@ -12,7 +12,7 @@ data class MbsReleaseGroupRes(
 
 data class MbsReleaseGroupDto(
         val identifier: UUID,
-        val lastUpdated: Date,
+        val lastUpdated: Long?,
         val comment: String? = null,
         val name: String,
         val artists: List<MbsArtistDto>

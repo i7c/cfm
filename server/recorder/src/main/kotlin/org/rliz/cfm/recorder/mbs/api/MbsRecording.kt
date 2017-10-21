@@ -4,7 +4,7 @@ import java.util.*
 
 data class MbsRecordingRes(
         val identifier: UUID? = null,
-        val lastUpdated: Date? = null,
+        val lastUpdated: Long? = null,
         val length: Long? = null,
         val name: String? = null,
         val comment: String? = null,
@@ -13,7 +13,7 @@ data class MbsRecordingRes(
 
 data class MbsRecordingDto(
         val identifier: UUID,
-        val lastUpdated: Date,
+        val lastUpdated: Long?,
         val length: Long,
         val name: String,
         val comment: String? = null,
