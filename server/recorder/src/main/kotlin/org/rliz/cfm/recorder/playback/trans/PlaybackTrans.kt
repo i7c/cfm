@@ -35,5 +35,6 @@ fun Playback.toRes(): PlaybackRes =
 
                 discNumber = this.originalData!!.discNumber,
                 trackNumber = this.originalData!!.trackNumber,
-                broken = (this.recording == null || this.releaseGroup == null)
+                broken = (this.recording == null || this.releaseGroup == null),
+                id = this.uuid
         )

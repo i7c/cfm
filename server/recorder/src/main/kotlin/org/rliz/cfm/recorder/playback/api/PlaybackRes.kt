@@ -13,5 +13,6 @@ data class PlaybackRes(
         val trackLength: Long? = null,
         val discNumber: Int? = null,
         val trackNumber: Int? = null,
-        val broken: Boolean? = null
+        val broken: Boolean? = null,
+        val id: UUID? = null
 )
