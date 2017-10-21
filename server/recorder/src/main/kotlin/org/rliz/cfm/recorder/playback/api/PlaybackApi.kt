@@ -37,6 +37,22 @@ class PlaybackApi {
                     playbackTimestamp = body.timestamp
             ).toHttpResponse(HttpStatus.CREATED)
 
+    @Transactional
+    @RequestMapping(method = arrayOf(RequestMethod.PATCH), path = arrayOf("/{playbackId}"))
+    fun patchPlayback(@PathVariable(name = "playbackId", required = true) playbackId: UUID,
+                      @RequestParam(name = "skipMbs", required = false) skipMbs: Boolean?,
+                      @RequestBody body: PatchPlaybackRes): ResponseEntity<PlaybackRes> =
+            playbackBoundary.updatePlayback(playbackId,
+                    skipMbs ?: false,
+                    artists = body.artists,
+                    recordingTitle = body.recordingTitle,
+                    releaseTitle = body.releaseTitle,
+                    trackLength = body.trackLength,
+                    playTime = body.playTime,
+                    discNumber = body.discNumber,
+                    trackNumber = body.trackNumber,
+                    playbackTimestamp = body.timestamp
+            ).toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))

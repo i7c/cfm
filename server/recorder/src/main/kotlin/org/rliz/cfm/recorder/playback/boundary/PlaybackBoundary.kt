@@ -1,7 +1,9 @@
 package org.rliz.cfm.recorder.playback.boundary
 
 import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
+import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.log.logger
+import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.Playback
 import org.rliz.cfm.recorder.playback.data.PlaybackRepo
 import org.rliz.cfm.recorder.playback.data.RawPlaybackData
@@ -69,4 +71,46 @@ class PlaybackBoundary {
 
     fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<Playback> =
             playbackRepo.findPlaybacksForUser(userId, pageable)
+
+    fun updatePlayback(playbackId: UUID,
+                       skipMbs: Boolean,
+                       artists: List<String>? = null,
+                       recordingTitle: String? = null,
+                       releaseTitle: String? = null,
+                       trackLength: Long? = null,
+                       playTime: Long? = null,
+                       discNumber: Int? = null,
+                       trackNumber: Int? = null,
+                       playbackTimestamp: Long? = null): Playback {
+
+        val playback = playbackRepo.findOneByUuid(playbackId) ?: throw NotFoundException(Playback::class)
+        demandOwnership(playback)
+
+        if (artists != null) playback.originalData!!.artists = artists
+        if (recordingTitle != null) playback.originalData!!.recordingTitle = recordingTitle
+        if (releaseTitle != null) playback.originalData!!.releaseTitle = releaseTitle
+        if (trackLength != null) playback.originalData!!.length = trackLength
+        if (playTime != null) playback.playTime = playTime
+        if (discNumber != null) playback.originalData!!.discNumber = discNumber
+        if (trackNumber != null) playback.originalData!!.trackNumber = trackNumber
+        if (playbackTimestamp != null) playback.timestamp = playbackTimestamp
+
+        // Detect mbs details again, if not skipped
+        if (!skipMbs) {
+            try {
+                val (recording, releaseGroup) =
+                        playbackIdentifier.identify(playback.originalData!!.recordingTitle!!,
+                                playback.originalData!!.releaseTitle!!, playback.originalData!!.artists!!)
+                playback.recording = recording
+                playback.releaseGroup = releaseGroup
+            } catch (e: MbsLookupFailedException) {
+                log.info("Failed to lookup details via mbs service during PATCH; Fallback to broken playback")
+                log.debug("Causing issue for failed lookup was", e)
+                playback.recording = null
+                playback.releaseGroup = null
+            }
+        }
+        playback.originalData = rawPlaybackDataRepo.save(playback.originalData)
+        return playbackRepo.save(playback)
+    }
 }
