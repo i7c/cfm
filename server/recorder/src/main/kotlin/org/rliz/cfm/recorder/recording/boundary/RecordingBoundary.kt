@@ -19,18 +19,18 @@ class RecordingBoundary {
 
     private fun findRecording(uuid: UUID): Recording? = recordingRepo.findOneByUuid(uuid)
 
-    fun saveOrUpdate(recording: Recording): Recording =
-            findRecording(recording.uuid ?: throw InvalidResourceException(Recording::uuid))
-                    .let {
+    fun saveOrUpdate(new: Recording): Recording =
+            findRecording(new.uuid ?: throw InvalidResourceException(Recording::uuid))
+                    .let { existing ->
                         when {
-                            it == null -> recordingRepo.save(recording)
-                            it.lastUpdated!!.before(recording.lastUpdated) -> {
-                                it.artists = recording.artists
-                                it.title = recording.title
-                                it.lastUpdated = recording.lastUpdated
-                                recordingRepo.save(it)
+                            existing == null -> recordingRepo.save(new)
+                            existing.lastUpdated!!.before(new.lastUpdated) -> {
+                                existing.artists = new.artists
+                                existing.title = new.title
+                                existing.lastUpdated = new.lastUpdated
+                                recordingRepo.save(existing)
                             }
-                            else -> it
+                            else -> existing
                         }
                     }
 }

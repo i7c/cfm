@@ -13,18 +13,18 @@ class ReleaseGroupBoundary {
     @Autowired
     lateinit var releaseGroupRepo: ReleaseGroupRepo
 
-    fun saveOrUpdate(rg: ReleaseGroup): ReleaseGroup =
-            findReleaseGroup(rg.uuid ?: throw InvalidResourceException(ReleaseGroup::uuid))
-                    .let {
+    fun saveOrUpdate(new: ReleaseGroup): ReleaseGroup =
+            findReleaseGroup(new.uuid ?: throw InvalidResourceException(ReleaseGroup::uuid))
+                    .let { existing ->
                         when {
-                            it == null -> releaseGroupRepo.save(rg)
-                            it.lastUpdated!!.before(rg.lastUpdated) -> {
-                                it.artists = rg.artists
-                                it.title = rg.title
-                                it.lastUpdated = rg.lastUpdated
-                                releaseGroupRepo.save(it)
+                            existing == null -> releaseGroupRepo.save(new)
+                            existing.lastUpdated!!.before(new.lastUpdated) -> {
+                                existing.artists = new.artists
+                                existing.title = new.title
+                                existing.lastUpdated = new.lastUpdated
+                                releaseGroupRepo.save(existing)
                             }
-                            else -> it
+                            else -> existing
                         }
                     }
 
