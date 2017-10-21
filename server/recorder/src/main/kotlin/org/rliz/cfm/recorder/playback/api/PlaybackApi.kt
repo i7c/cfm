@@ -39,7 +39,7 @@ class PlaybackApi {
 
 
     @Transactional(readOnly = true)
-    @RequestMapping
+    @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun getPlaybacks(@RequestParam("userId", required = false) userUuid: UUID?,
                      pageable: Pageable): ResponseEntity<ListRes<Playback, PlaybackRes>> =
             playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, pageable)
