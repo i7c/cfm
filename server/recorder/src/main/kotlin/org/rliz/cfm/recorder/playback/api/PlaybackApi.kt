@@ -62,5 +62,11 @@ class PlaybackApi {
                     .toRes(Playback::toRes)
                     .toHttpResponse(HttpStatus.OK)
 
+    @Transactional(readOnly = true)
+    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/{playbackId}"))
+    fun getPlayback(@PathVariable("playbackId") playbackId: UUID): ResponseEntity<PlaybackRes> =
+            playbackBoundary.getPlayback(playbackId)
+                    .toHttpResponse(HttpStatus.OK)
+
 }
 

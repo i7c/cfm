@@ -113,4 +113,9 @@ class PlaybackBoundary {
         playback.originalData = rawPlaybackDataRepo.save(playback.originalData)
         return playbackRepo.save(playback)
     }
+
+    fun getPlayback(playbackId: UUID): Playback =
+            findPlayback(playbackId) ?: throw NotFoundException(Playback::class)
+
+    fun findPlayback(playbackId: UUID): Playback? = playbackRepo.findOneByUuid(playbackId)
 }
