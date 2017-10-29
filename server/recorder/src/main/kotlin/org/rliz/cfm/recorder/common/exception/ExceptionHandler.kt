@@ -1,6 +1,7 @@
 package org.rliz.cfm.recorder.common.exception
 
 import org.rliz.cfm.recorder.common.log.logger
+import org.rliz.cfm.recorder.common.security.currentUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -15,7 +16,8 @@ class ExceptionHandler {
     }
 
     fun <E: Exception> logged(e: E): E {
-        log.info("Uncaught exception", e)
+        log.info("${e.message} [${currentUser()?.uuid}]")
+        log.debug("Uncaught exception", e)
         return e
     }
 
