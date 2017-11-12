@@ -7,6 +7,7 @@ use Log::Any qw($log);
 with 'Cfm::Singleton';
 
 use Config::Simple;
+use Getopt::Long qw/GetOptionsFromArray/;
 
 my @config_locations = (
     $ENV{'HOME'} . "/.cfm.conf",
@@ -18,18 +19,20 @@ my %conf_default = (
 
 );
 
-has conf => (is => 'rw');
-has options => (is => 'rw');
+has conf => (
+        is      => 'rw',
+        default => sub {+ {}},
+    );
 
 sub BUILD {
     my ($self, $args) = @_;
 
-    $self->options(+ {});
     for my $conf_file (@config_locations) {
         $log->debug("Try location " . $conf_file);
         if (-f $conf_file) {
             $log->info("Found config file: $conf_file");
-            $self->conf(Config::Simple->new($conf_file));
+            my %config = Config::Simple->new($conf_file)->vars;
+            $self->conf(\%config);
             return;
         }
     }
@@ -39,9 +42,7 @@ sub BUILD {
 sub get_option {
     my ($self, $option) = @_;
 
-    $self->options->{$option}
-        // do {$self->conf->param($option) if $self->conf;}
-        // $conf_default{$option};
+    $self->conf->{$option} // $conf_default{$option};
 }
 
 sub require_option {
