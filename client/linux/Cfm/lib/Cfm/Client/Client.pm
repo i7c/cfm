@@ -15,7 +15,7 @@ use URI;
 
 my $logger = Log::Log4perl->get_logger("cfm");
 
-has url => (is => 'ro');
+has url => (is => 'rw');
 has auth_user => (is => 'ro');
 has auth_pass => (is => 'ro');
 has headers => (is => 'rw');
@@ -26,14 +26,10 @@ sub BUILD {
 
     $logger->debug("Initialising generic HTTP client");
     my $headers = HTTP::Headers->new;
-    if (defined $args->{auth_user} && defined $args->{auth_pass}) {
-        $logger->debug("Auth header will be set with user " . $args->{auth_user});
-        $headers->authorization_basic($args->{auth_user}, $args->{auth_pass});
-    }
     $headers->content_type("application/json");
-    my $ua = LWP::UserAgent->new(default_headers => $headers);
-    $self->agent($ua);
     $self->headers($headers);
+    my $ua = LWP::UserAgent->new;
+    $self->agent($ua);
 }
 
 sub _generic_request {

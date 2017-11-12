@@ -1,16 +1,23 @@
 package Cfm::Client::CfmClient;
 
-use Moo;
 use strict;
 use warnings;
+use Moo;
+use Cfm::Autowire;
 
+
+with 'Cfm::Singleton';
 extends 'Cfm::Client::Client';
 
-sub create_playback {
-    my ($self, $create_playback) = @_;
+has config => singleton 'Cfm::Config';
 
-    my $response = $self->post_json("/rec/v1/playbacks", $create_playback->create_dto);
-    return Cfm::Playback->from_hash($response);
+sub BUILD {
+    my ($self, $args) = @_;
+
+    $self->url($self->config->require_option("url"));
+    my $user = $self->config->require_option("user");
+    my $pass = $self->config->require_option("pass");
+    $self->headers->authorization_basic($user, $pass);
 }
 
 sub my_playbacks {
