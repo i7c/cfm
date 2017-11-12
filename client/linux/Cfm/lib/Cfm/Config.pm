@@ -15,6 +15,9 @@ my @config_locations = (
     "/etc/cfm.conf"
 );
 
+my @cli_args = (
+);
+
 my %conf_default = (
 
 );
@@ -49,6 +52,20 @@ sub require_option {
     my ($self, $option) = @_;
 
     $self->get_option($option) or die $log->error("You must provide the $option option.");
+}
+
+sub add_flags {
+    my ($self, $args) = @_;
+    my %options;
+
+    $log->debug("seen input: " . join " ", $args->@*);
+    $log->info("parsing flags");
+    GetOptionsFromArray($args, \%options, @cli_args);
+    $log->debug("remaining input: " . join " ", $args->@*);
+
+    map {
+        $self->conf->{$_} = $options{$_};
+    } keys %options;
 }
 
 1;
