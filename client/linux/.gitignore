@@ -1,5 +1,4 @@
 .idea
-linux.iml
 fatlib
 Cfm/MYMETA.json
 Cfm/MYMETA.yml
@@ -7,3 +6,4 @@ Cfm/Makefile
 Cfm/Makefile.old
 Cfm/blib
 Cfm/pm_to_blib
+Cfm/Cfm.iml
