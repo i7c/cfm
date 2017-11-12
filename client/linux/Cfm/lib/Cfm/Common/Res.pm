@@ -60,4 +60,8 @@ sub _field_mapping {
     }
 }
 
+sub _ds_boolean {
+    $_[0] + 0
+}
+
 1;

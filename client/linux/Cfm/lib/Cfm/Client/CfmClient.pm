@@ -5,6 +5,9 @@ use warnings;
 use Moo;
 use Cfm::Autowire;
 
+use Cfm::Config;
+use Cfm::Common::ListRes;
+use Cfm::Playback::Playback;
 
 with 'Cfm::Singleton';
 extends 'Cfm::Client::Client';
@@ -24,35 +27,13 @@ sub my_playbacks {
     my ($self, $only_broken, $page) = @_;
 
     my @params = ();
-    if ($only_broken) {
-        push @params, onlyBroken => "true";
-    }
-    if ($page > 0) {
-        push @params, page => $page;
-    }
+    push @params, onlyBroken => "true" if ($only_broken);
+    push @params, page => $page if $page > 0;
 
-    my $response = $self->get_json("/rec/v1/playbacks", \@params);
-    return  Cfm::PlaybackList->from_hash($response);
-}
-
-sub fix_playback {
-    my ($self, $uuid, $create_playback, $auto) = @_;
-
-    my $playback;
-    if ($auto) {
-        $playback = $self->patch_json("/rec/v1/playbacks/$uuid", +{}, [ auto => "true" ]);
-    } else {
-        $playback = $self->patch_json("/rec/v1/playbacks/$uuid", $create_playback->_to_hash);
-    }
-    return Cfm::Playback->from_hash($playback);
-}
-
-sub create_invite {
-    my ($self) = @_;
-
-    my $params = ();
-    my $response = $self->post_json("/rec/v1/invites", +{}, $params);
-    return Cfm::Dto::Invite->from_hash($response);
+    Cfm::Common::ListRes->from_hash($self->get_json("/rec/v1/playbacks", \@params),
+        sub {
+            Cfm::Playback::Playback->from_hash($_);
+        });
 }
 
 1;
