@@ -2,17 +2,20 @@ package Cfm::Ui::Cli;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
-use Cfm::Autowire;
 use Log::Any qw($log);
 
+use Cfm::Autowire;
 use Cfm::Config;
 use Cfm::Playback::PlaybackService;
+use Cfm::Ui::Format::Formatter;
 
 my %command_mapping = (
+    list => \&cmd_list,
 );
 
 has config => singleton 'Cfm::Config';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
+has formatter => singleton 'Cfm::Ui::Format::Formatter';
 
 sub run {
     my ($self) = @_;
@@ -43,6 +46,15 @@ sub greedy_match_command {
     } else {
         die $log->error("No such command " . (join "-", $command->@*));
     }
+}
+
+### Commands ###
+
+sub cmd_list {
+    my ($self) = @_;
+
+    my $playbacks = $self->playback_service->my_playbacks(0);
+    $self->formatter->playback_list($playbacks);
 }
 
 1;
