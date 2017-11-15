@@ -1,8 +1,8 @@
 #!/bin/env perl
 use warnings FATAL => 'all';
 use strict;
-use Cfm::Cli;
 use Cfm::Common::Logging;
+use Cfm::Ui::Cli;
 
 binmode STDOUT, ":utf8";
 
@@ -17,7 +17,6 @@ $logger->info('
 '
 );
 $logger->info("Starting CLI ...");
-my $cli = Cfm::Cli->new;
-$cli->run;
+Cfm::Ui::Cli->new()->run();
 $logger->info("Application is terminating normally.");
 exit 0;
