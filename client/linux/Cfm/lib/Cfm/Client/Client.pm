@@ -3,7 +3,7 @@ package Cfm::Client::Client;
 use strict;
 use warnings;
 use Moo;
-use Log::Log4perl;
+use Log::Any qw/$log/;
 
 use LWP::UserAgent;
 use HTTP::Headers;
@@ -12,8 +12,6 @@ use Carp;
 use JSON;
 use Data::Dumper;
 use URI;
-
-my $logger = Log::Log4perl->get_logger("cfm");
 
 has url => (is => 'rw');
 has auth_user => (is => 'ro');
@@ -24,7 +22,7 @@ has agent => (is => 'rw');
 sub BUILD {
     my ($self, $args) = @_;
 
-    $logger->debug("Initialising generic HTTP client");
+    $log->debug("Initialising generic HTTP client");
     my $headers = HTTP::Headers->new;
     $headers->content_type("application/json");
     $self->headers($headers);
@@ -42,16 +40,16 @@ sub _generic_request {
     my $request = HTTP::Request->new($method, $uri, $self->headers);
     $request->content($content);
     # perform request
-    $logger->info("Request: $method $uri");
-    $logger->debug("Request body " . Dumper($content)) if defined $content;
+    $log->info("Request: $method $uri");
+    $log->debug("Request body " . Dumper($content)) if defined $content;
     my $resp = $self->agent->request($request);
-    $logger->info("Response Code: " . $resp->code);
+    $log->info("Response Code: " . $resp->code);
     if ($resp->is_success) {
-        $logger->debug("Response: " . $resp->decoded_content);
+        $log->debug("Response: " . $resp->decoded_content);
         return $resp->decoded_content;
     }
     else {
-        #$logger->error($resp->status_line . ": " . $uri);
+        #$log->error($resp->status_line . ": " . $uri);
         die;
     }
 }
