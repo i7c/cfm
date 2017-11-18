@@ -15,7 +15,7 @@ sub playback_list {
     for my $pb (@{$pbl->elements}) {
         my ($sound, $artist_list, $title, $album) = ("");
 
-        $sound .= "X" if $pb->broken eq "broken";
+        $sound .= "!" if $pb->broken;
         $artist_list = join "; ", $pb->artists->@*;
         $title = $pb->recordingTitle;
         $album = $pb->releaseTitle;
