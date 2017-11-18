@@ -9,6 +9,8 @@ import org.rliz.cfm.recorder.playback.trans.toHttpResponse
 import org.rliz.cfm.recorder.playback.trans.toRes
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.SortDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
@@ -57,7 +59,8 @@ class PlaybackApi {
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun getPlaybacks(@RequestParam("userId", required = false) userUuid: UUID?,
-                     pageable: Pageable): ResponseEntity<ListRes<Playback, PlaybackRes>> =
+                     @SortDefault(sort = arrayOf("timestamp"), direction = Sort.Direction.DESC) pageable: Pageable)
+            : ResponseEntity<ListRes<Playback, PlaybackRes>> =
             playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, pageable)
                     .toRes(Playback::toRes)
                     .toHttpResponse(HttpStatus.OK)
