@@ -5,7 +5,11 @@ use Moo;
 with 'Cfm::Singleton';
 with 'Cfm::Ui::Format::Formatter';
 
+use Cfm::Autowire;
+use Cfm::Ui::Format::Common;
 use Text::ASCIITable;
+
+has common => singleton "Cfm::Ui::Format::Common";
 
 sub playback_list {
     my ($self, $pbl) = @_;
@@ -24,11 +28,11 @@ sub playback_list {
             $artist_list,
             $title,
             $album,
-            Cfm::Ui::Format::Formatter::time($pb->timestamp),
+            $self->common->time($pb->timestamp),
             $pb->id);
     }
     print $table;
-    print Cfm::Ui::Format::Formatter::list_details($pbl);
+    print $self->common->list_details($pbl);
 }
 
 sub playback {
@@ -39,8 +43,8 @@ sub playback {
     $table->addRow("Artist(s)", join(";", $pb->artists->@*));
     $table->addRow("Title", $pb->recordingTitle);
     $table->addRow("Release", $pb->releaseTitle);
-    $table->addRow("Time", Cfm::Ui::Format::Formatter::time($pb->timestamp));
-    $table->addRow("Broken", $pb->broken);
+    $table->addRow("Time", $self->common->time($pb->timestamp));
+    $table->addRow("Broken", $self->common->boolean($pb->broken));
     print $table;
 }
 
