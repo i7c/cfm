@@ -22,12 +22,11 @@ class Recording : AbstractModel {
             inverseForeignKey = ForeignKey(name = "FK_Artists_Recording"))
     var artists: Set<Artist>? = null
 
-    @NotNull
     var length: Long? = null
 
     constructor() : super()
 
-    constructor(uuid: UUID, title: String, lastUpdated: Long?, artists: List<Artist>, length: Long) : super(uuid) {
+    constructor(uuid: UUID, title: String, lastUpdated: Long?, artists: List<Artist>, length: Long?) : super(uuid) {
         this.title = title
         this.lastUpdated = lastUpdated
         this.artists = artists.toSet()

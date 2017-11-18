@@ -14,7 +14,7 @@ data class MbsRecordingRes(
 data class MbsRecordingDto(
         val identifier: UUID,
         val lastUpdated: Long?,
-        val length: Long,
+        val length: Long?,
         val name: String,
         val comment: String? = null,
         val artists: List<MbsArtistDto>

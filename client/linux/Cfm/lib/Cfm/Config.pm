@@ -16,11 +16,15 @@ my @config_locations = (
 );
 
 my @cli_args = (
-    'set|s=s@'
+    'set|s=s@',
+    'csv-format=s',
+    'date-format=s',
+    'fail-log=s',
 );
 
 my %conf_default = (
-
+    'csv-format'  => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
+    'date-format' => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
 );
 
 has conf => (
@@ -53,6 +57,10 @@ sub require_option {
     my ($self, $option) = @_;
 
     $self->get_option($option) or die $log->error("You must provide the $option option.");
+}
+
+sub has_option {
+    defined $_[0]->conf->{$_[1]};
 }
 
 sub add_flags {

@@ -6,18 +6,21 @@ use Log::Any qw($log);
 
 use Cfm::Autowire;
 use Cfm::Config;
+use Cfm::Import::CsvImporter;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Format::Formatter;
 
 my %command_mapping = (
-    list => \&cmd_list,
-    add  => \&cmd_add,
+    list         => \&cmd_list,
+    add          => \&cmd_add,
+    'import-csv' => \&cmd_import_csv,
 );
 
 has config => singleton 'Cfm::Config';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has formatter => singleton 'Cfm::Ui::Format::Formatter';
+has csv_importer => singleton 'Cfm::Import::CsvImporter';
 
 sub run {
     my ($self) = @_;
@@ -76,6 +79,15 @@ sub cmd_add {
     );
     my $response = $self->playback_service->create_playback($playback);
     $self->formatter->playback($response);
+}
+
+sub cmd_import_csv {
+    my ($self, @args) = @_;
+
+    for my $file (@args) {
+        $log->info("Importing playbacks from $file");
+        $self->csv_importer->import_csv($file);
+    }
 }
 
 1;
