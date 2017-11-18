@@ -16,6 +16,7 @@ my @config_locations = (
 );
 
 my @cli_args = (
+    'set|s=s@'
 );
 
 my %conf_default = (
@@ -66,6 +67,14 @@ sub add_flags {
     map {
         $self->conf->{$_} = $options{$_};
     } keys %options;
+}
+
+sub kv_store {
+    my ($self) = @_;
+
+    return {
+        map {m/^\s*([^:]*[^:\s]+)\s*:\s*(.*[^\s]+)\s*$/} $self->conf->{set}->@*
+    }
 }
 
 1;
