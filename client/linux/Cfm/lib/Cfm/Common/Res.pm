@@ -14,8 +14,7 @@ sub _check_mandatory_fields {
 }
 
 sub from_hash {
-    my $class = shift;
-    my $content = shift;
+    my ($class, $content) = @_;
 
     $class->_check_mandatory_fields($content);
     my $obj = $class->deserialise($content);
@@ -37,8 +36,7 @@ sub _deserialise_field {
     my $mapping = $class->_field_mapping;
     if ($mapping->{$key}) {
         return $mapping->{$key}->($value);
-    }
-    else {
+    } else {
         return $value;
     }
 }

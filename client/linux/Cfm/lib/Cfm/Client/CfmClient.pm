@@ -27,7 +27,7 @@ sub my_playbacks {
     my ($self, $only_broken, $page) = @_;
 
     my @params = ();
-    push @params, onlyBroken => "true" if ($only_broken);
+    push @params, onlyBroken => "true" if $only_broken;
     push @params, page => $page if $page > 0;
 
     Cfm::Common::ListRes->from_hash($self->get_json("/rec/v1/playbacks", \@params),
