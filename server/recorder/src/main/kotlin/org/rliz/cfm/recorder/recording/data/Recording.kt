@@ -20,7 +20,7 @@ class Recording : AbstractModel {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(foreignKey = ForeignKey(name = "FK_Recording_Artists"),
             inverseForeignKey = ForeignKey(name = "FK_Artists_Recording"))
-    var artists: List<Artist>? = null
+    var artists: Set<Artist>? = null
 
     @NotNull
     var length: Long? = null
@@ -30,7 +30,7 @@ class Recording : AbstractModel {
     constructor(uuid: UUID, title: String, lastUpdated: Long?, artists: List<Artist>, length: Long) : super(uuid) {
         this.title = title
         this.lastUpdated = lastUpdated
-        this.artists = artists
+        this.artists = artists.toSet()
         this.length = length
     }
 }

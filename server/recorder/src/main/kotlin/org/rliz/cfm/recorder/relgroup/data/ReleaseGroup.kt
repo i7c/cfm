@@ -18,14 +18,14 @@ class ReleaseGroup : AbstractModel {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(foreignKey = ForeignKey(name = "FK_ReleaseGroup_Artists"),
             inverseForeignKey = ForeignKey(name = "FK_Artists_ReleaseGroup"))
-    var artists: List<Artist>? = null
+    var artists: Set<Artist>? = null
 
     constructor() : super()
 
     constructor(uuid: UUID, title: String, lastUpdated: Long?, artists: List<Artist>) : super(uuid) {
         this.title = title
         this.lastUpdated = lastUpdated
-        this.artists = artists
+        this.artists = artists.toSet()
     }
 
 }

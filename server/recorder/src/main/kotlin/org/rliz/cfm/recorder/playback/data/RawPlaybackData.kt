@@ -1,5 +1,7 @@
 package org.rliz.cfm.recorder.playback.data
 
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -12,8 +14,9 @@ open class RawPlaybackData {
     var oid: Long? = null
 
     @NotNull
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @Size(min = 1)
+    @Fetch(FetchMode.SUBSELECT)
     var artists: List<String>? = null
 
     @NotNull
