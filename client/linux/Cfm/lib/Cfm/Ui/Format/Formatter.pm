@@ -20,7 +20,7 @@ sub choose_instance {
 sub time {
     my ($timestamp) = @_;
 
-    return time2str("%Y-%m-%d %H:%M:%S", $timestamp / 1000);
+    return time2str("%Y-%m-%d %H:%M:%S", $timestamp);
 }
 
 sub list_details {
