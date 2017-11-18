@@ -3,8 +3,6 @@ package org.rliz.cfm.recorder.artist.data
 import org.rliz.cfm.recorder.common.data.AbstractModel
 import java.util.*
 import javax.persistence.Entity
-import javax.persistence.Temporal
-import javax.persistence.TemporalType
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
