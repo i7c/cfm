@@ -30,5 +30,6 @@ sub list_details {
 }
 
 sub playback_list {}
+sub playback {}
 
 1;

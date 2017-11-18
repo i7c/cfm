@@ -36,4 +36,12 @@ sub my_playbacks {
         });
 }
 
+sub create_playback {
+    my ($self, $playback) = @_;
+
+    Cfm::Playback::Playback->from_hash(
+        $self->post_json("/rec/v1/playbacks", Cfm::Playback::Playback->to_hash($playback))
+    );
+}
+
 1;

@@ -31,4 +31,17 @@ sub playback_list {
     print Cfm::Ui::Format::Formatter::list_details($pbl);
 }
 
+sub playback {
+    my ($self, $pb) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols("Property", "Value");
+    $table->addRow("Artist(s)", join(";", $pb->artists->@*));
+    $table->addRow("Title", $pb->recordingTitle);
+    $table->addRow("Release", $pb->releaseTitle);
+    $table->addRow("Time", Cfm::Ui::Format::Formatter::time($pb->timestamp));
+    $table->addRow("Broken", $pb->broken);
+    print $table;
+}
+
 1;

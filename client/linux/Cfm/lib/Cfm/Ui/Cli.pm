@@ -6,11 +6,13 @@ use Log::Any qw($log);
 
 use Cfm::Autowire;
 use Cfm::Config;
+use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Format::Formatter;
 
 my %command_mapping = (
     list => \&cmd_list,
+    add  => \&cmd_add,
 );
 
 has config => singleton 'Cfm::Config';
@@ -55,6 +57,25 @@ sub cmd_list {
 
     my $playbacks = $self->playback_service->my_playbacks(0);
     $self->formatter->playback_list($playbacks);
+}
+
+sub cmd_add {
+    my ($self) = @_;
+
+    my $kv = $self->config->kv_store();
+    my $playback = Cfm::Playback::Playback->new(
+        artists        => [ $kv->{artist}, $kv->{artist1}, $kv->{artist2}, $kv->{artist3} ],
+        recordingTitle => $kv->{title},
+        releaseTitle   => $kv->{release},
+        timestamp      => $kv->{timestamp},
+        playTime       => $kv->{playtime},
+        trackLength    => $kv->{length},
+        discNumber     => $kv->{disc},
+        trackNumber    => $kv->{track},
+        id             => $kv->{id},
+    );
+    my $response = $self->playback_service->create_playback($playback);
+    $self->formatter->playback($response);
 }
 
 1;
