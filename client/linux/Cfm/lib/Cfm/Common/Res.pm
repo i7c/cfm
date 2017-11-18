@@ -21,6 +21,22 @@ sub from_hash {
     return bless $obj, $class;
 }
 
+sub to_hash {
+    my ($class, $obj) = @_;
+
+    my $field_projections = $class->_field_projection();
+    my %projection = ();
+    for my $key (keys $obj->%*) {
+        next if !defined $obj->{$key};
+        if (defined $field_projections->{$key}) {
+            $projection{$key} = $field_projections->{$key}->($obj->{$key});
+        } else {
+            $projection{$key} = $obj->{$key};
+        }
+    }
+    return \%projection;
+}
+
 sub deserialise {
     my ($class, $content) = @_;
 
@@ -55,6 +71,14 @@ sub _field_mapping {
     do {
         no strict 'refs';
         \%{"${class}::mapping"}
+    }
+}
+
+sub _field_projection {
+    my ($class) = @_;
+    do {
+        no strict 'refs';
+        \%{"${class}::projection"}
     }
 }
 
