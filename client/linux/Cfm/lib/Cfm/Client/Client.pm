@@ -49,8 +49,7 @@ sub _generic_request {
         return $resp->decoded_content;
     }
     else {
-        #$log->error($resp->status_line . ": " . $uri);
-        die;
+        die $log->error($resp->status_line . ": " . $uri);
     }
 }
 
