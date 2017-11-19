@@ -1,4 +1,4 @@
-package org.rliz.mbs.recording.repository
+package org.rliz.mbs.recording.data
 
 import org.rliz.mbs.recording.data.Recording
 import org.rliz.mbs.release.model.ReleaseGroup
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.*
 
-interface RecordingRepository : JpaRepository<Recording, Long> {
+interface RecordingRepo : JpaRepository<Recording, Long> {
 
     @Query("""
         select distinct r

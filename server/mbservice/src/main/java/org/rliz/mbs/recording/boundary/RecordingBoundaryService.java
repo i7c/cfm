@@ -5,7 +5,7 @@ import org.rliz.mbs.common.exception.MbLookupException;
 import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.rating.service.RatingService;
 import org.rliz.mbs.recording.data.Recording;
-import org.rliz.mbs.recording.repository.RecordingRepository;
+import org.rliz.mbs.recording.data.RecordingRepo;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 public class RecordingBoundaryService {
 
     @Autowired
-    private RecordingRepository recordingRepository;
+    private RecordingRepo recordingRepo;
 
     @Autowired
     private RatingService ratingService;
 
     public Recording identifyRecording(Release release, String title, int threshold) {
-        List<Recording> recordings = recordingRepository.findAllByReleaseGroup(release.getReleaseGroup());
+        List<Recording> recordings = recordingRepo.findAllByReleaseGroup(release.getReleaseGroup());
 
         if (CollectionUtils.isEmpty(recordings)) {
             throw new MbLookupException(MbLookupException.EC_NO_RESULTS,
@@ -47,7 +47,7 @@ public class RecordingBoundaryService {
     }
 
     public Recording findByIdentifier(UUID identifier) {
-        Recording foundRecording = recordingRepository.findByIdentifier(identifier);
+        Recording foundRecording = recordingRepo.findByIdentifier(identifier);
         if (foundRecording == null) {
             throw new MbEntityNotFoundException(MbEntityNotFoundException.EC_NO_SUCH_UUID,
                     "No recording found for UUID %s.", identifier);
@@ -57,7 +57,7 @@ public class RecordingBoundaryService {
 
     public Page<Recording> findRecordingByReleaseGroupIdentifierAndName(UUID releaseGroupId, String name,
                                                                         Pageable pageable) {
-        List<Recording> foundRecordings = recordingRepository.findAllByReleaseGroupIdentifier(releaseGroupId);
+        List<Recording> foundRecordings = recordingRepo.findAllByReleaseGroupIdentifier(releaseGroupId);
 
         if (CollectionUtils.isEmpty(foundRecordings)) {
             throw new MbLookupException(MbLookupException.EC_NO_RESULTS,
