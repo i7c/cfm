@@ -25,7 +25,6 @@ my %date_patterns = (
     ben => "%d %b %Y %H:%M",
 );
 
-has config => singleton "Cfm::Config";
 has line_pattern => (
         is      => 'lazy',
         default => sub {$format_patterns{$_[0]->config->get_option("csv-format")};},
@@ -35,21 +34,21 @@ has date_format => (
         default => sub {$date_patterns{$_[0]->config->get_option("date-format")};},
     );
 
+has config => singleton "Cfm::Config";
 has playback_service => singleton "Cfm::Playback::PlaybackService";
 
 sub import_csv {
     my ($self, $filename) = @_;
 
-    $|++;
     my $count = 0;
     my $errors = 0;
     my $report_file = undef;
 
     open(my $fh, '<:encoding(UTF-8)', $filename) or die $log->fatal("Cannot read file $filename");
     if ($self->config->has_option("fail-log")) {
-        open($report_file, '>', $self->config->get_option("fail-log"));
-        binmode $report_file, ':utf8';
+        open($report_file, '>:encoding(UTF-8)', $self->config->get_option("fail-log"));
     }
+    STDOUT->autoflush(1);
 
     while (my $line = <$fh>) {
         $line =~ $self->line_pattern;
