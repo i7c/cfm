@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.rliz.mbs.artist.model.Artist;
 import org.rliz.mbs.artist.model.ArtistCreditName;
 import org.rliz.mbs.common.api.dto.Reference;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.model.Release;
 import org.rliz.mbs.release.model.ReleaseGroup;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**

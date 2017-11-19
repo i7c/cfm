@@ -1,4 +1,4 @@
-package org.rliz.mbs.recording.model;
+package org.rliz.mbs.recording.data;
 
 import org.rliz.mbs.artist.model.ArtistCredit;
 import org.rliz.mbs.common.model.FirstClassEntity;

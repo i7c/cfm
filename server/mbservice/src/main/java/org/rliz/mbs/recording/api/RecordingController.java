@@ -5,7 +5,7 @@ import org.rliz.mbs.recording.api.dto.RecordingDto;
 import org.rliz.mbs.recording.api.dto.factory.RecordingDtoFactory;
 import org.rliz.mbs.recording.api.dto.factory.RecordingListDtoFactory;
 import org.rliz.mbs.recording.boundary.RecordingBoundaryService;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package org.rliz.mbs.playback.api.dto;
 
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.model.ReleaseGroup;
 
 public class DeepPlaybackDetailsDto {

@@ -4,7 +4,7 @@ import org.rliz.mbs.common.exception.MbEntityNotFoundException;
 import org.rliz.mbs.common.exception.MbLookupException;
 import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.rating.service.RatingService;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.recording.repository.RecordingRepository;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.beans.factory.annotation.Autowired;

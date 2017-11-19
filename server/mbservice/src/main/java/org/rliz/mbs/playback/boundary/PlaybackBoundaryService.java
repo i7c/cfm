@@ -1,6 +1,6 @@
 package org.rliz.mbs.playback.boundary;
 
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.data.util.Pair;
 

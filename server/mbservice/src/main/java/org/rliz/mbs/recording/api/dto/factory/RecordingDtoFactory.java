@@ -1,7 +1,7 @@
 package org.rliz.mbs.recording.api.dto.factory;
 
 import org.rliz.mbs.recording.api.dto.RecordingDto;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.springframework.stereotype.Component;
 
 /**

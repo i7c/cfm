@@ -5,7 +5,7 @@ import org.rliz.mbs.artist.model.Artist;
 import org.rliz.mbs.artist.model.ArtistCreditName;
 import org.rliz.mbs.common.api.dto.AbstractDto;
 import org.rliz.mbs.common.api.dto.Reference;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 
 import java.util.Date;
 import java.util.List;

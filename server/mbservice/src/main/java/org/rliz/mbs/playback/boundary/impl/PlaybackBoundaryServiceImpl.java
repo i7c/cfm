@@ -2,7 +2,7 @@ package org.rliz.mbs.playback.boundary.impl;
 
 import org.rliz.mbs.playback.boundary.PlaybackBoundaryService;
 import org.rliz.mbs.recording.boundary.RecordingBoundaryService;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.boundary.ReleaseBoundaryService;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.beans.factory.annotation.Autowired;

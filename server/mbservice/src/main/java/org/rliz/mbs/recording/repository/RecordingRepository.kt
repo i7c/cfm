@@ -1,6 +1,6 @@
 package org.rliz.mbs.recording.repository
 
-import org.rliz.mbs.recording.model.Recording
+import org.rliz.mbs.recording.data.Recording
 import org.rliz.mbs.release.model.ReleaseGroup
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository

@@ -4,7 +4,7 @@ import org.rliz.mbs.playback.api.dto.PlaybackDetailsDto;
 import org.rliz.mbs.playback.api.dto.DeepPlaybackDetailsDto;
 import org.rliz.mbs.playback.api.dto.factory.PlaybackDetailsDtoFactory;
 import org.rliz.mbs.playback.boundary.PlaybackBoundaryService;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;

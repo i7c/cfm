@@ -2,7 +2,7 @@ package org.rliz.mbs.playback.api.dto.factory;
 
 import org.rliz.mbs.playback.api.dto.DeepPlaybackDetailsDto;
 import org.rliz.mbs.playback.api.dto.PlaybackDetailsDto;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.model.Release;
 import org.springframework.stereotype.Component;
 

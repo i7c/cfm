@@ -2,7 +2,7 @@ package org.rliz.mbs.recording.api.dto.factory;
 
 import org.rliz.mbs.common.api.dto.ListDto;
 import org.rliz.mbs.recording.api.dto.RecordingDto;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;

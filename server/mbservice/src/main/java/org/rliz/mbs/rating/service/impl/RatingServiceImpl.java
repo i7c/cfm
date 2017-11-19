@@ -2,7 +2,7 @@ package org.rliz.mbs.rating.service.impl;
 
 import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.rating.service.RatingService;
-import org.rliz.mbs.recording.model.Recording;
+import org.rliz.mbs.recording.data.Recording;
 import org.rliz.mbs.release.model.Release;
 import org.rliz.mbs.release.model.ReleaseGroup;
 import org.springframework.stereotype.Service;
