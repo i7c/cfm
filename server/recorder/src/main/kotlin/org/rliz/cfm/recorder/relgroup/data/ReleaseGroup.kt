@@ -7,6 +7,15 @@ import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity
+@Table(
+        indexes = arrayOf(
+                Index(
+                        name = "IX_ReleaseGroup_uuid",
+                        columnList = "uuid",
+                        unique = true
+                )
+        )
+)
 class ReleaseGroup : AbstractModel {
 
     @NotNull

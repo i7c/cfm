@@ -10,6 +10,39 @@ import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity
+@Table(
+        indexes = arrayOf(
+                Index(
+                        name = "IX_Playback_uuid",
+                        columnList = "uuid",
+                        unique = true
+                ),
+
+                Index(
+                        name = "IX_Playback_Recording",
+                        columnList = "recording_oid",
+                        unique = false
+                ),
+
+                Index(
+                        name = "IX_Playback_ReleaseGroup",
+                        columnList = "release_group_oid",
+                        unique = false
+                ),
+
+                Index(
+                        name = "IX_Playback_User",
+                        columnList = "user_oid",
+                        unique = false
+                ),
+
+                Index(
+                        name = "IX_Playback_OriginalData",
+                        columnList = "original_data_oid",
+                        unique = true
+                )
+        )
+)
 open class Playback : AbstractModel {
 
     @NotNull

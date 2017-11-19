@@ -5,8 +5,16 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "cfm_user",
-        uniqueConstraints = arrayOf(UniqueConstraint(name = "UC_User_name", columnNames = arrayOf("name")))
+@Table(
+        name = "cfm_user",
+        uniqueConstraints = arrayOf(UniqueConstraint(name = "UC_User_name", columnNames = arrayOf("name"))),
+        indexes = arrayOf(
+                Index(
+                        name = "IX_User_uuid",
+                        columnList = "uuid",
+                        unique = true
+                )
+        )
 )
 open class User : AbstractModel {
 

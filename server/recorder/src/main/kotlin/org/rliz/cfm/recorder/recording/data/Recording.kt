@@ -8,6 +8,15 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Entity
+@Table(
+        indexes = arrayOf(
+                Index(
+                        name = "IX_Recording_uuid",
+                        columnList = "uuid",
+                        unique = true
+                )
+        )
+)
 class Recording : AbstractModel {
 
     @NotNull
