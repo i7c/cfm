@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-/**
- * REST API endpoint for {@link Recording}s.
- */
 @RestController
 @RequestMapping("/mbs/v1/recordings")
 public class RecordingController {
@@ -36,12 +33,6 @@ public class RecordingController {
         this.recordingListDtoFactory = recordingListDtoFactory;
     }
 
-    /**
-     * GET request to retrieve a {@link Recording} by identifier.
-     *
-     * @param identifier unique identifier
-     * @return the {@link Recording}
-     */
     @Transactional(readOnly = true)
     @RequestMapping("/{identifier}")
     public RecordingDto findByIdentifier(@PathVariable("identifier") UUID identifier) {
@@ -49,14 +40,6 @@ public class RecordingController {
         return recordingDtoFactory.build(foundRecording);
     }
 
-    /**
-     * GET request to find recordings on the given release group with given title.
-     *
-     * @param releaseGroupId the release group on which this Recording apppears
-     * @param title          the title of the recording
-     * @param pageable       page request
-     * @return sorted list of recordings, best matching first
-     */
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET)
     public ListDto<RecordingDto> findByReleaseGroupIdAndName(@RequestParam("releaseGroupId") UUID releaseGroupId,
