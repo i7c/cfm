@@ -2,7 +2,6 @@ package org.rliz.mbs.recording.api;
 
 import org.rliz.mbs.common.api.dto.ListDto;
 import org.rliz.mbs.recording.api.dto.RecordingDto;
-import org.rliz.mbs.recording.api.dto.factory.RecordingDtoFactory;
 import org.rliz.mbs.recording.api.dto.factory.RecordingListDtoFactory;
 import org.rliz.mbs.recording.boundary.RecordingBoundaryService;
 import org.rliz.mbs.recording.data.Recording;
@@ -10,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -20,24 +22,13 @@ public class RecordingController {
 
     private RecordingBoundaryService recordingBoundaryService;
 
-    private RecordingDtoFactory recordingDtoFactory;
-
     private RecordingListDtoFactory recordingListDtoFactory;
 
     @Autowired
     public RecordingController(RecordingBoundaryService recordingBoundaryService,
-                               RecordingDtoFactory recordingDtoFactory,
                                RecordingListDtoFactory recordingListDtoFactory) {
         this.recordingBoundaryService = recordingBoundaryService;
-        this.recordingDtoFactory = recordingDtoFactory;
         this.recordingListDtoFactory = recordingListDtoFactory;
-    }
-
-    @Transactional(readOnly = true)
-    @RequestMapping("/{identifier}")
-    public RecordingDto findByIdentifier(@PathVariable("identifier") UUID identifier) {
-        Recording foundRecording = recordingBoundaryService.findByIdentifier(identifier);
-        return recordingDtoFactory.build(foundRecording);
     }
 
     @Transactional(readOnly = true)
