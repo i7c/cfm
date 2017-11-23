@@ -1,6 +1,6 @@
 package org.rliz.cfm.recorder.playback.api
 
-import org.rliz.cfm.recorder.common.api.ListRes
+import org.rliz.cfm.recorder.common.api.PageRes
 import org.rliz.cfm.recorder.common.api.toRes
 import org.rliz.cfm.recorder.common.security.currentUser
 import org.rliz.cfm.recorder.playback.boundary.PlaybackBoundary
@@ -60,7 +60,7 @@ class PlaybackApi {
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun getPlaybacks(@RequestParam("userId", required = false) userUuid: UUID?,
                      @SortDefault(sort = arrayOf("timestamp"), direction = Sort.Direction.DESC) pageable: Pageable)
-            : ResponseEntity<ListRes<Playback, PlaybackRes>> =
+            : ResponseEntity<PageRes<Playback, PlaybackRes>> =
             playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, pageable)
                     .toRes(Playback::toRes)
                     .toHttpResponse(HttpStatus.OK)
