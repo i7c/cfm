@@ -4,6 +4,7 @@ import org.rliz.mbs.common.api.toHttpResponse
 import org.rliz.mbs.playback.boundary.PlaybackBoundary
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
@@ -16,6 +17,7 @@ class PlaybackApi {
     @Autowired
     private lateinit var playbackBoundary: PlaybackBoundary
 
+    @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET), value = "/identify")
     fun identifyPlayback(@RequestParam("artist") artist: List<String>,
                          @RequestParam("title") title: String,
