@@ -5,8 +5,8 @@ import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.rest.restCall
 import org.rliz.cfm.recorder.mbs.api.MbsArtistDto
 import org.rliz.cfm.recorder.mbs.api.MbsIdentifyRes
-import org.rliz.cfm.recorder.mbs.trans.toDto
-import org.rliz.cfm.recorder.mbs.trans.toEntity
+import org.rliz.cfm.recorder.mbs.api.toDto
+import org.rliz.cfm.recorder.mbs.api.toEntity
 import org.rliz.cfm.recorder.recording.boundary.RecordingBoundary
 import org.rliz.cfm.recorder.recording.data.Recording
 import org.rliz.cfm.recorder.relgroup.boundary.ReleaseGroupBoundary

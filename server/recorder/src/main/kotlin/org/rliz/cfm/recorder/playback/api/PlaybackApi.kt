@@ -1,12 +1,11 @@
 package org.rliz.cfm.recorder.playback.api
 
 import org.rliz.cfm.recorder.common.api.PageRes
+import org.rliz.cfm.recorder.common.api.toHttpResponse
 import org.rliz.cfm.recorder.common.api.toRes
 import org.rliz.cfm.recorder.common.security.currentUser
 import org.rliz.cfm.recorder.playback.boundary.PlaybackBoundary
 import org.rliz.cfm.recorder.playback.data.Playback
-import org.rliz.cfm.recorder.playback.trans.toHttpResponse
-import org.rliz.cfm.recorder.playback.trans.toRes
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -37,7 +36,9 @@ class PlaybackApi {
                     discNumber = body.discNumber,
                     trackNumber = body.trackNumber,
                     playbackTimestamp = body.timestamp
-            ).toHttpResponse(HttpStatus.CREATED)
+            )
+                    .toRes()
+                    .toHttpResponse(HttpStatus.CREATED)
 
     @Transactional
     @RequestMapping(method = arrayOf(RequestMethod.PATCH), path = arrayOf("/{playbackId}"))
@@ -54,7 +55,9 @@ class PlaybackApi {
                     discNumber = body.discNumber,
                     trackNumber = body.trackNumber,
                     playbackTimestamp = body.timestamp
-            ).toHttpResponse(HttpStatus.OK)
+            )
+                    .toRes()
+                    .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))
@@ -69,6 +72,7 @@ class PlaybackApi {
     @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/{playbackId}"))
     fun getPlayback(@PathVariable("playbackId") playbackId: UUID): ResponseEntity<PlaybackRes> =
             playbackBoundary.getPlayback(playbackId)
+                    .toRes()
                     .toHttpResponse(HttpStatus.OK)
 
 }
