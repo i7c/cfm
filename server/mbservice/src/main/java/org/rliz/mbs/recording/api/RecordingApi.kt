@@ -1,10 +1,12 @@
 package org.rliz.mbs.recording.api
 
+import org.rliz.mbs.common.api.toHttpResponse
 import org.rliz.mbs.common.api.toRes
 import org.rliz.mbs.recording.boundary.RecordingBoundaryService
 import org.rliz.mbs.recording.data.Recording
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -29,5 +31,6 @@ class RecordingApi {
                       pageable: Pageable) =
             recordingBoundary.findRecordingByReleaseGroupIdentifierAndName(releaseGroupId, title, pageable)
                     .toRes(Recording::toRes)
+                    .toHttpResponse(HttpStatus.OK)
 }
 
