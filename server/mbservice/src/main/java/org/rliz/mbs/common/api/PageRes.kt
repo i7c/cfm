@@ -1,8 +1,6 @@
 package org.rliz.mbs.common.api
 
 import org.springframework.data.domain.Page
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 
 class PageRes<E, R> constructor(l: Page<E>, translate: (E) -> R) {
 
