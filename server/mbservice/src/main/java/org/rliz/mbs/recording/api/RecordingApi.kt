@@ -26,6 +26,12 @@ class RecordingApi {
 
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))
+    fun getRecordings(@RequestParam("id") ids: List<UUID>) = recordingBoundary.findByIdentifiers(ids)
+            .toRes(Recording::toRes)
+            .toHttpResponse(HttpStatus.OK)
+
+    @Transactional(readOnly = true)
+    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/identify"))
     fun getRecordings(@RequestParam("releaseGroupId") releaseGroupId: UUID,
                       @RequestParam("title") title: String,
                       pageable: Pageable) =

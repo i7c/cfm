@@ -1,6 +1,5 @@
 package org.rliz.mbs.recording.data
 
-import org.rliz.mbs.recording.data.Recording
 import org.rliz.mbs.release.model.ReleaseGroup
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
@@ -25,6 +24,9 @@ interface RecordingRepo : JpaRepository<Recording, Long> {
 
     @EntityGraph(attributePaths = arrayOf("artistCredit.artistCreditName.artist"))
     fun findByIdentifier(identifier: UUID): Recording
+
+    @EntityGraph(attributePaths = arrayOf("artistCredit.artistCreditName.artist"))
+    fun findByIdentifierIn(identifier: List<UUID>): List<Recording>
 
     @Query("""
         select distinct r

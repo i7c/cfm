@@ -55,6 +55,10 @@ public class RecordingBoundaryService {
         return foundRecording;
     }
 
+    public List<Recording> findByIdentifiers(List<UUID> uuids) {
+        return recordingRepo.findByIdentifierIn(uuids);
+    }
+
     public Page<Recording> findRecordingByReleaseGroupIdentifierAndName(UUID releaseGroupId, String name,
                                                                         Pageable pageable) {
         List<Recording> foundRecordings = recordingRepo.findAllByReleaseGroupIdentifier(releaseGroupId);
