@@ -3,6 +3,7 @@ package org.rliz.cfm.recorder.playback.boundary
 import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.log.logger
+import org.rliz.cfm.recorder.playback.api.toDto
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.Playback
 import org.rliz.cfm.recorder.playback.data.PlaybackRepo
@@ -41,7 +42,7 @@ class PlaybackBoundary {
 
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
-                       playbackTimestamp: Long? = null): Playback {
+                       playbackTimestamp: Long? = null): PlaybackDto {
 
         val rawPlaybackData = rawPlaybackDataRepo.save(RawPlaybackData(
                 artists = artists,
@@ -66,11 +67,11 @@ class PlaybackBoundary {
             log.info("Failed to lookup details via mbs service for new playback")
             log.debug("Causing exception for failed lookup during create playback", e)
         }
-        return playbackRepo.save(playback)
+        return playbackRepo.save(playback).toDto()
     }
 
-    fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<Playback> =
-            playbackRepo.findPlaybacksForUser(userId, pageable)
+    fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<PlaybackDto> =
+            playbackRepo.findPlaybacksForUser(userId, pageable).map(Playback::toDto)
 
     fun updatePlayback(playbackId: UUID,
                        skipMbs: Boolean,
@@ -81,7 +82,7 @@ class PlaybackBoundary {
                        playTime: Long? = null,
                        discNumber: Int? = null,
                        trackNumber: Int? = null,
-                       playbackTimestamp: Long? = null): Playback {
+                       playbackTimestamp: Long? = null): PlaybackDto {
 
         val playback = playbackRepo.findOneByUuid(playbackId) ?: throw NotFoundException(Playback::class)
         demandOwnership(playback)
@@ -111,11 +112,11 @@ class PlaybackBoundary {
             }
         }
         playback.originalData = rawPlaybackDataRepo.save(playback.originalData)
-        return playbackRepo.save(playback)
+        return playbackRepo.save(playback).toDto()
     }
 
-    fun getPlayback(playbackId: UUID): Playback =
+    fun getPlayback(playbackId: UUID): PlaybackDto =
             findPlayback(playbackId) ?: throw NotFoundException(Playback::class)
 
-    fun findPlayback(playbackId: UUID): Playback? = playbackRepo.findOneByUuid(playbackId)
+    fun findPlayback(playbackId: UUID): PlaybackDto? = playbackRepo.findOneByUuid(playbackId)?.toDto()
 }

@@ -1,6 +1,7 @@
 package org.rliz.cfm.recorder.playback.api
 
 import org.rliz.cfm.recorder.artist.data.Artist
+import org.rliz.cfm.recorder.playback.boundary.PlaybackDto
 import org.rliz.cfm.recorder.playback.data.Playback
 import java.util.*
 import javax.validation.constraints.NotNull
@@ -19,8 +20,8 @@ data class PlaybackRes(
         val id: UUID? = null
 )
 
-fun Playback.toRes(): PlaybackRes =
-        PlaybackRes(
+fun Playback.toDto(): PlaybackDto =
+        PlaybackDto(
                 artists = if (this.recording != null)
                     this.recording!!.artists!!.mapNotNull(Artist::name).toList()
                 else
