@@ -20,9 +20,9 @@ class RecordingApi {
 
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/{uuid}"))
-    fun getRecording(@PathVariable("uuid") uuid: UUID): RecordingRes =
-            recordingBoundary.findByIdentifier(uuid)
-                    .toRes()
+    fun getRecording(@PathVariable("uuid") uuid: UUID) = recordingBoundary.findByIdentifier(uuid)
+            .toRes()
+            .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))
