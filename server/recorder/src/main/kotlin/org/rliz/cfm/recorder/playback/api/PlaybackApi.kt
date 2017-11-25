@@ -1,6 +1,5 @@
 package org.rliz.cfm.recorder.playback.api
 
-import org.rliz.cfm.recorder.common.api.PageRes
 import org.rliz.cfm.recorder.common.api.toHttpResponse
 import org.rliz.cfm.recorder.common.api.toRes
 import org.rliz.cfm.recorder.common.security.currentUser
@@ -62,8 +61,7 @@ class PlaybackApi {
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun getPlaybacks(@RequestParam("userId", required = false) userUuid: UUID?,
-                     @SortDefault(sort = arrayOf("timestamp"), direction = Sort.Direction.DESC) pageable: Pageable)
-            : ResponseEntity<PageRes<PlaybackDto, PlaybackRes>> =
+                     @SortDefault(sort = arrayOf("timestamp"), direction = Sort.Direction.DESC) pageable: Pageable) =
             playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, pageable)
                     .toRes(PlaybackDto::toRes)
                     .toHttpResponse(HttpStatus.OK)
