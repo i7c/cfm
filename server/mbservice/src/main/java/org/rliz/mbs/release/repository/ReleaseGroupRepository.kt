@@ -12,6 +12,9 @@ interface ReleaseGroupRepository : JpaRepository<ReleaseGroup, Long> {
     @EntityGraph(attributePaths = arrayOf("artistCredit.artistCreditName.artist"))
     fun findByIdentifier(identifier: UUID): ReleaseGroup
 
+    @EntityGraph(attributePaths = arrayOf("artistCredit.artistCreditName.artist"))
+    fun findByIdentifierIn(identifiers: List<UUID>): List<ReleaseGroup>
+
     @Query("""
         SELECT r FROM
         ReleaseGroup r

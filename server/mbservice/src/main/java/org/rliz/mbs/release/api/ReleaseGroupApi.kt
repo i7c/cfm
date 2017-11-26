@@ -26,6 +26,13 @@ class ReleaseGroupApi {
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
+    @RequestMapping(method = arrayOf(RequestMethod.GET))
+    fun getReleaseGroups(@RequestParam("id") ids: List<UUID>) =
+            releaseGroupBoundary.findByIdentifiers(ids)
+                    .toRes(ReleaseGroup::toRes)
+                    .toHttpResponse(HttpStatus.OK)
+
+    @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/identify"))
     fun getReleaseGroups(@RequestParam("artist") artists: List<String>,
                          @RequestParam("release") name: String,

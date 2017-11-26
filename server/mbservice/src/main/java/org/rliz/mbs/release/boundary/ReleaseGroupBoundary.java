@@ -36,6 +36,10 @@ public class ReleaseGroupBoundary {
         return foundReleaseGroup;
     }
 
+    public List<ReleaseGroup> findByIdentifiers(List<UUID> ids) {
+        return releaseGroupRepository.findByIdentifierIn(ids);
+    }
+
     public Page<ReleaseGroup> findByArtistsAndName(List<String> artists, String name, Pageable pageable) {
         List<ReleaseGroup> foundReleaseGroups = releaseGroupRepository
                 .findReleaseGroupByArtistNames(artists.stream().map(String::toLowerCase).collect(Collectors.toList()));
