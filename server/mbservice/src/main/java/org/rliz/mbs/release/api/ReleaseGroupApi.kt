@@ -26,7 +26,7 @@ class ReleaseGroupApi {
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = arrayOf(RequestMethod.GET))
+    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/identify"))
     fun getReleaseGroups(@RequestParam("artist") artists: List<String>,
                          @RequestParam("release") name: String,
                          pageable: Pageable) =
