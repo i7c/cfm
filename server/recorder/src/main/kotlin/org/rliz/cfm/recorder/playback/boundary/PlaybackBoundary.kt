@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.IdGenerator
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.ExecutionException
 
 @Service
 class PlaybackBoundary {
@@ -66,7 +67,7 @@ class PlaybackBoundary {
                         playback.recordingUuid = recordingId
                         playback.releaseGroupUuid = releaseGroupId
                     }
-        } catch (e: MbsLookupFailedException) {
+        } catch (e: ExecutionException) {
             log.info("Failed to lookup details via mbs service for new playback")
             log.debug("Causing exception for failed lookup during create playback", e)
         }
@@ -114,7 +115,7 @@ class PlaybackBoundary {
                             playback.recordingUuid = recordingId
                             playback.releaseGroupUuid = releaseGroupId
                         }
-            } catch (e: MbsLookupFailedException) {
+            } catch (e: ExecutionException) {
                 log.info("Failed to lookup details via mbs service during PATCH; Fallback to broken playback")
                 log.debug("Causing issue for failed lookup was", e)
                 playback.recordingUuid = null

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 @Service
 class MbsService {
@@ -46,14 +47,19 @@ class MbsService {
                     .pathSegment("mbs", "v1", "playbacks", "identify")
                     .queryParam("title", recordingTitle)
                     .queryParam("release", releaseTitle)
-                    .let { uriBuilder ->
-                        artists.forEach { uriBuilder.queryParam("artist", it) }
-
-                        try {
-                            CompletableFuture.completedFuture(restCall().getForObject(uriBuilder.build().toUri(),
-                                    MbsIdentifiedPlaybackRes::class.java).toDto())
-                        } catch (e: Exception) {
-                            throw MbsLookupFailedException(e)
-                        }
+                    .apply {
+                        artists.forEach { queryParam("artist", it) }
                     }
+                    .build()
+                    .toUri()
+                    .let { uri ->
+                        val future = CompletableFuture<MbsIdentifiedPlaybackDto>()
+                        try {
+                            future.complete(restCall().getForObject(uri, MbsIdentifiedPlaybackRes::class.java).toDto())
+                        } catch (e: Exception) {
+                            future.completeExceptionally(MbsLookupFailedException(e))
+                        }
+                        future
+                    }
+
 }
