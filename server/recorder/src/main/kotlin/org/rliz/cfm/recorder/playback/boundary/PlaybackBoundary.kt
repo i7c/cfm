@@ -5,7 +5,6 @@ import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.log.logger
 import org.rliz.cfm.recorder.mbs.service.PlaybackService
-import org.rliz.cfm.recorder.playback.api.toDto
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.Playback
 import org.rliz.cfm.recorder.playback.data.PlaybackRepo
