@@ -2,7 +2,7 @@ package org.rliz.mbs.release.api
 
 import org.rliz.mbs.common.api.toHttpResponse
 import org.rliz.mbs.common.api.toRes
-import org.rliz.mbs.release.boundary.ReleaseGroupBoundaryService
+import org.rliz.mbs.release.boundary.ReleaseGroupBoundary
 import org.rliz.mbs.release.model.ReleaseGroup
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
@@ -16,7 +16,7 @@ import java.util.*
 class ReleaseGroupApi {
 
     @Autowired
-    private lateinit var releaseGroupBoundary: ReleaseGroupBoundaryService
+    private lateinit var releaseGroupBoundary: ReleaseGroupBoundary
 
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET), value = "/{uuid}")

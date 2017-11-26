@@ -1,10 +1,9 @@
-package org.rliz.mbs.release.boundary.impl;
+package org.rliz.mbs.release.boundary;
 
 import org.rliz.mbs.common.exception.MbEntityNotFoundException;
 import org.rliz.mbs.common.exception.MbLookupException;
 import org.rliz.mbs.rating.model.Rated;
 import org.rliz.mbs.rating.service.RatingService;
-import org.rliz.mbs.release.boundary.ReleaseGroupBoundaryService;
 import org.rliz.mbs.release.model.ReleaseGroup;
 import org.rliz.mbs.release.repository.ReleaseGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +18,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Implementation for {@link ReleaseGroupBoundaryService}.
- */
 @Service
-public class ReleaseGroupBoundaryServiceImpl implements ReleaseGroupBoundaryService {
-
-    private ReleaseGroupRepository releaseGroupRepository;
-
-    private RatingService ratingService;
+public class ReleaseGroupBoundary {
 
     @Autowired
-    public ReleaseGroupBoundaryServiceImpl(ReleaseGroupRepository releaseGroupRepository,
-                                           RatingService ratingService) {
-        this.releaseGroupRepository = releaseGroupRepository;
-        this.ratingService = ratingService;
-    }
+    private ReleaseGroupRepository releaseGroupRepository;
 
-    @Override
+    @Autowired
+    private RatingService ratingService;
+
     public ReleaseGroup findByIdentifier(UUID identifier) {
         ReleaseGroup foundReleaseGroup = releaseGroupRepository.findByIdentifier(identifier);
         if (foundReleaseGroup == null) {
@@ -46,7 +36,6 @@ public class ReleaseGroupBoundaryServiceImpl implements ReleaseGroupBoundaryServ
         return foundReleaseGroup;
     }
 
-    @Override
     public Page<ReleaseGroup> findByArtistsAndName(List<String> artists, String name, Pageable pageable) {
         List<ReleaseGroup> foundReleaseGroups = releaseGroupRepository
                 .findReleaseGroupByArtistNames(artists.stream().map(String::toLowerCase).collect(Collectors.toList()));
