@@ -13,11 +13,8 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
     @Query(value = """
         select distinct p
         from Playback p
-        left join fetch p.recording r
-        left join fetch p.releaseGroup rg
         join fetch p.originalData o
         join fetch p.user u
-        left join fetch r.artists a
         where u.uuid = :userId
     """, countQuery = """
         select distinct count(p)
