@@ -117,8 +117,8 @@ class PlaybackBoundary {
             } catch (e: MbsLookupFailedException) {
                 log.info("Failed to lookup details via mbs service during PATCH; Fallback to broken playback")
                 log.debug("Causing issue for failed lookup was", e)
-                playback.recording = null
-                playback.releaseGroup = null
+                playback.recordingUuid = null
+                playback.releaseGroupUuid = null
             }
         }
         playback.originalData = rawPlaybackDataRepo.save(playback.originalData)
