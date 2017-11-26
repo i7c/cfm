@@ -1,6 +1,9 @@
 package org.rliz.cfm.recorder.mbs.service
 
+import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.rest.restCall
+import org.rliz.cfm.recorder.mbs.api.MbsIdentifiedPlaybackDto
+import org.rliz.cfm.recorder.mbs.api.MbsIdentifiedPlaybackRes
 import org.rliz.cfm.recorder.mbs.api.MbsRecordingViewListRes
 import org.rliz.cfm.recorder.mbs.api.MbsReleaseGroupViewListRes
 import org.springframework.beans.factory.annotation.Value
@@ -34,5 +37,23 @@ class MbsService {
                         ids.forEach { uriBuilder.queryParam("id", it) }
                         CompletableFuture.completedFuture(restCall().getForObject(uriBuilder.build().toUri(),
                                 MbsReleaseGroupViewListRes::class.java))
+                    }
+
+    @Async
+    fun identifyPlayback(recordingTitle: String, releaseTitle: String, artists: List<String>):
+            CompletableFuture<MbsIdentifiedPlaybackDto> =
+            UriComponentsBuilder.fromHttpUrl(mbsUrl)
+                    .pathSegment("mbs", "v1", "playbacks", "identify")
+                    .queryParam("title", recordingTitle)
+                    .queryParam("release", releaseTitle)
+                    .let { uriBuilder ->
+                        artists.forEach { uriBuilder.queryParam("artist", it) }
+
+                        try {
+                            CompletableFuture.completedFuture(restCall().getForObject(uriBuilder.build().toUri(),
+                                    MbsIdentifiedPlaybackRes::class.java).toDto())
+                        } catch (e: Exception) {
+                            throw MbsLookupFailedException(e)
+                        }
                     }
 }

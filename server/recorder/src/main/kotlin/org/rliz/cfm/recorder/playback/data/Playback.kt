@@ -19,14 +19,14 @@ import javax.validation.constraints.NotNull
                 ),
 
                 Index(
-                        name = "IX_Playback_Recording",
-                        columnList = "recording_oid",
+                        name = "IX_Playback_RecordingUuid",
+                        columnList = "recording_uuid",
                         unique = false
                 ),
 
                 Index(
-                        name = "IX_Playback_ReleaseGroup",
-                        columnList = "release_group_oid",
+                        name = "IX_Playback_ReleaseGroupUuid",
+                        columnList = "release_group_uuid",
                         unique = false
                 ),
 
@@ -66,6 +66,12 @@ open class Playback : AbstractModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = ForeignKey(name = "FK_Playback_ReleaseGroup"))
     var releaseGroup: ReleaseGroup? = null
+
+    @Column(name = "recording_uuid")
+    var recordingUuid: UUID? = null
+
+    @Column(name = "release_group_uuid")
+    var releaseGroupUuid: UUID? = null
 
     constructor() : super()
 
