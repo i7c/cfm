@@ -28,8 +28,8 @@ class PlaybackApi {
     fun postPlayback(@Valid @RequestBody body: PlaybackRes): ResponseEntity<PlaybackRes> =
             playbackBoundary.createPlayback(
                     artists = body.artists,
-                    recordingTitle = body.recordingTitle,
-                    releaseTitle = body.releaseTitle,
+                    recordingTitle = body.recordingTitle!!,
+                    releaseTitle = body.releaseTitle!!,
                     trackLength = body.trackLength,
                     playTime = body.playTime,
                     discNumber = body.discNumber,

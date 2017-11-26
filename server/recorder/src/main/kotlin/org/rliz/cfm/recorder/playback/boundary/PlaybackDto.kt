@@ -6,9 +6,9 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 data class PlaybackDto(
-        @field:NotNull @field:Size(min = 1) val artists: List<String> = emptyList(),
-        @field:NotNull @field:Size(min = 1) val recordingTitle: String = "",
-        @field:NotNull @field:Size(min = 1) val releaseTitle: String = "",
+        val artists: List<String> = emptyList(),
+        val recordingTitle: String? = null,
+        val releaseTitle: String? = null,
         val timestamp: Long? = null,
         val playTime: Long? = null,
         val trackLength: Long? = null,

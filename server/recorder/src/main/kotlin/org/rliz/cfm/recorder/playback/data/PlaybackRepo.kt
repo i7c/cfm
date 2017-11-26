@@ -17,7 +17,7 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
         left join fetch p.releaseGroup rg
         join fetch p.originalData o
         join fetch p.user u
-        join fetch r.artists a
+        left join fetch r.artists a
         where u.uuid = :userId
     """, countQuery = """
         select distinct count(p)

@@ -1,8 +1,10 @@
 package org.rliz.cfm.recorder.playback.boundary
 
+import org.rliz.cfm.recorder.common.data.contentMap
 import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.log.logger
+import org.rliz.cfm.recorder.mbs.service.PlaybackService
 import org.rliz.cfm.recorder.playback.api.toDto
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.Playback
@@ -40,6 +42,9 @@ class PlaybackBoundary {
     @Autowired
     lateinit var playbackIdentifier: PlaybackIdentifier
 
+    @Autowired
+    lateinit var playbackService: PlaybackService
+
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
                        playbackTimestamp: Long? = null): PlaybackDto {
@@ -71,7 +76,7 @@ class PlaybackBoundary {
     }
 
     fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<PlaybackDto> =
-            playbackRepo.findPlaybacksForUser(userId, pageable).map(Playback::toDto)
+            makePlaybackView(playbackRepo.findPlaybacksForUser(userId, pageable))
 
     fun updatePlayback(playbackId: UUID,
                        skipMbs: Boolean,
@@ -119,4 +124,35 @@ class PlaybackBoundary {
             findPlayback(playbackId) ?: throw NotFoundException(Playback::class)
 
     fun findPlayback(playbackId: UUID): PlaybackDto? = playbackRepo.findOneByUuid(playbackId)?.toDto()
+
+    private fun makePlaybackView(playbacks: Page<Playback>): Page<PlaybackDto> =
+            playbacks.contentMap { it -> makePlaybackView(it) }
+
+    private fun makePlaybackView(playbacks: List<Playback>): List<PlaybackDto> =
+            playbacks.groupBy { it.recording == null || it.releaseGroup == null }
+                    .flatMap { (broken, playbacks) ->
+                        if (broken) playbacks.map(Playback::toDto)
+                        else {
+                            val releaseGroupsFuture =
+                                    playbackService.getReleaseGroupView(playbacks.map { it.releaseGroup!!.uuid!! })
+                            val recordingsFuture =
+                                    playbackService.getRecordingView(playbacks.map { it.recording!!.uuid!! })
+                            val recordings = recordingsFuture.get().elements.map { it.id to it }.toMap()
+                            val releaseGroups = releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
+                            playbacks.map {
+                                val recordingView = recordings[it.recording!!.uuid] ?: throw MbsLookupFailedException()
+                                val releaseGroupView = releaseGroups[it.releaseGroup!!.uuid]
+                                        ?: throw MbsLookupFailedException()
+                                PlaybackDto(
+                                        artists = recordingView.artists,
+                                        recordingTitle = recordingView.name,
+                                        releaseTitle = releaseGroupView.name,
+                                        timestamp = it.timestamp,
+                                        playTime = it.playTime,
+                                        broken = false,
+                                        id = it.uuid
+                                )
+                            }
+                        }
+                    }
 }
