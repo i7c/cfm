@@ -72,7 +72,7 @@ class PlaybackBoundary {
             log.info("Failed to lookup details via mbs service for new playback")
             log.debug("Causing exception for failed lookup during create playback", e)
         }
-        return playbackRepo.save(playback).toDto()
+        return makePlaybackView(playbackRepo.save(playback))
     }
 
     fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<PlaybackDto> =
@@ -117,13 +117,17 @@ class PlaybackBoundary {
             }
         }
         playback.originalData = rawPlaybackDataRepo.save(playback.originalData)
-        return playbackRepo.save(playback).toDto()
+        return makePlaybackView(playbackRepo.save(playback))
     }
 
     fun getPlayback(playbackId: UUID): PlaybackDto =
             findPlayback(playbackId) ?: throw NotFoundException(Playback::class)
 
-    fun findPlayback(playbackId: UUID): PlaybackDto? = playbackRepo.findOneByUuid(playbackId)?.toDto()
+    fun findPlayback(playbackId: UUID): PlaybackDto? = playbackRepo.findOneByUuid(playbackId)?.let {
+        makePlaybackView(listOf(it)).first()
+    }
+
+    private fun makePlaybackView(playback: Playback): PlaybackDto = playback.let { makePlaybackView(listOf(it)) }.first()
 
     private fun makePlaybackView(playbacks: Page<Playback>): Page<PlaybackDto> =
             playbacks.contentMap { it -> makePlaybackView(it) }
