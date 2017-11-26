@@ -11,7 +11,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 @Service
-class PlaybackService {
+class MbsService {
 
     @Value("\${cfm.mbs.url}")
     lateinit var mbsUrl: String

@@ -4,7 +4,7 @@ import org.rliz.cfm.recorder.common.data.contentMap
 import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.log.logger
-import org.rliz.cfm.recorder.mbs.service.PlaybackService
+import org.rliz.cfm.recorder.mbs.service.MbsService
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.Playback
 import org.rliz.cfm.recorder.playback.data.PlaybackRepo
@@ -42,7 +42,7 @@ class PlaybackBoundary {
     lateinit var playbackIdentifier: PlaybackIdentifier
 
     @Autowired
-    lateinit var playbackService: PlaybackService
+    lateinit var mbsService: MbsService
 
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
@@ -137,9 +137,9 @@ class PlaybackBoundary {
                         if (broken) playbacks.map(Playback::toDto)
                         else {
                             val releaseGroupsFuture =
-                                    playbackService.getReleaseGroupView(playbacks.map { it.releaseGroup!!.uuid!! })
+                                    mbsService.getReleaseGroupView(playbacks.map { it.releaseGroup!!.uuid!! })
                             val recordingsFuture =
-                                    playbackService.getRecordingView(playbacks.map { it.recording!!.uuid!! })
+                                    mbsService.getRecordingView(playbacks.map { it.recording!!.uuid!! })
                             val recordings = recordingsFuture.get().elements.map { it.id to it }.toMap()
                             val releaseGroups = releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
                             playbacks.map {
