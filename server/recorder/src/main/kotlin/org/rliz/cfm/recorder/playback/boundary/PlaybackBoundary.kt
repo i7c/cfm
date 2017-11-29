@@ -5,6 +5,7 @@ import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.log.logger
 import org.rliz.cfm.recorder.mbs.service.MbsService
+import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.Playback
 import org.rliz.cfm.recorder.playback.data.PlaybackRepo
@@ -132,6 +133,58 @@ class PlaybackBoundary {
     fun findPlayback(playbackId: UUID): PlaybackDto? = playbackRepo.findOneByUuid(playbackId)?.let {
         makePlaybackView(listOf(it)).first()
     }
+
+    fun batchCreatePlaybacks(batch: List<PlaybackRes>): List<BatchResultItem> = batch.map { playbackRes ->
+
+        /* We try to prevent here anything that could fail the entire transaction. The batch import is handled in one
+        single transaction, which means one failed validation cancels the batch import. Taking out batch items that will
+        should prevent this. */
+        if (playbackRes.artists != null
+                && playbackRes.artists.isNotEmpty()
+                && playbackRes.artists.map(String::isNotBlank).isNotEmpty()
+                && playbackRes.recordingTitle != null
+                && playbackRes.recordingTitle.isNotBlank()
+                && playbackRes.releaseTitle != null
+                && playbackRes.releaseTitle.isNotBlank()) {
+
+            val identifiedPlaybackFuture =
+                    mbsService.identifyPlayback(playbackRes.recordingTitle,
+                            playbackRes.releaseTitle,
+                            playbackRes.artists)
+            return@map {
+                val rawPlaybackData = rawPlaybackDataRepo.save(RawPlaybackData(
+                        artists = playbackRes.artists,
+                        recordingTitle = playbackRes.recordingTitle,
+                        releaseTitle = playbackRes.releaseTitle,
+                        length = playbackRes.trackLength,
+                        discNumber = playbackRes.discNumber,
+                        trackNumber = playbackRes.trackNumber
+                ))
+                val user = userBoundary.getCurrentUser()
+                val timestamp = playbackRes.timestamp ?: Instant.now().epochSecond
+                val time = playbackRes.playTime ?: playbackRes.trackLength
+
+                val playback = Playback(playbackRes.id ?: idgen.generateId(), user, timestamp, time, rawPlaybackData)
+                try {
+                    identifiedPlaybackFuture
+                            .get()
+                            .apply {
+                                playback.recordingUuid = recordingId
+                                playback.releaseGroupUuid = releaseGroupId
+                            }
+                } catch (e: ExecutionException) {
+                    log.info("Failed to lookup details via mbs service for new playback ({},{},{})",
+                            playbackRes.recordingTitle,
+                            playbackRes.releaseTitle,
+                            playbackRes.artists)
+                    log.debug("Causing exception for failed lookup during create playback", e)
+                }
+                playbackRepo.save(playback)
+                BatchResultItem(true)
+            }
+        } else return@map { BatchResultItem(false) }
+    }.map { it() }
+
 
     private fun makePlaybackView(playback: Playback): PlaybackDto = playback.let { makePlaybackView(listOf(it)) }.first()
 
