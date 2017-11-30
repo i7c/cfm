@@ -139,8 +139,7 @@ class PlaybackBoundary {
         /* We try to prevent here anything that could fail the entire transaction. The batch import is handled in one
         single transaction, which means one failed validation cancels the batch import. Taking out batch items that will
         should prevent this. */
-        if (playbackRes.artists != null
-                && playbackRes.artists.isNotEmpty()
+        if (playbackRes.artists.isNotEmpty()
                 && playbackRes.artists.map(String::isNotBlank).isNotEmpty()
                 && playbackRes.recordingTitle != null
                 && playbackRes.recordingTitle.isNotBlank()
