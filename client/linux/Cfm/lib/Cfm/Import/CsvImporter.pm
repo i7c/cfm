@@ -64,7 +64,7 @@ sub import_csv {
             $self->playback_service->create_playback($playback);
             $count++;
         } catch {
-            print $report_file $line if defined $fh;
+            print $report_file $line if defined $report_file;
             $errors++;
         };
         print "$count playbacks imported; $errors errors\r";
