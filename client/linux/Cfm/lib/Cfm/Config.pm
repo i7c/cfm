@@ -20,11 +20,13 @@ my @cli_args = (
     'csv-format=s',
     'date-format=s',
     'fail-log=s',
+    'page|s=i',
 );
 
 my %conf_default = (
     'csv-format'  => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format' => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
+    page          => 0,
 );
 
 has conf => (
