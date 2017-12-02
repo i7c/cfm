@@ -76,8 +76,12 @@ class PlaybackBoundary {
         return makePlaybackView(playbackRepo.save(playback))
     }
 
-    fun getPlaybacksForUser(userId: UUID, pageable: Pageable): Page<PlaybackDto> =
-            makePlaybackView(playbackRepo.findPlaybacksForUser(userId, pageable))
+    fun getPlaybacksForUser(userId: UUID, broken: Boolean, pageable: Pageable): Page<PlaybackDto> =
+            makePlaybackView(
+                    if (broken)
+                        playbackRepo.findBrokenPlaybacksForUser(userId, pageable)
+                    else playbackRepo.findPlaybacksForUser(userId, pageable)
+            )
 
     fun updatePlayback(playbackId: UUID,
                        skipMbs: Boolean,

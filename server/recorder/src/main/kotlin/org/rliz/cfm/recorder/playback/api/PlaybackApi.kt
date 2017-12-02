@@ -61,8 +61,9 @@ class PlaybackApi {
     @Transactional(readOnly = true)
     @RequestMapping(method = arrayOf(RequestMethod.GET))
     fun getPlaybacks(@RequestParam("userId", required = false) userUuid: UUID?,
+                     @RequestParam("broken", required = false, defaultValue = "false") broken: Boolean,
                      @SortDefault(sort = arrayOf("timestamp"), direction = Sort.Direction.DESC) pageable: Pageable) =
-            playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, pageable)
+            playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, broken, pageable)
                     .toRes(PlaybackDto::toRes)
                     .toHttpResponse(HttpStatus.OK)
 

@@ -24,6 +24,23 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
                 """)
     fun findPlaybacksForUser(@Param("userId") userId: UUID, pageable: Pageable): Page<Playback>
 
+    @Query(value = """
+        select distinct p
+        from Playback p
+        join fetch p.originalData o
+        join fetch p.user u
+        where u.uuid = :userId
+        and p.recordingUuid is null
+    """, countQuery = """
+        select distinct count(p)
+        from Playback p
+        join p.user u
+        where u.uuid = :userId
+        and p.recordingUuid is null
+                """)
+    fun findBrokenPlaybacksForUser(@Param("userId") userId: UUID, pageable: Pageable): Page<Playback>
+
+
     @EntityGraph(attributePaths = arrayOf("originalData", "user"))
     fun findOneByUuid(uuid: UUID): Playback?
 }
