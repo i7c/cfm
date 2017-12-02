@@ -12,9 +12,9 @@ use Cfm::Client::CfmClient;
 has client => singleton "Cfm::Client::CfmClient";
 
 sub my_playbacks {
-    my ($self, $page) = @_;
+    my ($self, $page, $broken) = @_;
 
-    $self->client->my_playbacks(0, $page);
+    $self->client->my_playbacks($broken // 0, $page);
 }
 
 sub create_playback {

@@ -21,6 +21,7 @@ my @cli_args = (
     'date-format=s',
     'fail-log=s',
     'page|s=i',
+    'broken',
 );
 
 my %conf_default = (

@@ -58,7 +58,8 @@ sub greedy_match_command {
 sub cmd_list {
     my ($self) = @_;
 
-    my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1);
+    my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
+        $self->config->get_option("broken"));
     $self->formatter->playback_list($playbacks);
 }
 
