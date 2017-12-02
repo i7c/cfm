@@ -8,6 +8,8 @@ use Cfm::Autowire;
 use Cfm::Config;
 use Cfm::Common::ListRes;
 use Cfm::Playback::Playback;
+use Cfm::Playback::PlaybackBatchRes;
+use Cfm::Playback::BatchResultRes;
 
 with 'Cfm::Singleton';
 extends 'Cfm::Client::Client';
@@ -44,4 +46,11 @@ sub create_playback {
     );
 }
 
+sub batch_create_playbacks {
+    my ($self, $batch) = @_;
+
+    Cfm::Playback::BatchResultRes->from_hash(
+        $self->post_json("/rec/v1/playbacks/batch", Cfm::Playback::PlaybackBatchRes->to_hash($batch))
+    );
+}
 1;

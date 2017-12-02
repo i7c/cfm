@@ -24,4 +24,10 @@ sub create_playback {
     $self->client->create_playback($playback);
 }
 
+sub batch_create {
+    my ($self, $batch) = @_;
+
+    $self->client->batch_create_playbacks($batch);
+}
+
 1;

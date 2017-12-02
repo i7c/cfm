@@ -8,6 +8,7 @@ with 'Cfm::Singleton';
 use Cfm::Autowire;
 use Cfm::Config;
 use Cfm::Playback::Playback;
+use Cfm::Playback::PlaybackBatchRes;
 use Cfm::Playback::PlaybackService;
 use Time::Piece;
 use Try::Tiny;
@@ -50,22 +51,23 @@ sub import_csv {
     }
     STDOUT->autoflush(1);
 
-    while (my $line = <$fh>) {
-        $line =~ $self->line_pattern;
-
-        my $playback = Cfm::Playback::Playback->new(
-            artists        => [ $+{artist} ],
-            recordingTitle => $+{title},
-            releaseTitle   => $+{release},
-            timestamp      => Time::Piece->strptime($+{timestamp}, $self->date_format)->epoch,
-        );
+    my $chunk;
+    while (($chunk = $self->_read_chunk($fh)) && scalar $chunk->@* > 0) {
 
         try {
-            $self->playback_service->create_playback($playback);
-            $count++;
+            my $batch = $self->_make_playbacks($chunk);
+            my $res = $self->playback_service->batch_create(Cfm::Playback::PlaybackBatchRes->new(playbacks => $batch));
+            for (my $i = 0; $i < scalar $chunk->@*; $i++) {
+                if ($res->results->[$i]->success) {
+                    $count++;
+                } else {
+                    $errors++;
+                    print $report_file $chunk->[$i] if defined $report_file;
+                }
+            }
         } catch {
-            print $report_file $line if defined $report_file;
-            $errors++;
+            $errors += scalar $chunk->@*;
+            print $report_file (join '', $chunk->@*) if defined $report_file;
         };
         print "$count playbacks imported; $errors errors\r";
     }
@@ -73,6 +75,31 @@ sub import_csv {
     print "See the fail log for lines that could not be imported\n" if defined $report_file;
     close $fh;
     close $report_file if defined $report_file;
+}
+
+sub _read_chunk {
+    my ($self, $fh) = @_;
+    my @lines = ();
+
+    while (my $line = <$fh>) {
+        push @lines, $line;
+        last unless scalar @lines < 25;
+    }
+    return \@lines;
+}
+
+sub _make_playbacks {
+    my ($self, $lines) = @_;
+
+    [ map {
+        $_ =~ $self->line_pattern;
+        Cfm::Playback::Playback->new(
+            artists        => [ $+{artist} ],
+            recordingTitle => $+{title},
+            releaseTitle   => $+{release},
+            timestamp      => Time::Piece->strptime($+{timestamp}, $self->date_format)->epoch,
+        );
+    } $lines->@* ];
 }
 
 1;
