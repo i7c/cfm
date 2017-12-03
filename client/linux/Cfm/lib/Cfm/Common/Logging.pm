@@ -24,9 +24,9 @@ sub setup_logger {
     }
     $stdout_appender->layout($layout);
     $logger->add_appender($stdout_appender);
-    # environment varible CFM_LOG_LEVEL can be used to
-    if (defined $ENV{CFM_LOG_LEVEL}) {
-        my $level = $ENV{CFM_LOG_LEVEL};
+    # environment variable CFM_LL can be used to reset log level before bootstrapping
+    if (defined $ENV{CFM_LL}) {
+        my $level = $ENV{CFM_LL};
         if ($level eq "info") {
             $logger->level($INFO);
         } elsif ($level eq "debug") {
