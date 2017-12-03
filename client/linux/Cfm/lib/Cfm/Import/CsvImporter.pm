@@ -69,7 +69,7 @@ sub import_csv {
             $errors += scalar $chunk->@*;
             print $report_file (join '', $chunk->@*) if defined $report_file;
         };
-        print "$count playbacks imported; $errors errors\r";
+        print "    $count playbacks imported; $errors errors\r";
     }
     print "$count playbacks imported; $errors errors occurred\n";
     print "See the fail log for lines that could not be imported\n" if defined $report_file;
