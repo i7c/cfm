@@ -32,23 +32,19 @@ my %conf_default = (
 
 has conf => (
         is      => 'rw',
-        default => sub {+ {}},
+        default => sub {
+            for my $conf_file (@config_locations) {
+                $log->debug("Try location " . $conf_file);
+                if (-f $conf_file) {
+                    $log->info("Found config file: $conf_file");
+                    my %config = Config::Simple->new($conf_file)->vars;
+                    return \%config;
+                }
+            }
+            $log->info("Ran out of config file locations. Proceed without configuration file.");
+            + {};
+        },
     );
-
-sub BUILD {
-    my ($self, $args) = @_;
-
-    for my $conf_file (@config_locations) {
-        $log->debug("Try location " . $conf_file);
-        if (-f $conf_file) {
-            $log->info("Found config file: $conf_file");
-            my %config = Config::Simple->new($conf_file)->vars;
-            $self->conf(\%config);
-            return;
-        }
-    }
-    $log->info("Ran out of config file locations. Proceed without configuration file.");
-}
 
 sub get_option {
     my ($self, $option) = @_;
