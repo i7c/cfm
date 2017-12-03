@@ -23,9 +23,8 @@ has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has csv_importer => singleton 'Cfm::Import::CsvImporter';
 
 sub run {
-    my ($self) = @_;
+    my ($self, @args) = @_;
 
-    my @args = @ARGV;
     $self->config->add_flags(\@args);
     my ($cmd, $cmdargs) = $self->greedy_match_command(\@args);
     $log->debug("$cmd args: " . join " ", $cmdargs->@*);

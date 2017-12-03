@@ -17,6 +17,6 @@ $logger->info('
 '
 );
 $logger->info("Starting CLI ...");
-Cfm::Ui::Cli->new()->run();
+Cfm::Ui::Cli->new()->run(@ARGV);
 $logger->info("Application is terminating normally.");
 exit 0;
