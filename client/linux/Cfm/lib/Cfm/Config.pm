@@ -73,11 +73,12 @@ sub add_flags {
     $log->debug("seen input: " . join " ", $args->@*);
     $log->info("parsing flags");
     GetOptionsFromArray($args, \%options, @cli_args);
-    $log->debug("remaining input: " . join " ", $args->@*);
 
     map {
+        $log->debug("Flag: $_ = $options{$_}");
         $self->conf->{$_} = $options{$_};
     } keys %options;
+    $log->debug("remaining input: " . join " ", $args->@*);
 }
 
 sub kv_store {
