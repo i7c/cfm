@@ -11,9 +11,9 @@ sub cut {Cfm::Ui::Cli->new(@_);}
 sub mock_config {
     my ($config) = @_;
 
-    my $mock_c = Test::MockObject->new();
-    $mock_c->set_true("add_flags");
-    $mock_c->mock("get_option", sub {
+    Test::MockObject->new()
+        ->set_true("add_flags")
+        ->mock("get_option", sub {
             my ($self, $o) = @_;
             $config->{$o};
         });
@@ -34,11 +34,11 @@ sub mock_config {
 
 # list command with args
 {
-    my $mock_p = Test::MockObject->new();
-    $mock_p->mock("my_playbacks", sub {478;});
+    my $mock_p = Test::MockObject->new()
+        ->mock("my_playbacks", sub {478;});
 
-    my $mock_f = Test::MockObject->new();
-    $mock_f->set_true("playback_list");
+    my $mock_f = Test::MockObject->new()
+        ->set_true("playback_list");
 
     my $mock_c = mock_config({
         page   => 3,
@@ -60,14 +60,14 @@ sub mock_config {
 
 # add command with args
 {
-    my $mock_pbs = Test::MockObject->new();
-    $mock_pbs->mock("create_playback", sub {849;});
+    my $mock_pbs = Test::MockObject->new()
+        ->mock("create_playback", sub {849;});
 
-    my $mock_f = Test::MockObject->new();
-    $mock_f->set_true("playback");
+    my $mock_f = Test::MockObject->new()
+        ->set_true("playback");
 
-    my $mock_c = mock_config();
-    $mock_c->mock("kv_store", sub {
+    my $mock_c = mock_config()
+        ->mock("kv_store", sub {
             + {
                 artist   => "A",
                 artist2  => "B",
@@ -96,8 +96,8 @@ sub mock_config {
 
 # import csv command
 {
-    my $mock_i = Test::MockObject->new;
-    $mock_i->set_true("import_csv");
+    my $mock_i = Test::MockObject->new
+        ->set_true("import_csv");
 
     cut(csv_importer => $mock_i,
         config       => mock_config()
