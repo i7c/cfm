@@ -8,7 +8,7 @@ use Log::Any::Adapter;
 
 sub setup_logger {
     my $logger = Log::Log4perl->get_logger("");
-    my $layout = Log::Log4perl::Layout::PatternLayout->new("%d %r [%c] %L %m%n");
+    my $layout = Log::Log4perl::Layout::PatternLayout->new("%d %5r [%c] %L %m%n");
     my $stdout_appender;
     # use colors if stderr is a terminal
     if (-t STDERR) {
