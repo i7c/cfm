@@ -22,6 +22,7 @@ my @cli_args = (
     'fail-log=s',
     'page|s=i',
     'broken',
+    'debug-dump-config',
 );
 
 my %conf_default = (
@@ -71,9 +72,10 @@ sub add_flags {
     GetOptionsFromArray($args, \%options, @cli_args);
 
     map {
-        $log->debug("Flag: $_ = $options{$_}");
+        $log->debug("FLAG: $_=$options{$_}");
         $self->conf->{$_} = $options{$_};
     } keys %options;
+    map {$log->debug("CONF: $_=" . $self->conf->{$_})} keys $self->conf->%* if $self->has_option("debug-dump-config");
     $log->debug("remaining input: " . join " ", $args->@*);
 }
 
