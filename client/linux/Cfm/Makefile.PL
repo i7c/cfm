@@ -17,6 +17,8 @@ WriteMakefile(
     EXE_FILES       => [ qw(script/cfm) ],
     BUILD_REQUIRES => {
         'Test::More' => 0,
+        'Test::Exception' => 0,
+        'Test::MockObject' => 0,
     },
     PREREQ_PM => {
         "JSON"                  => "2.94",
