@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 19;
+use Test::More tests => 21;
 use Test::Exception;
 use Test::MockObject;
 
@@ -15,6 +15,17 @@ sub mock_config {
         ->set_true("add_flags")
         ->mock("get_option", sub {
             my ($self, $o) = @_;
+            $config->{$o};
+        })
+        ->mock("has_option", sub {
+            my ($self, $o) = @_;
+
+            defined $config->{$o};
+        })
+        ->mock("require_option", sub {
+            my ($self, $o) = @_;
+
+            die unless defined $config->{$o};
             $config->{$o};
         });
 }
@@ -105,4 +116,22 @@ sub mock_config {
 
     $mock_i->called_args_pos_is(1, 2, "file1", "passed file1");
     $mock_i->called_args_pos_is(2, 2, "file2", "passed file2");
+}
+
+# record mpris command
+{
+    my $mock_m = Test::MockObject->new
+        ->set_true("listen");
+
+    cut(
+        mpris2   => $mock_m,
+        loglevel => sub {
+            ok (1, "loglevel called")
+        },
+        config   => mock_config({
+            player => "xp",
+        }),
+    )->run(qw/record mpris/);
+
+    $mock_m->called_args_pos_is(1, 2, "xp", "listen() called with player");
 }

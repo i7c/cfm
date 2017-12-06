@@ -6,21 +6,26 @@ use Log::Any qw($log);
 
 use Cfm::Autowire;
 use Cfm::Config;
+use Cfm::Connector::Mpris2;
 use Cfm::Import::CsvImporter;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Format::Formatter;
 
 my %command_mapping = (
-    list         => \&cmd_list,
-    add          => \&cmd_add,
-    'import-csv' => \&cmd_import_csv,
+    list           => \&cmd_list,
+    add            => \&cmd_add,
+    'import-csv'   => \&cmd_import_csv,
+    'record-mpris' => \&cmd_record_mpris,
 );
+
+has loglevel => inject 'loglevel';
 
 has config => singleton 'Cfm::Config';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has csv_importer => singleton 'Cfm::Import::CsvImporter';
+has mpris2 => singleton 'Cfm::Connector::Mpris2';
 
 sub run {
     my ($self, @args) = @_;
@@ -88,6 +93,14 @@ sub cmd_import_csv {
         $log->info("Importing playbacks from $file");
         $self->csv_importer->import_csv($file);
     }
+}
+
+sub cmd_record_mpris {
+    my ($self) = @_;
+
+    my $player = $self->config->require_option("player");
+    $self->loglevel->("info") unless $self->config->has_option("quiet");
+    $self->mpris2->listen($player);
 }
 
 1;

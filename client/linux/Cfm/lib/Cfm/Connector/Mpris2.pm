@@ -2,6 +2,7 @@ package Cfm::Connector::Mpris2;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
+with 'Cfm::Singleton';
 use Log::Any qw/$log/;
 
 use Net::DBus;
@@ -9,8 +10,10 @@ use Net::DBus::Reactor;
 use Data::Dumper;
 use Data::Printer;
 
+use Cfm::Autowire;
+use Cfm::Playback::Playback;
+use Cfm::Playback::PlaybackService;
 use Cfm::PlayerStateMachine;
-use Cfm::SavePlaybackDto;
 
 has psm => (
         is      => 'rw',
@@ -23,18 +26,15 @@ has psm => (
             );
         }
     );
-
-has client => (is => 'ro');
-
-has dbus_name => (is => 'ro');
+has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
 sub listen {
-    my ($self) = @_;
+    my ($self, $dbus_name) = @_;
 
     $log->debug("Get DBus session");
     my $bus = Net::DBus->session;
-    $log->debug("Get DBus service " . $self->dbus_name);
-    my $spotify_service = $bus->get_service($self->dbus_name);
+    $log->debug("Get DBus service " . $dbus_name);
+    my $spotify_service = $bus->get_service("org.mpris.MediaPlayer2.$dbus_name");
     $log->debug("Get DBus interface");
     my $main_interface = $spotify_service->get_object("/org/mpris/MediaPlayer2",
         "org.freedesktop.DBus.Properties");
@@ -102,13 +102,14 @@ sub completed {
     my ($metadata, $passed_time, $self) = @_;
     my $artist = join(", ", @{$metadata->{artists}});
 
-    my $create_playback = Cfm::SavePlaybackDto->new(
-        title       => $metadata->{title},
-        artists     => $metadata->{artists},
-        album       => $metadata->{album},
-        length      => $metadata->{length},
-        trackNumber => $metadata->{trackNumber},
-        discNumber  => $metadata->{discNumber},
+    my $playback = Cfm::Playback::Playback->new(
+        artists        => $metadata->{artists},
+        recordingTitle => $metadata->{title},
+        releaseTitle   => $metadata->{album},
+        discNumber     => $metadata->{discNumber},
+        trackNumber    => $metadata->{trackNumber},
+        trackLength    => $metadata->{length},
+        playTime       => $passed_time,
     );
 
     $log->debug(Dumper($metadata));
@@ -116,7 +117,7 @@ sub completed {
 
     $log->info("Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)");
     $log->info("Sending playback to server ... ");
-    $self->client->create_playback($create_playback);
+    my $response = $self->playback_service->create_playback($playback);
 }
 
 sub canceled {

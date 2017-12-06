@@ -23,6 +23,8 @@ my @cli_args = (
     'page|s=i',
     'broken',
     'debug-dump-config',
+    'player=s',
+    'quiet|q',
 );
 
 my %conf_default = (
