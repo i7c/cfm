@@ -20,7 +20,7 @@ my @cli_args = (
     'csv-format=s',
     'date-format=s',
     'fail-log=s',
-    'page|s=i',
+    'page|p=i',
     'broken',
     'debug-dump-config',
     'player=s',
