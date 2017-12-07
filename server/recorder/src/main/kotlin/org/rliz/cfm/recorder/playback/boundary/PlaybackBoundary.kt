@@ -195,30 +195,28 @@ class PlaybackBoundary {
             playbacks.contentMap { it -> makePlaybackView(it) }
 
     private fun makePlaybackView(playbacks: List<Playback>): List<PlaybackDto> =
-            playbacks.groupBy { it.recordingUuid == null || it.releaseGroupUuid == null }
-                    .flatMap { (broken, playbacks) ->
-                        if (broken) playbacks.map(Playback::toDto)
-                        else {
-                            val releaseGroupsFuture =
-                                    mbsService.getReleaseGroupView(playbacks.map { it.releaseGroupUuid!! })
-                            val recordingsFuture =
-                                    mbsService.getRecordingView(playbacks.map { it.recordingUuid!! })
-                            val recordings = recordingsFuture.get().elements.map { it.id to it }.toMap()
-                            val releaseGroups = releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
-                            playbacks.map {
-                                val recordingView = recordings[it.recordingUuid!!] ?: throw MbsLookupFailedException()
-                                val releaseGroupView = releaseGroups[it.releaseGroupUuid!!]
-                                        ?: throw MbsLookupFailedException()
-                                PlaybackDto(
-                                        artists = recordingView.artists,
-                                        recordingTitle = recordingView.name,
-                                        releaseTitle = releaseGroupView.name,
-                                        timestamp = it.timestamp,
-                                        playTime = it.playTime,
-                                        broken = false,
-                                        id = it.uuid
-                                )
-                            }
-                        }
-                    }
+            if (playbacks.isEmpty()) emptyList()
+            else playbacks.let {
+                val releaseGroupsFuture = mbsService.getReleaseGroupView(it.mapNotNull { it.releaseGroupUuid })
+                val recordingsFuture = mbsService.getRecordingView(it.mapNotNull { it.recordingUuid })
+
+                val recordings = recordingsFuture.get().elements.map { it.id to it }.toMap()
+                val releaseGroups = releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
+
+                it.map {
+                    if (it.recordingUuid != null) {
+                        val recordingView = recordings[it.recordingUuid!!] ?: throw MbsLookupFailedException()
+                        val releaseGroupView = releaseGroups[it.releaseGroupUuid!!] ?: throw MbsLookupFailedException()
+                        PlaybackDto(
+                                artists = recordingView.artists,
+                                recordingTitle = recordingView.name,
+                                releaseTitle = releaseGroupView.name,
+                                timestamp = it.timestamp,
+                                playTime = it.playTime,
+                                broken = false,
+                                id = it.uuid
+                        )
+                    } else it.toDto()
+                }
+            }
 }
