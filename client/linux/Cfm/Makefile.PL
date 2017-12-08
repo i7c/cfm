@@ -36,6 +36,8 @@ WriteMakefile(
         "Text::ASCIITable"      => "0.22",
         "Time::HiRes"           => "1.9741",
         "URI"                   => "1.72",
+        "Log::Any"              => 0,
+        "Log::Any::Adapter::Log4perl" => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Cfm-*' },
