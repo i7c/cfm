@@ -1,12 +1,10 @@
 package Cfm::PlayerStateMachine;
-
 use strict;
 use warnings FATAL => 'all';
 use Moo;
-use Cfm::Autowire;
 
+use Cfm::Autowire;
 use Cfm::Config;
-use Data::Dumper;
 use Time::HiRes qw/time/;
 
 has config => singleton 'Cfm::Config';
@@ -59,13 +57,13 @@ sub play {
     } elsif ($self->state == 0 || $self->state == 1) {
         # transition: pause -> playing OR still playing
         if ($self->_track_changed($data)) {
-            $self->_update_passed_time($now) if ($self->state == 1);
+            $self->_update_passed_time($now) if $self->state == 1;
             $self->_emit_end_of_track_event(\@user_args);
             $self->_set_playing($now);
             $self->_set_new_track($data);
             $self->_emit_begin_of_track_event(\@user_args);
         } else {
-            $self->_set_playing($now) if ($self->state == 0);
+            $self->_set_playing($now) if $self->state == 0;
             $self->_emit_resume_track_event(\@user_args);
         }
         return;
@@ -138,21 +136,21 @@ sub _set_paused {
 sub _track_changed {
     my ($self, $data) = @_;
 
-    return 1 if (_arrays_differ($self->metadata->{artist}, $data->{artist})
+    return 1 if _arrays_differ($self->metadata->{artist}, $data->{artist})
         || ($self->metadata->{title} ne $data->{title})
-        || ($self->metadata->{album} ne $data->{album}));
+        || ($self->metadata->{album} ne $data->{album});
     return 0;
 }
 
 sub _arrays_differ {
     my ($a1, $a2) = @_;
 
-    return 1 if (defined $a1 xor defined $a2);
-    return 0 if (!defined $a1 && !defined $a2);
-    return 1 if (scalar @$a1 != scalar @$a2);
+    return 1 if defined $a1 xor defined $a2;
+    return 0 if !defined $a1 && !defined $a2;
+    return 1 if scalar @$a1 != scalar @$a2;
 
     for (my $i = 0; $i < scalar @$a1; $i++) {
-        return 1 if ($a1->[$i] ne $a2->[$i]);
+        return 1 if $a1->[$i] ne $a2->[$i];
     }
     return 0;
 }
@@ -169,7 +167,7 @@ sub _set_new_track {
 sub _preinitialised {
     my ($self) = @_;
 
-    return 1 if ($self->metadata->{length} < 0);
+    return 1 if $self->metadata->{length} < 0;
     return 0;
 }
 
@@ -181,7 +179,7 @@ sub _emit_end_of_track_event {
     return if $self->_preinitialised;
     if (($self->passed_time / $self->metadata->{length}) >= $self->threshold) {
         if (defined $self->cb_playback_completed) {
-            $self->passed_time($self->metadata->{length}) if ($self->passed_time > $self->metadata->{length});
+            $self->passed_time($self->metadata->{length}) if $self->passed_time > $self->metadata->{length};
             $self->cb_playback_completed->($self->metadata, $self->passed_time, @$user_args)
         }
     } else {
