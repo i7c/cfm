@@ -25,12 +25,14 @@ my @cli_args = (
     'debug-dump-config',
     'player=s',
     'quiet|q',
+    'threshold=i',
 );
 
 my %conf_default = (
     'csv-format'  => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format' => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     page          => 0,
+    threshold     => 50,
 );
 
 has conf => (

@@ -3,9 +3,13 @@ package Cfm::PlayerStateMachine;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
+use Cfm::Autowire;
 
+use Cfm::Config;
 use Data::Dumper;
 use Time::HiRes qw/time/;
+
+has config => singleton 'Cfm::Config';
 
 # track meta data
 has metadata => (is => 'rw');
@@ -20,7 +24,10 @@ has start_time => (is => 'rw');
 has passed_time => (is => 'rw');
 
 # client-defined percentage when a track is considered to be completed
-has threshold => (is => 'rw');
+has threshold => (
+        is      => 'lazy',
+        default => sub {$_[0]->config->get_option("threshold") / 100.0}
+    );
 
 # callback when track completed
 has cb_playback_completed => (is => 'rw');
@@ -44,7 +51,6 @@ sub BUILD {
         length => -1,
     });
     $self->state(- 1);
-    $self->threshold(0.5);
     $self->passed_time(0);
 }
 
