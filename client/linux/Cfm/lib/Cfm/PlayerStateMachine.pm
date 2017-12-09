@@ -11,48 +11,32 @@ use Time::HiRes qw/time/;
 
 has config => singleton 'Cfm::Config';
 
-# track meta data
-has metadata => (is => 'rw');
-
-# -1: stopped/neverplayed; 0: pause; 1: playing
-has state => (is => 'rw');
-
-# when the machine last moved into "playing" state
+has metadata => (
+        is      => 'rw',
+        default => sub {{
+            artists => [],
+            title   => "",
+            album   => "",
+            length  => - 1,
+        }},
+    );
+has state => (
+        is      => 'rw',
+        default => sub {- 1}
+    );
 has start_time => (is => 'rw');
-
-# amount of time spent in "playing" state so for
-has passed_time => (is => 'rw');
-
-# client-defined percentage when a track is considered to be completed
+has passed_time => (
+        is      => 'rw',
+        default => sub {0}
+    );
 has threshold => (
         is      => 'lazy',
         default => sub {$_[0]->config->get_option("threshold") / 100.0}
     );
-
-# callback when track completed
 has cb_playback_completed => (is => 'rw');
-
-# callback when track canceled
 has cb_playback_canceled => (is => 'rw');
-
-# callback when track started
 has cb_playback_started => (is => 'rw');
-
-# callback when track resumed
 has cb_playback_resumed => (is => 'rw');
-
-sub BUILD {
-    my ($self) = @_;
-
-    $self->metadata({
-        artists => [],
-        title => "",
-        album => "",
-        length => -1,
-    });
-    $self->state(- 1);
-    $self->passed_time(0);
-}
 
 # Moves the machine into "playing" state. If the transition is from "stopped", a "begin of track" event will be fired
 #  and times will be reset accordingly. If transition is from "paused" or "playing", the outcome depends on whether
