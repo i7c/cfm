@@ -200,8 +200,12 @@ class PlaybackBoundary {
                 val releaseGroupsFuture = mbsService.getReleaseGroupView(it.mapNotNull { it.releaseGroupUuid })
                 val recordingsFuture = mbsService.getRecordingView(it.mapNotNull { it.recordingUuid })
 
-                val recordings = recordingsFuture.get().elements.map { it.id to it }.toMap()
-                val releaseGroups = releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
+                val (recordings, releaseGroups) = try {
+                    Pair(recordingsFuture.get().elements.map { it.id to it }.toMap(),
+                            releaseGroupsFuture.get().elements.map { it.id to it }.toMap())
+                } catch (e: Exception) {
+                    return@let it.map { it.toDto() }
+                }
 
                 it.map {
                     if (it.recordingUuid != null) {
