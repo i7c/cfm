@@ -13,19 +13,9 @@ use Data::Printer;
 use Cfm::Autowire;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
-use Cfm::PlayerStateMachine;
+use Cfm::Connector::State::PlayerStateMachine;
 
-has psm => (
-        is      => 'rw',
-        default => sub {
-            Cfm::PlayerStateMachine->new(
-                cb_playback_started   => \&started,
-                cb_playback_canceled  => \&canceled,
-                cb_playback_completed => \&completed,
-                cb_playback_resumed   => \&resumed
-            );
-        }
-    );
+has psm => autowire 'Cfm::Connector::State::PlayerStateMachine';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
 sub listen {
@@ -45,11 +35,10 @@ sub listen {
     $main_interface->connect_to_signal("PropertiesChanged", sub {
             my ($player, $rawdata) = @_;
 
-            $log->info("Received signal.");
             $log->debug(Dumper(@_));
 
             if (defined $rawdata->{PlaybackStatus}) {
-                $log->info("Received playback status update: " . $rawdata->{PlaybackStatus});
+                $log->debug("Received playback status update: " . $rawdata->{PlaybackStatus});
                 $state = $rawdata->{PlaybackStatus};
             }
             if (defined $rawdata->{Metadata}) {
@@ -71,15 +60,19 @@ sub listen {
                     artists     => $metadata->{"xesam:artist"},
                     title       => $metadata->{"xesam:title"},
                     album       => $metadata->{"xesam:album"},
-                    length      => $metadata->{"mpris:length"} / 1000, # in ms
+                    release     => $metadata->{"xesam:album"},
+                    length_ms   => $metadata->{"mpris:length"} / 1000, # to ms
+                    length_s    => $metadata->{"mpris:length"} / 1000000, # to s
                     trackNumber => $metadata->{"xesam:trackNumber"},
                     rawdata     => $metadata
                 };
 
                 if ($state eq "Playing") {
-                    $self->psm->play($data, $self);
+                    $self->psm->play(time(), $data);
                 } elsif ($state eq "Paused") {
-                    $self->psm->pause($data, $self);
+                    $self->psm->pause(time(), $data);
+                } elsif ($state eq "Stopped") {
+                    $self->psm->stop(time(), $data);
                 }
             }
             return;
@@ -87,55 +80,6 @@ sub listen {
     $log->info("Connection to DBus established. Listening ...");
     my $reactor = Net::DBus::Reactor->main();
     $reactor->run();
-}
-
-sub started {
-    my ($metadata, $passed_time, $self) = @_;
-    my $artist = join(", ", @{$metadata->{artists}});
-
-    $log->debug(Dumper($metadata));
-    $log->debug("Passed time: $passed_time");
-    $log->info("Started: $artist - $metadata->{title}");
-}
-
-sub completed {
-    my ($metadata, $passed_time, $self) = @_;
-    my $artist = join(", ", @{$metadata->{artists}});
-
-    my $playback = Cfm::Playback::Playback->new(
-        artists        => $metadata->{artists},
-        recordingTitle => $metadata->{title},
-        releaseTitle   => $metadata->{album},
-        discNumber     => $metadata->{discNumber},
-        trackNumber    => $metadata->{trackNumber},
-        trackLength    => $metadata->{length},
-        playTime       => $passed_time,
-    );
-
-    $log->debug(Dumper($metadata));
-    $log->debug("Passed time: $passed_time");
-
-    $log->info("Completed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)");
-    $log->info("Sending playback to server ... ");
-    my $response = $self->playback_service->create_playback($playback);
-}
-
-sub canceled {
-    my ($metadata, $passed_time, $self) = @_;
-    my $artist = join(", ", @{$metadata->{artists}});
-
-    $log->debug(Dumper($metadata));
-    $log->debug("Passed time: $passed_time");
-    $log->info("Canceled: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)");
-}
-
-sub resumed {
-    my ($metadata, $passed_time, $self) = @_;
-    my $artist = join(", ", @{$metadata->{artists}});
-
-    $log->debug(Dumper($metadata));
-    $log->debug("Passed time: $passed_time");
-    $log->info("Resumed: $artist - $metadata->{title} ($passed_time of $metadata->{length} ms)");
 }
 
 1;
