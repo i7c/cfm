@@ -29,10 +29,11 @@ my @cli_args = (
 );
 
 my %conf_default = (
-    'csv-format'  => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
-    'date-format' => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
-    page          => 0,
-    threshold     => 50,
+    'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
+    'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
+    page              => 0,
+    threshold         => 50,
+    'gap-to-complete' => 3,
 );
 
 has conf => (
