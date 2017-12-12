@@ -38,6 +38,8 @@ WriteMakefile(
         "URI"                   => "1.72",
         "Log::Any"              => 0,
         "Log::Any::Adapter::Log4perl" => 0,
+        "MCE::Flow"             => 0,
+        "MCE::Queue"            => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Cfm-*' },
