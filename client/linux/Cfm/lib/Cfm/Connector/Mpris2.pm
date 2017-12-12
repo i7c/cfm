@@ -48,7 +48,7 @@ sub listen {
                     || $metadata->{"xesam:title"} eq ""
                     || $metadata->{"mpris:length"} == 0) {
                     $log->warn("Ignoring bogus signal from mpris2.");
-                    $log->warn(Dumper($metadata));
+                    $log->debug(Dumper($metadata));
                     return;
                 }
                 for my $artist ($metadata->{"xesam:artist"}->@*) {
