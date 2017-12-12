@@ -5,6 +5,8 @@ use Moo;
 with 'Cfm::Singleton';
 use Log::Any qw/$log/;
 
+use MCE::Flow;
+use MCE::Queue;
 use Net::DBus;
 use Net::DBus::Reactor;
 use Data::Dumper;
@@ -15,10 +17,40 @@ use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Connector::State::PlayerStateMachine;
 
+has queue => (
+        is      => 'ro',
+        default => sub {MCE::Queue->new}
+    );
+
 has psm => autowire 'Cfm::Connector::State::PlayerStateMachine';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
 sub listen {
+    my ($self, $dbus_name) = @_;
+
+    mce_flow + {
+            max_workers => [ 1, 1 ]
+        },
+        sub {
+            $self->_mpris_connect($dbus_name);
+        },
+        sub {
+            while (1) {
+                my $queue_item = $self->queue->dequeue;
+                my $data = $$queue_item;
+
+                if ($data->{state} eq "Playing") {
+                    $self->psm->play($data->{timestamp}, $data);
+                } elsif ($data->{state} eq "Paused") {
+                    $self->psm->pause($data->{timestamp}, $data);
+                } elsif ($data->{state} eq "Stopped") {
+                    $self->psm->stop($data->{timestamp}, $data);
+                }
+            }
+        };
+}
+
+sub _mpris_connect {
     my ($self, $dbus_name) = @_;
 
     $log->debug("Get DBus session");
@@ -64,16 +96,12 @@ sub listen {
                     length_ms   => $metadata->{"mpris:length"} / 1000, # to ms
                     length_s    => $metadata->{"mpris:length"} / 1000000, # to s
                     trackNumber => $metadata->{"xesam:trackNumber"},
-                    rawdata     => $metadata
+                    rawdata     => $metadata,
+                    state       => $state,
+                    timestamp   => time(),
                 };
 
-                if ($state eq "Playing") {
-                    $self->psm->play(time(), $data);
-                } elsif ($state eq "Paused") {
-                    $self->psm->pause(time(), $data);
-                } elsif ($state eq "Stopped") {
-                    $self->psm->stop(time(), $data);
-                }
+                $self->queue->enqueue(\$data);
             }
             return;
         });
