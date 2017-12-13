@@ -35,6 +35,12 @@ import javax.validation.constraints.NotNull
                 ),
 
                 Index(
+                        name = "IX_Playback_UserAndSource",
+                        columnList = "user_oid, source",
+                        unique = false
+                ),
+
+                Index(
                         name = "IX_Playback_OriginalData",
                         columnList = "original_data_oid",
                         unique = true
@@ -63,14 +69,17 @@ open class Playback : AbstractModel {
     @Column(name = "release_group_uuid")
     var releaseGroupUuid: UUID? = null
 
+    var source: String? = null
+
     constructor() : super()
 
     constructor(uuid: UUID, user: User?, timestamp: Long? = Instant.now().epochSecond, playTime: Long? = null,
-                originalData: RawPlaybackData? = null) : super(uuid) {
+                originalData: RawPlaybackData? = null, source: String?) : super(uuid) {
         this.user = user
         this.timestamp = timestamp
         this.playTime = playTime
         this.originalData = originalData
+        this.source = source
     }
 
 }

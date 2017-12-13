@@ -34,7 +34,8 @@ class PlaybackApi {
                     playTime = body.playTime,
                     discNumber = body.discNumber,
                     trackNumber = body.trackNumber,
-                    playbackTimestamp = body.timestamp
+                    playbackTimestamp = body.timestamp,
+                    source = body.source
             )
                     .toRes()
                     .toHttpResponse(HttpStatus.CREATED)

@@ -45,7 +45,7 @@ class PlaybackBoundary {
 
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
-                       playbackTimestamp: Long? = null): PlaybackDto {
+                       playbackTimestamp: Long? = null, source: String?): PlaybackDto {
 
         val rawPlaybackData = rawPlaybackDataRepo.save(RawPlaybackData(
                 artists = artists,
@@ -60,7 +60,7 @@ class PlaybackBoundary {
         val timestamp = playbackTimestamp ?: Instant.now().epochSecond
         val time = playTime ?: trackLength
 
-        val playback = Playback(idgen.generateId(), user, timestamp, time, rawPlaybackData)
+        val playback = Playback(idgen.generateId(), user, timestamp, time, rawPlaybackData, source)
         try {
             mbsService.identifyPlayback(recordingTitle, releaseTitle, artists)
                     .get()
@@ -167,7 +167,14 @@ class PlaybackBoundary {
                 val timestamp = playbackRes.timestamp ?: Instant.now().epochSecond
                 val time = playbackRes.playTime ?: playbackRes.trackLength
 
-                val playback = Playback(playbackRes.id ?: idgen.generateId(), user, timestamp, time, rawPlaybackData)
+                val playback = Playback(
+                        playbackRes.id ?: idgen.generateId(),
+                        user,
+                        timestamp,
+                        time,
+                        rawPlaybackData,
+                        playbackRes.source
+                )
                 try {
                     identifiedPlaybackFuture
                             .get()
