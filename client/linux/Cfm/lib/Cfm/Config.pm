@@ -26,6 +26,7 @@ my @cli_args = (
     'player=s',
     'quiet|q',
     'threshold=i',
+    'import-source=s',
 );
 
 my %conf_default = (

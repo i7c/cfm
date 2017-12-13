@@ -81,6 +81,7 @@ sub cmd_add {
         discNumber     => $kv->{disc},
         trackNumber    => $kv->{track},
         id             => $kv->{id},
+        source         => $kv->{source},
     );
     my $response = $self->playback_service->create_playback($playback);
     $self->formatter->playback($response);

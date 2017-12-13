@@ -8,6 +8,7 @@ use Log::Any qw/$log/;
 use Cfm::Autowire;
 use Cfm::Client::CfmClient;
 use Cfm::Playback::PlaybackService;
+use Sys::Hostname;
 
 has client => singleton 'Cfm::Client::CfmClient';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
@@ -25,6 +26,7 @@ sub track_ended {
         trackNumber    => $track->{trackNumber},
         trackLength    => $track->{length_s},
         playTime       => $elapsed,
+        source         => hostname,
     );
 
     $self->playback_service->create_playback($playback);

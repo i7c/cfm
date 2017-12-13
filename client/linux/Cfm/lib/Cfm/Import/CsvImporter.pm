@@ -44,6 +44,7 @@ sub import_csv {
     my $count = 0;
     my $errors = 0;
     my $report_file = undef;
+    my $source = $self->config->require_option("import-source");
 
     open(my $fh, '<:encoding(UTF-8)', $filename) or die $log->fatal("Cannot read file $filename");
     if ($self->config->has_option("fail-log")) {
@@ -55,7 +56,7 @@ sub import_csv {
     while (($chunk = $self->_read_chunk($fh)) && scalar $chunk->@* > 0) {
 
         try {
-            my $batch = $self->_make_playbacks($chunk);
+            my $batch = $self->_make_playbacks($chunk, $source);
             my $res = $self->playback_service->batch_create(Cfm::Playback::PlaybackBatchRes->new(playbacks => $batch));
             for (my $i = 0; $i < scalar $chunk->@*; $i++) {
                 if ($res->results->[$i]->success) {
@@ -89,7 +90,7 @@ sub _read_chunk {
 }
 
 sub _make_playbacks {
-    my ($self, $lines) = @_;
+    my ($self, $lines, $source) = @_;
 
     [ map {
         $_ =~ $self->line_pattern;
@@ -98,6 +99,7 @@ sub _make_playbacks {
             recordingTitle => $+{title},
             releaseTitle   => $+{release},
             timestamp      => Time::Piece->strptime($+{timestamp}, $self->date_format)->epoch,
+            source         => $source,
         );
     } $lines->@* ];
 }
