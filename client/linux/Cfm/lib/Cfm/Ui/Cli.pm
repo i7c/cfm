@@ -22,10 +22,10 @@ my %command_mapping = (
 has loglevel => inject 'loglevel';
 
 has config => singleton 'Cfm::Config';
-has playback_service => singleton 'Cfm::Playback::PlaybackService';
-has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has csv_importer => singleton 'Cfm::Import::CsvImporter';
+has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
+has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
 sub run {
     my ($self, @args) = @_;
