@@ -11,12 +11,15 @@ use Cfm::Import::CsvImporter;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Format::Formatter;
+use Cfm::User::User;
+use Cfm::User::UserService;
 
 my %command_mapping = (
     list           => \&cmd_list,
     add            => \&cmd_add,
     'import-csv'   => \&cmd_import_csv,
     'record-mpris' => \&cmd_record_mpris,
+    'create-user'  => \&cmd_create_user,
 );
 
 has loglevel => inject 'loglevel';
@@ -26,6 +29,7 @@ has csv_importer => singleton 'Cfm::Import::CsvImporter';
 has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
+has user_service => singleton 'Cfm::User::UserService';
 
 sub run {
     my ($self, @args) = @_;
@@ -102,6 +106,26 @@ sub cmd_record_mpris {
     my $player = $self->config->require_option("player");
     $self->loglevel->("info") unless $self->config->has_option("quiet");
     $self->mpris2->listen($player);
+}
+
+sub cmd_create_user {
+    my ($self) = @_;
+
+    my $kv = $self->config->kv_store();
+    my $state;
+    if (defined $kv->{state} && $kv->{state} eq "active") {
+        $state = $Cfm::User::User::active;
+    } else {
+        $state = $Cfm::User::User::inactive;
+    }
+    my $user = Cfm::User::User->new(
+        name       => $kv->{name} // $kv->{user},
+        password   => $kv->{password} // $kv->{pass},
+        state      => $state,
+        systemUser => 0,
+    );
+    my $response = $self->user_service->create_user($user);
+    $self->formatter->user($response);
 }
 
 1;

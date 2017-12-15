@@ -18,5 +18,6 @@ sub choose_instance {
 
 sub playback_list {}
 sub playback {}
+sub user {}
 
 1;

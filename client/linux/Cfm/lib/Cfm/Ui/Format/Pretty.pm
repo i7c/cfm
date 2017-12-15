@@ -48,4 +48,15 @@ sub playback {
     print $table;
 }
 
+sub user {
+    my ($self, $user) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols("Property", "Value");
+    $table->addRow("Name", $user->name);
+    $table->addRow("State", $user->state);
+    $table->addRow("System User", $user->systemUser);
+    print $table;
+}
+
 1;

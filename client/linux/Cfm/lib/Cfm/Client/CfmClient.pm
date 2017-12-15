@@ -53,4 +53,12 @@ sub batch_create_playbacks {
         $self->post_json("/rec/v1/playbacks/batch", Cfm::Playback::PlaybackBatchRes->to_hash($batch))
     );
 }
+
+sub post_user {
+    my ($self, $user) = @_;
+
+    Cfm::User::User->from_hash(
+        $self->post_json("/rec/v1/users", Cfm::User::User->to_hash($user))
+    );
+}
 1;
