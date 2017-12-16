@@ -14,9 +14,9 @@ sub _check_mandatory_fields {
 }
 
 sub from_hash {
-    my ($class, $content) = @_;
+    my ($class, $content, $skip_check) = @_;
 
-    $class->_check_mandatory_fields($content);
+    $class->_check_mandatory_fields($content) unless $skip_check;
     my $obj = $class->deserialise($content);
     return bless $obj, $class;
 }
