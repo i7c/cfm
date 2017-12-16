@@ -73,6 +73,12 @@ sub post_json {
     $self->_generic_json_request("POST", $path, $content, $params);
 }
 
+sub put_json {
+    my ($self, $path, $content, $params) = @_;
+
+    $self->_generic_json_request("PUT", $path, $content, $params);
+}
+
 sub patch_json {
     my ($self, $path, $content, $params) = @_;
 
