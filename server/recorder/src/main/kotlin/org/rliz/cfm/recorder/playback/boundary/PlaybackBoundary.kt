@@ -7,10 +7,7 @@ import org.rliz.cfm.recorder.common.log.logger
 import org.rliz.cfm.recorder.mbs.service.MbsService
 import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
-import org.rliz.cfm.recorder.playback.data.Playback
-import org.rliz.cfm.recorder.playback.data.PlaybackRepo
-import org.rliz.cfm.recorder.playback.data.RawPlaybackData
-import org.rliz.cfm.recorder.playback.data.RawPlaybackDataRepo
+import org.rliz.cfm.recorder.playback.data.*
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -47,14 +44,16 @@ class PlaybackBoundary {
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
                        playbackTimestamp: Long? = null, source: String?): PlaybackDto {
 
-        val rawPlaybackData = rawPlaybackDataRepo.save(RawPlaybackData(
-                artists = artists,
-                recordingTitle = recordingTitle,
-                releaseTitle = releaseTitle,
-                length = trackLength,
-                discNumber = discNumber,
-                trackNumber = trackNumber
-        ))
+        val rawPlaybackData = rawPlaybackDataRepo.save(
+                RawPlaybackData(
+                        artists = artists,
+                        recordingTitle = recordingTitle,
+                        releaseTitle = releaseTitle,
+                        length = trackLength,
+                        discNumber = discNumber,
+                        trackNumber = trackNumber
+                )
+        )
 
         val user = userBoundary.getCurrentUser()
         val timestamp = playbackTimestamp ?: Instant.now().epochSecond
@@ -151,18 +150,22 @@ class PlaybackBoundary {
                 && playbackRes.releaseTitle.isNotBlank()) {
 
             val identifiedPlaybackFuture =
-                    mbsService.identifyPlayback(playbackRes.recordingTitle,
+                    mbsService.identifyPlayback(
+                            playbackRes.recordingTitle,
                             playbackRes.releaseTitle,
-                            playbackRes.artists)
+                            playbackRes.artists
+                    )
             return@map {
-                val rawPlaybackData = rawPlaybackDataRepo.save(RawPlaybackData(
-                        artists = playbackRes.artists,
-                        recordingTitle = playbackRes.recordingTitle,
-                        releaseTitle = playbackRes.releaseTitle,
-                        length = playbackRes.trackLength,
-                        discNumber = playbackRes.discNumber,
-                        trackNumber = playbackRes.trackNumber
-                ))
+                val rawPlaybackData = rawPlaybackDataRepo.save(
+                        RawPlaybackData(
+                                artists = playbackRes.artists,
+                                recordingTitle = playbackRes.recordingTitle,
+                                releaseTitle = playbackRes.releaseTitle,
+                                length = playbackRes.trackLength,
+                                discNumber = playbackRes.discNumber,
+                                trackNumber = playbackRes.trackNumber
+                        )
+                )
                 val user = userBoundary.getCurrentUser()
                 val timestamp = playbackRes.timestamp ?: Instant.now().epochSecond
                 val time = playbackRes.playTime ?: playbackRes.trackLength
@@ -183,10 +186,12 @@ class PlaybackBoundary {
                                 playback.releaseGroupUuid = releaseGroupId
                             }
                 } catch (e: ExecutionException) {
-                    log.info("Failed to lookup details via mbs service for new playback ({},{},{})",
+                    log.info(
+                            "Failed to lookup details via mbs service for new playback ({},{},{})",
                             playbackRes.recordingTitle,
                             playbackRes.releaseTitle,
-                            playbackRes.artists)
+                            playbackRes.artists
+                    )
                     log.debug("Causing exception for failed lookup during create playback", e)
                 }
                 playbackRepo.save(playback)
@@ -208,8 +213,10 @@ class PlaybackBoundary {
                 val recordingsFuture = mbsService.getRecordingView(it.mapNotNull { it.recordingUuid })
 
                 val (recordings, releaseGroups) = try {
-                    Pair(recordingsFuture.get().elements.map { it.id to it }.toMap(),
-                            releaseGroupsFuture.get().elements.map { it.id to it }.toMap())
+                    Pair(
+                            recordingsFuture.get().elements.map { it.id to it }.toMap(),
+                            releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
+                    )
                 } catch (e: Exception) {
                     return@let it.map { it.toDto() }
                 }
