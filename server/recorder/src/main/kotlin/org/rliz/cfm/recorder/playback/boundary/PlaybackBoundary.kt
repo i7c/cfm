@@ -40,6 +40,9 @@ class PlaybackBoundary {
     @Autowired
     lateinit var mbsService: MbsService
 
+    @Autowired
+    lateinit var nowPlayingRepo: NowPlayingRepo
+
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
                        playbackTimestamp: Long? = null, source: String?): PlaybackDto {
@@ -200,6 +203,64 @@ class PlaybackBoundary {
         } else return@map { BatchResultItem(false) }
     }.map { it() }
 
+    fun setNowPlaying(artists: List<String>, title: String, release: String, timestamp: Long?) =
+            userBoundary.getCurrentUser().let { user ->
+
+                val nowPlaying = (nowPlayingRepo.findOneByUserUuid(user.uuid!!) ?: NowPlaying()).apply {
+                    this.artists = artists
+                    this.recordingTitle = title
+                    this.releaseTitle = release
+                    this.timestamp = timestamp ?: Instant.now().epochSecond
+                    this.user = user
+                    this.recordingUuid = null
+                    this.releaseGroupUuid = null
+                }
+
+                try {
+                    mbsService.identifyPlayback(title, release, artists)
+                            .get().apply {
+                        nowPlaying.recordingUuid = this.recordingId
+                        nowPlaying.releaseGroupUuid = this.releaseGroupId
+                    }
+                } catch (e: ExecutionException) {
+                    log.info(
+                            "Failed to lookup details via mbs service for new playback ({},{},{})",
+                            title,
+                            release,
+                            artists
+                    )
+                }
+                makePlaybackView(nowPlayingRepo.save(nowPlaying))
+            }
+
+    private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { nowPlaying ->
+        if (nowPlaying.recordingUuid != null && nowPlaying.releaseGroupUuid != null) {
+            val recordingViewFuture = mbsService.getRecordingView(listOf(nowPlaying.recordingUuid!!))
+            val releaseGroupViewFuture = mbsService.getReleaseGroupView(listOf(nowPlaying.releaseGroupUuid!!))
+
+            try {
+                val recordingView = recordingViewFuture.get().elements.first()
+                val releaseGroupView = releaseGroupViewFuture.get().elements.first()
+
+                return@let PlaybackDto(
+                        artists = recordingView.artists,
+                        recordingTitle = recordingView.name,
+                        releaseTitle = releaseGroupView.name,
+                        timestamp = nowPlaying.timestamp,
+                        broken = false
+                )
+            } catch (e: ExecutionException) {
+                // nothing
+            }
+        }
+        PlaybackDto(
+                artists = nowPlaying.artists!!,
+                recordingTitle = nowPlaying.recordingTitle!!,
+                releaseTitle = nowPlaying.releaseTitle!!,
+                timestamp = nowPlaying.timestamp,
+                broken = true
+        )
+    }
 
     private fun makePlaybackView(playback: Playback): PlaybackDto = playback.let { makePlaybackView(listOf(it)) }.first()
 
