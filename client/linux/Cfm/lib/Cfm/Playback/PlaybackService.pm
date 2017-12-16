@@ -30,4 +30,11 @@ sub batch_create {
     $self->client->batch_create_playbacks($batch);
 }
 
+sub set_now_playing {
+    my ($self, $playback) = @_;
+
+    $log->info("Set now playing ...");
+    $self->client->put_now_playing($playback)
+}
+
 1;

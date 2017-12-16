@@ -61,4 +61,13 @@ sub post_user {
         $self->post_json("/rec/v1/users", Cfm::User::User->to_hash($user))
     );
 }
+
+sub put_now_playing {
+    my ($self, $playback) = @_;
+
+    Cfm::Playback::Playback->from_hash(
+        $self->put_json("/rec/v1/playbacks/now", Cfm::Playback::Playback->to_hash($playback)),
+        1 # skip field checks
+    );
+}
 1;

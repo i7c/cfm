@@ -13,6 +13,20 @@ use Sys::Hostname;
 has client => singleton 'Cfm::Client::CfmClient';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
+sub track_started {
+    my ($self, $time, $track) = @_;
+
+    $log->info("START " . (join ", ", $track->{artists}->@*) . " - $track->{title} ($track->{release})");
+
+    my $playback = Cfm::Playback::Playback->new(
+        artists        => $track->{artists},
+        recordingTitle => $track->{title},
+        releaseTitle   => $track->{release},
+    );
+
+    $self->playback_service->set_now_playing($playback);
+}
+
 sub track_ended {
     my ($self, $time, $elapsed, $track) = @_;
 
