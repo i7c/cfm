@@ -10,7 +10,6 @@ use MCE::Queue;
 use Net::DBus;
 use Net::DBus::Reactor;
 use Data::Dumper;
-use Data::Printer;
 use Time::HiRes qw/time/;
 
 use Cfm::Autowire;
