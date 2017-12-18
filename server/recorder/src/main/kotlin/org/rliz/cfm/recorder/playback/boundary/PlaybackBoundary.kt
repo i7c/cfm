@@ -233,6 +233,10 @@ class PlaybackBoundary {
                 makePlaybackView(nowPlayingRepo.save(nowPlaying))
             }
 
+    fun getNowPlaying(): PlaybackDto = (nowPlayingRepo.findOneByUserUuid(userBoundary.getCurrentUser().uuid!!)?.apply {
+        if (this.timestamp!! + 10 * 60 < Instant.now().epochSecond) throw NotFoundException(NowPlaying::class, "user")
+    }?.let(this::makePlaybackView)) ?: throw NotFoundException(NowPlaying::class, "user")
+
     private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { nowPlaying ->
         if (nowPlaying.recordingUuid != null && nowPlaying.releaseGroupUuid != null) {
             val recordingViewFuture = mbsService.getRecordingView(listOf(nowPlaying.recordingUuid!!))
