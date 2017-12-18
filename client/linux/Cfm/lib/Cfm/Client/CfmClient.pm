@@ -70,4 +70,13 @@ sub put_now_playing {
         1 # skip field checks
     );
 }
+
+sub get_now_playing {
+    my ($self) = @_;
+
+    Cfm::Playback::Playback->from_hash(
+        $self->get_json("/rec/v1/playbacks/now"),
+        1
+    );
+}
 1;

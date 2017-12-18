@@ -20,6 +20,7 @@ my %command_mapping = (
     'import-csv'   => \&cmd_import_csv,
     'record-mpris' => \&cmd_record_mpris,
     'create-user'  => \&cmd_create_user,
+    now            => \&cmd_now,
 );
 
 has loglevel => inject 'loglevel';
@@ -126,6 +127,13 @@ sub cmd_create_user {
     );
     my $response = $self->user_service->create_user($user);
     $self->formatter->user($response);
+}
+
+sub cmd_now {
+    my ($self) = @_;
+
+    my $np = $self->playback_service->get_now_playing;
+    $self->formatter->playback($np);
 }
 
 1;

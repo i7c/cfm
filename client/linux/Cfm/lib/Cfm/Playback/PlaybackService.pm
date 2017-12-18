@@ -37,4 +37,10 @@ sub set_now_playing {
     $self->client->put_now_playing($playback)
 }
 
+sub get_now_playing {
+    my ($self) = @_;
+
+    $self->client->get_now_playing;
+}
+
 1;
