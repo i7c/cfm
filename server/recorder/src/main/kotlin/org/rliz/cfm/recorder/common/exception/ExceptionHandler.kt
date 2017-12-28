@@ -16,7 +16,7 @@ class ExceptionHandler {
     }
 
     fun <E: Exception> logged(e: E): E {
-        log.info("${e.message} [${currentUser()?.uuid}]")
+        log.info("${e.message} [${currentUser().uuid}]")
         log.info("Uncaught exception", e)
         return e
     }
