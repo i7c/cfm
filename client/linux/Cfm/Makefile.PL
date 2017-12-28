@@ -24,6 +24,7 @@ WriteMakefile(
         "JSON"                  => "2.94",
         "Carp"                  => "1.38",
         "Config::Simple"        => "4.58",
+        "Text::CSV"             => 0,
         "Data::Printer"         => "0.40",
         "Date::Format"          => "2.24",
         "Getopt::Long"          => "2.50",

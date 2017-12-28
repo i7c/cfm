@@ -27,6 +27,7 @@ my @cli_args = (
     'quiet|q',
     'threshold=i',
     'import-source=s',
+    'format=s',
 );
 
 my %conf_default = (
@@ -35,6 +36,7 @@ my %conf_default = (
     page              => 0,
     threshold         => 50,
     'gap-to-complete' => 3,
+    format            => 'pretty',
 );
 
 has conf => (
