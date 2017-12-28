@@ -1,5 +1,6 @@
 package org.rliz.cfm.recorder.playback.api
 
+import org.rliz.cfm.recorder.playback.boundary.PlaybackDto
 import java.util.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -16,4 +17,14 @@ data class PlaybackRes(
         val broken: Boolean? = null,
         val id: UUID? = null,
         val source: String? = null
+)
+
+fun PlaybackDto.toRes(): PlaybackRes = PlaybackRes(
+        artists = this.artists,
+        recordingTitle = this.recordingTitle,
+        releaseTitle = this.releaseTitle,
+        timestamp = this.timestamp,
+        playTime = this.playTime,
+        broken = this.broken,
+        id = this.id
 )

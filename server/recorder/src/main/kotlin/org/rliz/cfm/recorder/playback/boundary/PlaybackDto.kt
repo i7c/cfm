@@ -1,6 +1,5 @@
 package org.rliz.cfm.recorder.playback.boundary
 
-import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.data.Playback
 import java.util.*
 
@@ -16,15 +15,6 @@ data class PlaybackDto(
         val broken: Boolean? = null,
         val id: UUID? = null) {
 
-    fun toRes(): PlaybackRes = PlaybackRes(
-            artists = this.artists,
-            recordingTitle = this.recordingTitle,
-            releaseTitle = this.releaseTitle,
-            timestamp = this.timestamp,
-            playTime = this.playTime,
-            broken = this.broken,
-            id = this.id
-    )
 }
 
 fun Playback.toDto(): PlaybackDto =
