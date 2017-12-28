@@ -45,7 +45,8 @@ class PlaybackApi {
     fun patchPlayback(@PathVariable(name = "playbackId", required = true) playbackId: UUID,
                       @RequestParam(name = "skipMbs", required = false) skipMbs: Boolean?,
                       @RequestBody body: PatchPlaybackRes): ResponseEntity<PlaybackRes> =
-            playbackBoundary.updatePlayback(playbackId,
+            playbackBoundary.updatePlayback(
+                    playbackId,
                     skipMbs ?: false,
                     artists = body.artists,
                     recordingTitle = body.recordingTitle,
