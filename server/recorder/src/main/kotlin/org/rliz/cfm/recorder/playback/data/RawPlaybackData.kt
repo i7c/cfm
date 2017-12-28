@@ -20,6 +20,11 @@ open class RawPlaybackData {
     var artists: List<String>? = null
 
     @NotNull
+    @Size(min = 1, max = 1024)
+    @Column(length = 1024)
+    var artistJson: String? = null
+
+    @NotNull
     @Size(min = 1)
     var recordingTitle: String? = null
 
@@ -35,9 +40,10 @@ open class RawPlaybackData {
 
     constructor()
 
-    constructor(artists: List<String>?, recordingTitle: String?, releaseTitle: String?, length: Long? = null,
-                discNumber: Int? = null, trackNumber: Int? = null) : this() {
+    constructor(artists: List<String>?, artistJson: String?, recordingTitle: String?, releaseTitle: String?,
+                length: Long? = null, discNumber: Int? = null, trackNumber: Int? = null) : this() {
         this.artists = artists
+        this.artistJson = artistJson
         this.recordingTitle = recordingTitle
         this.releaseTitle = releaseTitle
         this.length = length

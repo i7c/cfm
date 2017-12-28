@@ -1,5 +1,6 @@
 package org.rliz.cfm.recorder.playback.boundary
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.rliz.cfm.recorder.common.data.contentMap
 import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
@@ -43,6 +44,9 @@ class PlaybackBoundary {
     @Autowired
     lateinit var nowPlayingRepo: NowPlayingRepo
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
                        playbackTimestamp: Long? = null, source: String?): PlaybackDto {
@@ -50,6 +54,7 @@ class PlaybackBoundary {
         val rawPlaybackData = rawPlaybackDataRepo.save(
                 RawPlaybackData(
                         artists = artists,
+                        artistJson = objectMapper.writeValueAsString(artists),
                         recordingTitle = recordingTitle,
                         releaseTitle = releaseTitle,
                         length = trackLength,
@@ -100,7 +105,10 @@ class PlaybackBoundary {
         demandOwnership(playback)
 
         val originalData = playback.originalData!!
-        if (artists != null) originalData.artists = artists
+        if (artists != null) {
+            originalData.artists = artists
+            originalData.artistJson = objectMapper.writeValueAsString(artists)
+        }
         if (recordingTitle != null) originalData.recordingTitle = recordingTitle
         if (releaseTitle != null) originalData.releaseTitle = releaseTitle
         if (trackLength != null) originalData.length = trackLength
@@ -162,6 +170,7 @@ class PlaybackBoundary {
                 val rawPlaybackData = rawPlaybackDataRepo.save(
                         RawPlaybackData(
                                 artists = playbackRes.artists,
+                                artistJson = objectMapper.writeValueAsString(playbackRes.artists),
                                 recordingTitle = playbackRes.recordingTitle,
                                 releaseTitle = playbackRes.releaseTitle,
                                 length = playbackRes.trackLength,
