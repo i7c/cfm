@@ -90,6 +90,11 @@ class PlaybackBoundary {
                     else playbackRepo.findPlaybacksForUser(userId, pageable)
             )
 
+    fun getAccumulatedBrokenPlaybacks(userId: UUID, pageable: Pageable): Page<AccumulatedPlaybacksDto> =
+            playbackRepo.findAccumulatedBrokenPlaybacks(userId, pageable)
+                    .map { acc -> acc.toDto(objectMapper.readValue(acc.artistsJson, List::class.java) as List<String>) }
+
+
     fun updatePlayback(playbackId: UUID,
                        skipMbs: Boolean,
                        artists: List<String>? = null,

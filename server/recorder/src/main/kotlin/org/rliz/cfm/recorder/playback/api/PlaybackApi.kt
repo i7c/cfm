@@ -3,6 +3,7 @@ package org.rliz.cfm.recorder.playback.api
 import org.rliz.cfm.recorder.common.api.toHttpResponse
 import org.rliz.cfm.recorder.common.api.toRes
 import org.rliz.cfm.recorder.common.security.currentUser
+import org.rliz.cfm.recorder.playback.boundary.AccumulatedPlaybacksDto
 import org.rliz.cfm.recorder.playback.boundary.PlaybackBoundary
 import org.rliz.cfm.recorder.playback.boundary.PlaybackDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -96,5 +97,13 @@ class PlaybackApi {
             playbackBoundary.getNowPlaying()
                     .toRes()
                     .toHttpResponse(HttpStatus.OK)
+
+    @Transactional(readOnly = true)
+    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/acc"))
+    fun getAccumulatedBroken(pageable: Pageable) =
+            playbackBoundary.getAccumulatedBrokenPlaybacks(currentUser().uuid!!, pageable)
+                    .toRes(AccumulatedPlaybacksDto::toRes)
+                    .toHttpResponse(HttpStatus.OK)
+
 }
 

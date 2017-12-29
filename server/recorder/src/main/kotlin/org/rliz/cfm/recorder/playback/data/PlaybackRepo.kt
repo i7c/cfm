@@ -40,6 +40,25 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
                 """)
     fun findBrokenPlaybacksForUser(@Param("userId") userId: UUID, pageable: Pageable): Page<Playback>
 
+    @Query(value = """
+        select
+        new org.rliz.cfm.recorder.playback.data.AccumulatedPlaybacks(count(p), o.artistJson, o.recordingTitle, o.releaseTitle)
+        from Playback p
+        join p.originalData o
+        join p.user u
+        group by o.artistJson, o.recordingTitle, o.releaseTitle, u.uuid, p.recordingUuid, p.releaseGroupUuid
+        having u.uuid = :userId and p.recordingUuid is null and p.releaseGroupUuid is null
+        order by count(p) desc, o.artistJson asc
+        """,
+            countQuery = """
+        select count(p)
+        from Playback p
+        join p.originalData o
+        join p.user u
+        group by o.artistJson, o.recordingTitle, o.releaseTitle, u.uuid, p.recordingUuid, p.releaseGroupUuid
+        having u.uuid = :userId and p.recordingUuid is null and p.releaseGroupUuid is null
+                """)
+    fun findAccumulatedBrokenPlaybacks(@Param("userId") userId: UUID, pageable: Pageable): Page<AccumulatedPlaybacks>
 
     @EntityGraph(attributePaths = arrayOf("originalData", "user"))
     fun findOneByUuid(uuid: UUID): Playback?
