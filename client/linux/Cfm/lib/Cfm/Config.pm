@@ -24,6 +24,7 @@ my @cli_args = (
     'fail-log=s',
     'format=s',
     'import-source=s',
+    'option|o=s@',
     'page|p=i',
     'player=s',
     'quiet|q',
@@ -79,6 +80,12 @@ sub add_flags {
     $log->debug("seen input: " . join " ", $args->@*);
     $log->info("parsing flags");
     GetOptionsFromArray($args, \%options, @cli_args);
+
+    # Enhance options hash by all custom options specified with -o
+    my $okv = $self->_split_kv_array($options{"option"});
+    map {
+        $options{$_} = $okv->{$_};
+    } keys $okv->%*;
 
     map {
         $log->debug("FLAG: $_=$options{$_}");
