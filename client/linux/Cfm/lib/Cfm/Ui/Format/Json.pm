@@ -7,6 +7,7 @@ with 'Cfm::Ui::Format::Formatter';
 
 use Cfm::Autowire;
 use Cfm::Playback::Playback;
+use Encode;
 use JSON::MaybeXS;
 
 sub playback_list {
@@ -21,19 +22,28 @@ sub playback_list {
         totalPages => $pbl->totalPages,
     );
 
-    print JSON::encode_json(\%res);
+    $self->_print(encode_json(\%res));
 }
 
 sub playback {
     my ($self, $pb) = @_;
 
-    print JSON::encode_json(Cfm::Playback::Playback->to_hash($pb));
+    $self->_print(encode_json(Cfm::Playback::Playback->to_hash($pb)));
 }
 
 sub user {
     my ($self, $user) = @_;
 
-    print JSON::encode_json(Cfm::User::User->to_hash($user));
+    $self->_print(encode_json(fm::User::User->to_hash($user)));
+}
+
+sub _print {
+    my ($self, $x) = @_;
+
+    # Let's fool perl's IO layer. encode_json actually writes a raw byte stream, but somehow fails to set the
+    # utf8 flag. This leads to perl's IO layer trying to encode everything *again*. Not nice, but works for now. :)
+    Encode::_utf8_on($x);
+    print $x;
 }
 
 1;
