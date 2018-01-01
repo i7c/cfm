@@ -35,7 +35,7 @@ sub playback {
 sub user {
     my ($self, $user) = @_;
 
-    $self->_print(encode_json(fm::User::User->to_hash($user)));
+    $self->_print(encode_json(Cfm::User::User->to_hash($user)));
 }
 
 sub accumulated_playbacks {
