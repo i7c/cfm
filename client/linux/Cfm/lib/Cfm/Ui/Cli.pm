@@ -67,9 +67,16 @@ sub greedy_match_command {
 sub cmd_list {
     my ($self) = @_;
 
-    my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
-        $self->config->get_option("broken"));
-    $self->formatter->playback_list($playbacks);
+    # if the user specifies --acc, we use the service method to get accumulated broken playbacks, rather than the
+    # regular list. --broken then has no effect on the result.
+    if ($self->config->has_option('acc')) {
+        my $acc_playbacks = $self->playback_service->accumulated_broken_playbacks($self->config->get_option('page') - 1);
+        $self->formatter->accumulated_playbacks($acc_playbacks);
+    } else {
+        my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
+            $self->config->get_option("broken"));
+        $self->formatter->playback_list($playbacks);
+    }
 }
 
 sub cmd_add {

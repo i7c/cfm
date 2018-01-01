@@ -34,4 +34,13 @@ sub user {
     $self->csv->print(\*STDOUT, [ $user->name, $user->state, $user->systemUser ]);
 }
 
+sub accumulated_playbacks {
+    my ($self, $acc_playbacks) = @_;
+
+    for my $acc ($acc_playbacks->elements->@*) {
+        $self->csv->print(\*STDOUT, [ $acc->occurrences, $acc->artists->[0], $acc->recordingTitle,
+                $acc->releaseTitle ]);
+    }
+}
+
 1;

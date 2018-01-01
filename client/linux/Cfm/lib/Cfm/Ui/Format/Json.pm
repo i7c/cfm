@@ -6,6 +6,7 @@ with 'Cfm::Singleton';
 with 'Cfm::Ui::Format::Formatter';
 
 use Cfm::Autowire;
+use Cfm::Playback::AccumulatedPlaybacks;
 use Cfm::Playback::Playback;
 use Encode;
 use JSON::MaybeXS;
@@ -35,6 +36,21 @@ sub user {
     my ($self, $user) = @_;
 
     $self->_print(encode_json(fm::User::User->to_hash($user)));
+}
+
+sub accumulated_playbacks {
+    my ($self, $acc_playbacks) = @_;
+
+    my %res = (
+        elements   => [ map {Cfm::Playback::AccumulatedPlaybacks->to_hash($_)} $acc_playbacks->elements->@* ],
+        size       => $acc_playbacks->size,
+        count      => $acc_playbacks->count,
+        number     => $acc_playbacks->number,
+        total      => $acc_playbacks->total,
+        totalPages => $acc_playbacks->totalPages,
+    );
+
+    $self->_print(encode_json(\%res));
 }
 
 sub _print {

@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 23;
+use Test::More tests => 29;
 use Test::Exception;
 use Test::MockObject;
 
@@ -67,6 +67,33 @@ sub mock_config {
     $mock_p->called_args_pos_is(1, 3, 0, "broken arg");
     $mock_f->called_pos_ok(1, "playback_list", "called playback_list on formatter");
     $mock_f->called_args_pos_is(1, 2, 478, "formatter called with playback list result");
+    is ($mock_f->call_pos(2), undef, "no further calls on formatter");
+}
+
+# list --acc command
+{
+    my $mock_p = Test::MockObject->new()
+        ->mock("accumulated_broken_playbacks", sub {945612;});
+
+    my $mock_f = Test::MockObject->new()
+        ->set_true("accumulated_playbacks");
+
+    my $mock_c = mock_config({
+        page => 9,
+        acc  => 1,
+    });
+
+    cut(
+        playback_service => $mock_p,
+        formatter        => $mock_f,
+        config           => $mock_c,
+    )->run("list");
+
+    $mock_p->called_pos_ok(1, "accumulated_broken_playbacks", "called accumulated_broken_playbacks on service");
+    $mock_p->called_args_pos_is(1, 2, 8, "page arg");
+    $mock_f->called_pos_ok(1, "accumulated_playbacks", "called accumulated_playbacks on formatter");
+    $mock_f->called_args_pos_is(1, 2, 945612, "formatter called with accumulated playbacks result");
+    is ($mock_f->call_pos(2), undef, "no further calls on formatter");
 }
 
 # add command with args

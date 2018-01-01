@@ -17,6 +17,12 @@ sub my_playbacks {
     $self->client->my_playbacks($broken // 0, $page);
 }
 
+sub accumulated_broken_playbacks {
+    my ($self, $page) = @_;
+
+    $self->client->get_accumulated_playbacks($page);
+}
+
 sub create_playback {
     my ($self, $playback) = @_;
 

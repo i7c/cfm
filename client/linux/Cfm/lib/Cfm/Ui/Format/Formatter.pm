@@ -32,5 +32,6 @@ sub choose_instance {
 sub playback_list {}
 sub playback {}
 sub user {}
+sub accumulated_playbacks {}
 
 1;

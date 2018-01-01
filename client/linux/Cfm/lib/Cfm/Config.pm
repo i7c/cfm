@@ -16,6 +16,7 @@ my @config_locations = (
 );
 
 my @cli_args = (
+    'acc',
     'broken',
     'csv-format=s',
     'date-format=s',

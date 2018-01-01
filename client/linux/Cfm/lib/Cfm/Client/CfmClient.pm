@@ -5,11 +5,12 @@ use warnings;
 use Moo;
 use Cfm::Autowire;
 
-use Cfm::Config;
 use Cfm::Common::ListRes;
+use Cfm::Config;
+use Cfm::Playback::AccumulatedPlaybacks;
+use Cfm::Playback::BatchResultRes;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackBatchRes;
-use Cfm::Playback::BatchResultRes;
 
 with 'Cfm::Singleton';
 extends 'Cfm::Client::Client';
@@ -79,4 +80,17 @@ sub get_now_playing {
         1
     );
 }
+
+sub get_accumulated_playbacks {
+    my ($self, $page) = @_;
+
+    my @params = ();
+    push @params, page => $page if $page > 0;
+
+    Cfm::Common::ListRes->from_hash($self->get_json("/rec/v1/playbacks/acc", \@params),
+        sub {
+            Cfm::Playback::AccumulatedPlaybacks->from_hash($_);
+        });
+}
+
 1;

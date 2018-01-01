@@ -59,4 +59,16 @@ sub user {
     print $table;
 }
 
+sub accumulated_playbacks {
+    my ($self, $acc_playbacks) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols("Occ", "Artists", "Title", "Release");
+    for my $acc ($acc_playbacks->elements->@*) {
+        $table->addRow($acc->occurrences, join("; ", $acc->artists->@*), $acc->recordingTitle, $acc->releaseTitle);
+    }
+    print $table;
+    print $self->common->list_details($acc_playbacks);
+}
+
 1;
