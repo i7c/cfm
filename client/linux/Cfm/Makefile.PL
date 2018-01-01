@@ -21,7 +21,7 @@ WriteMakefile(
         'Test::MockObject' => 0,
     },
     PREREQ_PM => {
-        "JSON"                  => "2.94",
+        "JSON::MaybeXS"         => "1.3.9",
         "Carp"                  => "1.38",
         "Config::Simple"        => "4.58",
         "Text::CSV"             => 0,

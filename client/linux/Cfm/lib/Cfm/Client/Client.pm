@@ -9,7 +9,7 @@ use LWP::UserAgent;
 use HTTP::Headers;
 use HTTP::Request;
 use Carp;
-use JSON;
+use JSON::MaybeXS;
 use Data::Dumper;
 use URI;
 
@@ -56,8 +56,8 @@ sub _generic_request {
 sub _generic_json_request {
     my ($self, $method, $path, $content, $params) = @_;
 
-    JSON::decode_json(
-        $self->_generic_request($method, $path, JSON::encode_json($content), $params)
+    decode_json(
+        $self->_generic_request($method, $path, encode_json($content), $params)
     );
 }
 
