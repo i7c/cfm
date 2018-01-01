@@ -217,14 +217,14 @@ class PlaybackBoundary {
         } else return@map { BatchResultItem(false) }
     }.map { it() }
 
-    fun setNowPlaying(artists: List<String>, title: String, release: String, timestamp: Long?) =
+    fun setNowPlaying(artists: List<String>, title: String, release: String, timestamp: Long?, trackLength: Long?) =
             userBoundary.getCurrentUser().let { user ->
 
                 val nowPlaying = (nowPlayingRepo.findOneByUserUuid(user.uuid!!) ?: NowPlaying()).apply {
                     this.artists = artists
                     this.recordingTitle = title
                     this.releaseTitle = release
-                    this.timestamp = timestamp ?: Instant.now().epochSecond
+                    this.timestamp = (timestamp ?: Instant.now().epochSecond) + (trackLength ?: 600)
                     this.user = user
                     this.recordingUuid = null
                     this.releaseGroupUuid = null
@@ -248,7 +248,7 @@ class PlaybackBoundary {
             }
 
     fun getNowPlaying(): PlaybackDto = (nowPlayingRepo.findOneByUserUuid(userBoundary.getCurrentUser().uuid!!)?.apply {
-        if (this.timestamp!! + 10 * 60 < Instant.now().epochSecond) throw NotFoundException(NowPlaying::class, "user")
+        if (this.timestamp!! < Instant.now().epochSecond) throw NotFoundException(NowPlaying::class, "user")
     }?.let(this::makePlaybackView)) ?: throw NotFoundException(NowPlaying::class, "user")
 
     private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { nowPlaying ->
