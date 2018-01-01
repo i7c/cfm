@@ -22,6 +22,7 @@ sub track_started {
         artists        => $track->{artists},
         recordingTitle => $track->{title},
         releaseTitle   => $track->{release},
+        trackLength    => int($track->{length_s}),
     );
 
     $self->playback_service->set_now_playing($playback);
@@ -38,7 +39,7 @@ sub track_ended {
         releaseTitle   => $track->{release},
         discNumber     => $track->{discNumber},
         trackNumber    => $track->{trackNumber},
-        trackLength    => $track->{length_s},
+        trackLength    => int($track->{length_s}),
         playTime       => $elapsed,
         source         => hostname,
     );
