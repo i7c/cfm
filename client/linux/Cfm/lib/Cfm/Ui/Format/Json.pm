@@ -14,16 +14,9 @@ use JSON::MaybeXS;
 sub playback_list {
     my ($self, $pbl) = @_;
 
-    my %res = (
-        elements   => [ map {Cfm::Playback::Playback->to_hash($_)} $pbl->elements->@* ],
-        size       => $pbl->size,
-        count      => $pbl->count,
-        number     => $pbl->number,
-        total      => $pbl->total,
-        totalPages => $pbl->totalPages,
-    );
-
-    $self->_print(encode_json(\%res));
+    $self->_print(encode_json(
+        $self->_list($pbl, sub {Cfm::Playback::Playback->to_hash($_)})
+    ));
 }
 
 sub playback {
@@ -41,16 +34,22 @@ sub user {
 sub accumulated_playbacks {
     my ($self, $acc_playbacks) = @_;
 
-    my %res = (
-        elements   => [ map {Cfm::Playback::AccumulatedPlaybacks->to_hash($_)} $acc_playbacks->elements->@* ],
-        size       => $acc_playbacks->size,
-        count      => $acc_playbacks->count,
-        number     => $acc_playbacks->number,
-        total      => $acc_playbacks->total,
-        totalPages => $acc_playbacks->totalPages,
-    );
+    $self->_print(encode_json(
+        $self->_list($acc_playbacks, sub {Cfm::Playback::AccumulatedPlaybacks->to_hash($_)})
+    ));
+}
 
-    $self->_print(encode_json(\%res));
+sub _list {
+    my ($self, $list, $trans) = @_;
+
+    + {
+        elements   => [ map {$trans->($_)} $list->elements->@* ],
+        size       => $list->size,
+        count      => $list->count,
+        number     => $list->number,
+        total      => $list->total,
+        totalPages => $list->totalPages,
+    }
 }
 
 sub _print {
