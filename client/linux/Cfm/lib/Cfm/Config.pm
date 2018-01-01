@@ -16,27 +16,27 @@ my @config_locations = (
 );
 
 my @cli_args = (
-    'set|s=s@',
+    'broken',
     'csv-format=s',
     'date-format=s',
-    'fail-log=s',
-    'page|p=i',
-    'broken',
     'debug-dump-config',
+    'fail-log=s',
+    'format=s',
+    'import-source=s',
+    'page|p=i',
     'player=s',
     'quiet|q',
+    'set|s=s@',
     'threshold=i',
-    'import-source=s',
-    'format=s',
 );
 
 my %conf_default = (
     'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
-    page              => 0,
-    threshold         => 50,
     'gap-to-complete' => 3,
     format            => 'pretty',
+    page              => 0,
+    threshold         => 50,
 );
 
 has conf => (
