@@ -12,7 +12,7 @@ use JSON::MaybeXS;
 sub playback_list {
     my ($self, $pbl) = @_;
 
-    my % res = (
+    my %res = (
         elements   => [ map {Cfm::Playback::Playback->to_hash($_)} $pbl->elements->@* ],
         size       => $pbl->size,
         count      => $pbl->count,
