@@ -89,10 +89,16 @@ sub add_flags {
 }
 
 sub kv_store {
-    my ($self) = @_;
+    my ($self, $over) = @_;
+
+    $self->_split_kv_array($self->conf->{$over // "set"});
+}
+
+sub _split_kv_array {
+    my ($self, $array) = @_;
 
     return {
-        map {m/^\s*([^:]*[^:\s]+)\s*:\s*(.*[^\s]+)\s*$/} $self->conf->{set}->@*
+        map {m/^\s*([^:]*[^:\s]+)\s*:\s*(.*[^\s]+)\s*$/} $array->@*
     }
 }
 
