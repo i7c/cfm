@@ -33,5 +33,6 @@ sub playback_list {}
 sub playback {}
 sub user {}
 sub accumulated_playbacks {}
+sub release_groups {}
 
 1;

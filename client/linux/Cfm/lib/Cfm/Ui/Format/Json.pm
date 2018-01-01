@@ -39,6 +39,14 @@ sub accumulated_playbacks {
     ));
 }
 
+sub release_groups {
+    my ($self, $rgs) = @_;
+
+    $self->_print(encode_json(
+        $self->_list($rgs, sub {Cfm::Mb::ReleaseGroup->to_hash($_)})
+    ));
+}
+
 sub _list {
     my ($self, $list, $trans) = @_;
 

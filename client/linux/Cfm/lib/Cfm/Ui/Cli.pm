@@ -8,6 +8,7 @@ use Cfm::Autowire;
 use Cfm::Config;
 use Cfm::Connector::Mpris2;
 use Cfm::Import::CsvImporter;
+use Cfm::Mb::MbService;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Format::Formatter;
@@ -21,6 +22,7 @@ my %command_mapping = (
     'record-mpris' => \&cmd_record_mpris,
     'create-user'  => \&cmd_create_user,
     now            => \&cmd_now,
+    'find-rg'      => \&cmd_find_rg,
 );
 
 has loglevel => inject 'loglevel';
@@ -28,6 +30,7 @@ has loglevel => inject 'loglevel';
 has config => singleton 'Cfm::Config';
 has csv_importer => singleton 'Cfm::Import::CsvImporter';
 has formatter => singleton 'Cfm::Ui::Format::Formatter';
+has mbservice => singleton 'Cfm::Mb::MbService';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has user_service => singleton 'Cfm::User::UserService';
@@ -141,6 +144,13 @@ sub cmd_now {
 
     my $np = $self->playback_service->get_now_playing;
     $self->formatter->playback($np);
+}
+
+sub cmd_find_rg {
+    my ($self, $rg, @artists) = @_;
+
+    my $rgs = $self->mbservice->identify_release_group(\@artists, $rg, $self->config->get_option("page") - 1);
+    $self->formatter->release_groups($rgs);
 }
 
 1;

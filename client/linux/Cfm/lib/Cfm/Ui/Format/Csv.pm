@@ -43,4 +43,12 @@ sub accumulated_playbacks {
     }
 }
 
+sub release_groups {
+    my ($self, $rgs) = @_;
+
+    for my $rg ($rgs->elements->@*) {
+        $self->csv->print(\*STDOUT, [ $rg->artists->[0], $rg->name, $rg->id ]);
+    }
+}
+
 1;

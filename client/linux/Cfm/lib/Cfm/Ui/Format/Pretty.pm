@@ -71,4 +71,16 @@ sub accumulated_playbacks {
     print $self->common->list_details($acc_playbacks);
 }
 
+sub release_groups {
+    my ($self, $rgs) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols("Artists", "Title", "Id");
+    for my $rg ($rgs->elements->@*) {
+        $table->addRow(join("; ", $rg->artists->@*), $rg->name, $rg->id);
+    }
+    print $table;
+    print $self->common->list_details($rgs);
+}
+
 1;

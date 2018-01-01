@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 29;
+use Test::More tests => 37;
 use Test::Exception;
 use Test::MockObject;
 
@@ -173,8 +173,34 @@ sub mock_config {
     cut(
         playback_service => $mock_pbs,
         formatter        => $mock_f,
+        config           => mock_config(),
     )->run(qw/now/);
 
     $mock_pbs->called_pos_ok(1, "get_now_playing", "now command asks pbs first");
     $mock_f->called_args_pos_is(1, 2, 994, "formatter gets returned playback");
+}
+
+# find rg
+{
+    my $mock_m = Test::MockObject->new
+        ->mock("identify_release_group", sub {31300;});
+    my $mock_f = Test::MockObject->new
+        ->set_true("release_groups");
+
+    cut(
+        mbservice => $mock_m,
+        formatter => $mock_f,
+        config    => mock_config({
+            page => 0,
+        }),
+    )->run(qw/find rg a b c d/);
+
+    $mock_m->called_pos_ok(1, "identify_release_group", "find-rg calls identify_release_group");
+    is ($mock_m->call_args_pos(1, 2)->[0], "b", "first artist");
+    is ($mock_m->call_args_pos(1, 2)->[1], "c", "second artist");
+    is ($mock_m->call_args_pos(1, 2)->[2], "d", "third artist");
+    is ($mock_m->call_args_pos(1, 3), "a", "release group");
+    is ($mock_m->call_args_pos(1, 4), - 1, "page");
+    $mock_f->called_pos_ok(1, "release_groups", "find-rg calls release_groups formatter");
+    $mock_f->called_args_pos_is(1, 2, 31300, "release groups list is passed to formatter");
 }
