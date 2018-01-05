@@ -7,10 +7,10 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(autowire singleton inject);
 
 sub autowire {
-    my ($class, $does) = @_;
+    my ($class, $does, @args) = @_;
     return (
         is      => 'lazy',
-        default => sub {$class->new},
+        default => sub {$class->new(@args)},
         isa     => sub {$_[0]->DOES($does // $class)}
     );
 }
