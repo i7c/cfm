@@ -15,4 +15,10 @@ sub identify_release_group {
     $self->client->get_identified_release_groups($artists, $release, $page);
 }
 
+sub identify_recording {
+    my ($self, $rgid, $title, $page) = @_;
+
+    $self->client->get_identified_recordings($rgid, $title, $page);
+}
+
 1;

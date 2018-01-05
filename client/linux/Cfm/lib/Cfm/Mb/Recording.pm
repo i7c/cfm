@@ -2,53 +2,19 @@ package Cfm::Mb::Recording;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
+use Cfm::Common::Res;
+with 'Cfm::Common::Res';
 
-use Cfm::Resource;
-use Cfm::Dto::Reference;
-
-extends 'Cfm::Resource';
-
-my %mapping = (
-    artistReferences => \&_ds_artist_references,
-);
-
-my @mandatory = (
-    "identifier",
+@Cfm::Mb::Recording::mandatory = (
+    "id",
     "name",
     "length",
-    "artistReferences",
+    "artists",
 );
 
-# cfm identifier
-has identifier => (is => 'ro');
-
-# Name of the release group
+has id => (is => 'ro');
 has name => (is => 'ro');
-
-# Length of the song
 has length => (is => 'ro');
-
-# Comment
-has comment => (is => 'ro');
-
-# Artist references
-has artistReferences => (is => 'ro');
-
-sub _ds_artist_references {
-    my ($content) = @_;
-
-    my @arefs = map {
-        Cfm::Dto::Reference->from_hash($_);
-    } @$content;
-    return \@arefs;
-}
-
-sub _field_mapping {
-    return \%mapping;
-}
-
-sub _mandatory_fields {
-    return \@mandatory;
-}
+has artists => (is => 'ro');
 
 1;

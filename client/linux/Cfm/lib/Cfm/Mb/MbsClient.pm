@@ -7,6 +7,7 @@ extends 'Cfm::Client::Client';
 
 use Cfm::Autowire;
 use Cfm::Common::ListRes;
+use Cfm::Mb::Recording;
 use Cfm::Mb::ReleaseGroup;
 
 has config => singleton 'Cfm::Config';
@@ -36,16 +37,16 @@ sub get_identified_release_groups {
     );
 }
 
-# Find recordings by release group id and title
-sub find_recordings {
+sub get_identified_recordings {
     my ($self, $rgid, $title, $page) = @_;
 
-    my $params = [
-        releaseGroupId => $rgid,
-        title          => $title,
-        page           => $page,
-    ];
-    my $response = $self->get_json("/mbs/v1/recordings", $params);
+    my @params;
+    push @params, releaseGroupId => $rgid;
+    push @params, title => $title;
+    push @params, page => $page if defined $page;
+    Cfm::Common::ListRes->from_hash(
+        $self->get_json("/mbs/v1/recordings/identify", \@params), sub {Cfm::Mb::Recording->from_hash($_)}
+    );
 }
 
 1;
