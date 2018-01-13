@@ -6,6 +6,7 @@ use Log::Any qw($log);
 
 use Cfm::Autowire;
 use Cfm::Config;
+use Cfm::Connector::Mpd;
 use Cfm::Connector::Mpris2;
 use Cfm::Import::CsvImporter;
 use Cfm::Mb::MbService;
@@ -22,6 +23,7 @@ my %command_mapping = (
     add            => \&cmd_add,
     'import-csv'   => \&cmd_import_csv,
     'record-mpris' => \&cmd_record_mpris,
+    'record-mpd'   => \&cmd_record_mpd,
     'create-user'  => \&cmd_create_user,
     now            => \&cmd_now,
     'find-rg'      => \&cmd_find_rg,
@@ -35,6 +37,7 @@ has csv_importer => singleton 'Cfm::Import::CsvImporter';
 has fix_acc_playback_wizard => singleton 'Cfm::Ui::Wizard::FixAccPlaybackWizard';
 has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has mbservice => singleton 'Cfm::Mb::MbService';
+has mpd => singleton 'Cfm::Connector::Mpd';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has select_playback_wizard => singleton 'Cfm::Ui::Wizard::SelectPlaybackWizard';
@@ -122,6 +125,13 @@ sub cmd_record_mpris {
     my $player = $self->config->require_option("player");
     $self->loglevel->("info") unless $self->config->has_option("quiet");
     $self->mpris2->listen($player);
+}
+
+sub cmd_record_mpd {
+    my ($self) = @_;
+
+    $self->loglevel->("info") unless $self->config->has_option("quiet");
+    $self->mpd->listen();
 }
 
 sub cmd_create_user {
