@@ -37,6 +37,7 @@ WriteMakefile(
         "MCE::Queue"                                => "1.833",
         "Moo"                                       => "2.3.2",
         "Net::DBus"                                 => "1.1.0",
+        "Net::MPD"                                  => "0.07",
         "Term::Form"                                => "0.310",
         "Text::ASCIITable"                          => "0.22",
         "Text::CSV"                                 => "1.95",
