@@ -114,8 +114,8 @@ class PlaybackApi {
                     artistsJson = body.artistsJson,
                     releaseTitle = body.releaseTitle,
                     recordingTitle = body.recordingTitle,
-                    recId = body.recordingId!!,
-                    rgId = body.releaseGroupId!!
+                    recId = body.recordingId,
+                    rgId = body.releaseGroupId
             ).toHttpResponse(HttpStatus.OK)
 
 }

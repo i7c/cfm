@@ -10,8 +10,8 @@ class AccumulatedPlaybackRes(
         val artists: List<String> = emptyList(),
         val recordingTitle: String = "",
         val releaseTitle: String = "",
-        @field:NotNull val recordingId: UUID? = null,
-        @field:NotNull val releaseGroupId: UUID? = null
+        val recordingId: UUID? = null,
+        val releaseGroupId: UUID? = null
 )
 
 fun AccumulatedPlaybacksDto.toRes() = AccumulatedPlaybackRes(

@@ -103,18 +103,21 @@ class PlaybackBoundary {
                                 artistsJson: String,
                                 recordingTitle: String,
                                 releaseTitle: String,
-                                rgId: UUID,
-                                recId: UUID): Unit {
+                                rgId: UUID?,
+                                recId: UUID?) {
         val changedPlaybacks = playbackRepo.bulkSetRecAndRgIds(
                 artistsJson,
                 recordingTitle,
                 releaseTitle,
                 rgId,
                 recId,
+                Instant.now().epochSecond,
                 userBoundary.getCurrentUser()
         )
         if (changedPlaybacks > occ) throw OutdatedException(Playback::class)
-        fingerprintBoundary.putFingerprint(artistsJson, recordingTitle, releaseTitle, recId, rgId)
+        // fingerprint only if this was a successful fix
+        if (recId != null && rgId != null)
+            fingerprintBoundary.putFingerprint(artistsJson, recordingTitle, releaseTitle, recId, rgId)
     }
 
     fun updatePlayback(playbackId: UUID,

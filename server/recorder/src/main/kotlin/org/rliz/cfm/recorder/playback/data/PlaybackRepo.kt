@@ -69,7 +69,7 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
     @Query(
             value = """
         update Playback p
-        set p.releaseGroupUuid = :releaseGroupId, p.recordingUuid = :recordingId
+        set p.releaseGroupUuid = :releaseGroupId, p.recordingUuid = :recordingId, p.fixAttempt = :fixAttempt
         where p.originalData in (
             select o
             from RawPlaybackData o
@@ -83,7 +83,8 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
     fun bulkSetRecAndRgIds(@Param("artistJson") artistsJson: String,
                            @Param("recording") recordingTitle: String,
                            @Param("release") releaseTitle: String,
-                           @Param("releaseGroupId") rgId: UUID,
-                           @Param("recordingId") recId: UUID,
+                           @Param("releaseGroupId") rgId: UUID?,
+                           @Param("recordingId") recId: UUID?,
+                           @Param("fixAttempt") fixAttempt: Long,
                            @Param("user") user: User): Int
 }

@@ -71,6 +71,8 @@ open class Playback : AbstractModel {
 
     var source: String? = null
 
+    var fixAttempt: Long? = 0
+
     constructor() : super()
 
     constructor(uuid: UUID, user: User?, timestamp: Long? = Instant.now().epochSecond, playTime: Long? = null,
