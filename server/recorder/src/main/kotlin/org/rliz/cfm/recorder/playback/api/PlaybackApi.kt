@@ -18,14 +18,14 @@ import java.util.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(path = arrayOf("/rec/v1/playbacks"))
+@RequestMapping(path = ["/rec/v1/playbacks"])
 class PlaybackApi {
 
     @Autowired
     lateinit var playbackBoundary: PlaybackBoundary
 
     @Transactional
-    @RequestMapping(method = arrayOf(RequestMethod.POST))
+    @RequestMapping(method = [RequestMethod.POST])
     fun postPlayback(@Valid @RequestBody body: PlaybackRes): ResponseEntity<PlaybackRes> =
             playbackBoundary.createPlayback(
                     artists = body.artists,
@@ -42,7 +42,7 @@ class PlaybackApi {
                     .toHttpResponse(HttpStatus.CREATED)
 
     @Transactional
-    @RequestMapping(method = arrayOf(RequestMethod.PATCH), path = arrayOf("/{playbackId}"))
+    @RequestMapping(method = [RequestMethod.PATCH], path = ["/{playbackId}"])
     fun patchPlayback(@PathVariable(name = "playbackId", required = true) playbackId: UUID,
                       @RequestParam(name = "skipMbs", required = false) skipMbs: Boolean?,
                       @RequestBody body: PatchPlaybackRes): ResponseEntity<PlaybackRes> =
@@ -62,30 +62,30 @@ class PlaybackApi {
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = arrayOf(RequestMethod.GET))
+    @RequestMapping(method = [RequestMethod.GET])
     fun getPlaybacks(@RequestParam("userId", required = false) userUuid: UUID?,
                      @RequestParam("broken", required = false, defaultValue = "false") broken: Boolean,
-                     @SortDefault(sort = arrayOf("timestamp"), direction = Sort.Direction.DESC) pageable: Pageable) =
+                     @SortDefault(sort = ["timestamp"], direction = Sort.Direction.DESC) pageable: Pageable) =
             playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, broken, pageable)
                     .toRes(PlaybackDto::toRes)
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/{playbackId}"))
+    @RequestMapping(method = [RequestMethod.GET], path = ["/{playbackId}"])
     fun getPlayback(@PathVariable("playbackId") playbackId: UUID): ResponseEntity<PlaybackRes> =
             playbackBoundary.getPlayback(playbackId)
                     .toRes()
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional
-    @RequestMapping(method = arrayOf(RequestMethod.POST), path = arrayOf("/batch"))
+    @RequestMapping(method = [RequestMethod.POST], path = ["/batch"])
     fun postPlaybackBatch(@RequestBody batch: PlaybackBatchRes) =
             playbackBoundary.batchCreatePlaybacks(batch.playbacks)
                     .toRes()
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional
-    @RequestMapping(method = arrayOf(RequestMethod.PUT), path = arrayOf("/now"))
+    @RequestMapping(method = [RequestMethod.PUT], path = ["/now"])
     fun putNowPlaying(@RequestBody body: PlaybackRes) =
             playbackBoundary.setNowPlaying(body.artists, body.recordingTitle!!, body.releaseTitle!!, body.timestamp,
                     body.trackLength)
@@ -93,14 +93,14 @@ class PlaybackApi {
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/now"))
+    @RequestMapping(method = [RequestMethod.GET], path = ["/now"])
     fun getNowPlaying() =
             playbackBoundary.getNowPlaying()
                     .toRes()
                     .toHttpResponse(HttpStatus.OK)
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/acc"))
+    @RequestMapping(method = [RequestMethod.GET], path = ["/acc"])
     fun getAccumulatedBroken(pageable: Pageable) =
             playbackBoundary.getAccumulatedBrokenPlaybacks(currentUser().uuid!!, pageable)
                     .toRes(AccumulatedPlaybacksDto::toRes)
