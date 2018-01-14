@@ -3,6 +3,5 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    generate-ddl: true
   jackson:
     default-property-inclusion: non_null
