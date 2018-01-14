@@ -93,4 +93,10 @@ sub get_accumulated_playbacks {
         });
 }
 
+sub post_accumulated_playbacks {
+    my ($self, $acc) = @_;
+
+    $self->post_json("/rec/v1/playbacks/acc", Cfm::Playback::AccumulatedPlaybacks->to_hash($acc))
+}
+
 1;

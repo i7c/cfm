@@ -49,4 +49,10 @@ sub get_now_playing {
     $self->client->get_now_playing;
 }
 
+sub fix_acc_playback {
+    my ($self, $acc) = @_;
+
+    $self->client->post_accumulated_playbacks($acc);
+}
+
 1;

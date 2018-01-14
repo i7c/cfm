@@ -17,5 +17,7 @@ has artistsJson => (is => 'ro');
 has artists => (is => 'ro');
 has recordingTitle => (is => 'ro');
 has releaseTitle => (is => 'ro');
+has releaseGroupId => (is => 'rw');
+has recordingId => (is => 'rw');
 
 1;

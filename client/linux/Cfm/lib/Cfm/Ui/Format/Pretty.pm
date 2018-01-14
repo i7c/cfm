@@ -11,11 +11,20 @@ use Text::ASCIITable;
 
 has common => singleton "Cfm::Ui::Format::Common";
 
+has row_count => (
+        is      => 'lazy',
+        default => sub {0},
+    );
+
 sub playback_list {
     my ($self, $pbl) = @_;
 
     my $table = Text::ASCIITable->new;
-    $table->setCols(" ", "Artist", "Title", "Album", "Time", "Identifier");
+    my @cols = (" ", "Artist", "Title", "Album", "Time", "Identifier");
+    unshift @cols, "No" if $self->row_count;
+    $table->setCols(@cols);
+
+    my $i = 1;
     for my $pb (@{$pbl->elements}) {
         my ($sound, $artist_list, $title, $album) = ("");
 
@@ -24,12 +33,16 @@ sub playback_list {
         $title = $pb->recordingTitle;
         $album = $pb->releaseTitle;
 
-        $table->addRow($sound,
+        my @vals = (
+            $sound,
             $artist_list,
             $title,
             $album,
             $self->common->time($pb->timestamp),
-            $pb->id);
+            $pb->id
+        );
+        unshift @vals, $i++ if $self->row_count;
+        $table->addRow(@vals);
     }
     print $table;
     print $self->common->list_details($pbl);
@@ -71,16 +84,68 @@ sub accumulated_playbacks {
     print $self->common->list_details($acc_playbacks);
 }
 
+sub accumulated_playback {
+    my ($self, $acc) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols("Property", "Value");
+    for my $artist ($acc->artists->@*) {
+        $table->addRow("Artist", $artist);
+    }
+    $table->addRow("Title", $acc->recordingTitle);
+    $table->addRow("Release", $acc->releaseTitle);
+    $table->addRow("Occurences", $acc->occurrences);
+    print $table;
+}
+
 sub release_groups {
     my ($self, $rgs) = @_;
 
     my $table = Text::ASCIITable->new;
-    $table->setCols("Artists", "Title", "Id");
+    my @cols = ("Artists", "Title", "Id");
+    unshift @cols, "No" if $self->row_count;
+    $table->setCols(@cols);
+
+    my $i = 1;
     for my $rg ($rgs->elements->@*) {
-        $table->addRow(join("; ", $rg->artists->@*), $rg->name, $rg->id);
+        my @vals = (join("; ", $rg->artists->@*), $rg->name, $rg->id);
+        unshift @vals, $i++ if $self->row_count;
+        $table->addRow(@vals);
     }
     print $table;
     print $self->common->list_details($rgs);
+}
+
+sub recordings {
+    my ($self, $recs) = @_;
+
+    my $table = Text::ASCIITable->new;
+    my @cols = ("Artists", "Name", "Length", "Id");
+    unshift @cols, "No" if $self->row_count;
+    $table->setCols(@cols);
+
+    my $i = 1;
+    for my $rec ($recs->elements->@*) {
+        my @vals = (join("; ", $rec->artists->@*), $rec->name, $rec->length, $rec->id);
+        unshift @vals, $i++ if $self->row_count;
+        $table->addRow(@vals);
+    }
+    print $table;
+    print $self->common->list_details($recs);
+}
+
+sub review_acc_fix {
+    my ($self, $acc, $rg, $rec) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols("Property", "Old", "New");
+
+    $table->addRow("Artists", join("; ", $acc->artists->@*), join("; ", $rec->artists->@*));
+    $table->addRow("Title", $acc->recordingTitle, $rec->name);
+    $table->addRow("Release", $acc->releaseTitle, $rg->name);
+    $table->addRow("Rec ID", "", $rec->id);
+    $table->addRow("Rg ID", "", $rg->id);
+    print $table;
 }
 
 1;

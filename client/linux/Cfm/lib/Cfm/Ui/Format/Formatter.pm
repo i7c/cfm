@@ -34,5 +34,6 @@ sub playback {}
 sub user {}
 sub accumulated_playbacks {}
 sub release_groups {}
+sub review_acc_fix {}
 
 1;

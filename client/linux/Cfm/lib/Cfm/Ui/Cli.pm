@@ -12,6 +12,8 @@ use Cfm::Mb::MbService;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Format::Formatter;
+use Cfm::Ui::Wizard::FixAccPlaybackWizard;
+use Cfm::Ui::Wizard::SelectPlaybackWizard;
 use Cfm::User::User;
 use Cfm::User::UserService;
 
@@ -23,16 +25,19 @@ my %command_mapping = (
     'create-user'  => \&cmd_create_user,
     now            => \&cmd_now,
     'find-rg'      => \&cmd_find_rg,
+    fix            => \&cmd_fix,
 );
 
 has loglevel => inject 'loglevel';
 
 has config => singleton 'Cfm::Config';
 has csv_importer => singleton 'Cfm::Import::CsvImporter';
+has fix_acc_playback_wizard => singleton 'Cfm::Ui::Wizard::FixAccPlaybackWizard';
 has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has mbservice => singleton 'Cfm::Mb::MbService';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
+has select_playback_wizard => singleton 'Cfm::Ui::Wizard::SelectPlaybackWizard';
 has user_service => singleton 'Cfm::User::UserService';
 
 sub run {
@@ -151,6 +156,16 @@ sub cmd_find_rg {
 
     my $rgs = $self->mbservice->identify_release_group(\@artists, $rg, $self->config->get_option("page") - 1);
     $self->formatter->release_groups($rgs);
+}
+
+sub cmd_fix {
+    my ($self) = @_;
+
+    while (1) {
+        my $acc = $self->select_playback_wizard->select_accumulated_broken;
+        return unless defined $acc;
+        $self->fix_acc_playback_wizard->run($acc);
+    }
 }
 
 1;
