@@ -44,13 +44,13 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
 
     @Query(value = """
         select
-        new org.rliz.cfm.recorder.playback.data.AccumulatedPlaybacks(count(p), o.artistJson, o.recordingTitle, o.releaseTitle)
+        new org.rliz.cfm.recorder.playback.data.AccumulatedPlaybacks(count(p), o.artistJson, o.recordingTitle, o.releaseTitle, max(p.fixAttempt))
         from Playback p
         join p.originalData o
         join p.user u
         group by o.artistJson, o.recordingTitle, o.releaseTitle, u.uuid, p.recordingUuid, p.releaseGroupUuid
         having u.uuid = :userId and p.recordingUuid is null and p.releaseGroupUuid is null
-        order by count(p) desc, o.artistJson asc
+        order by max(p.fixAttempt) asc, count(p) desc, o.artistJson asc
         """,
             countQuery = """
         select count(p)
