@@ -55,4 +55,12 @@ sub fix_acc_playback {
     $self->client->post_accumulated_playbacks($acc);
 }
 
+sub mark_unfixable {
+    my ($self, $acc) = @_;
+
+    $acc->releaseGroupId(undef);
+    $acc->recordingId(undef);
+    $self->client->post_accumulated_playbacks($acc);
+}
+
 1;

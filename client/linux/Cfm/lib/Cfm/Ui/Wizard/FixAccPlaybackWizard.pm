@@ -75,7 +75,7 @@ sub mark_unfixable {
 
     my $mark_unfixable = Cfm::Ui::Selector::Selector::yes_no("Skip this playback for now");
     if ($mark_unfixable) {
-        die $log->fatal("Skipping")
+        $self->playback_service->mark_unfixable($acc);
     }
 }
 
