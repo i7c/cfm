@@ -1,7 +1,6 @@
 package Cfm::Mb::ReleaseGroup;
 use strict;
 use Moo;
-use Cfm::Resource;
 with 'Cfm::Common::Res';
 
 @Cfm::Mb::ReleaseGroup::mandatory = (
