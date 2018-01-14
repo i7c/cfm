@@ -106,5 +106,17 @@ class PlaybackApi {
                     .toRes(AccumulatedPlaybacksDto::toRes)
                     .toHttpResponse(HttpStatus.OK)
 
+    @Transactional
+    @RequestMapping(method = [RequestMethod.POST], path = ["/acc"])
+    fun postAccumulatedPlaybacks(@Valid @RequestBody body: AccumulatedPlaybackRes) = playbackBoundary
+            .fixAccumulatedPlaybacks(
+                    occ = body.occurrences,
+                    artistsJson = body.artistsJson,
+                    releaseTitle = body.releaseTitle,
+                    recordingTitle = body.recordingTitle,
+                    recId = body.recordingId!!,
+                    rgId = body.releaseGroupId!!
+            ).toHttpResponse(HttpStatus.OK)
+
 }
 

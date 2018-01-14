@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.rliz.cfm.recorder.common.data.contentMap
 import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
+import org.rliz.cfm.recorder.common.exception.OutdatedException
 import org.rliz.cfm.recorder.common.log.logger
+import org.rliz.cfm.recorder.fingerprint.boundary.FingerprintBoundary
 import org.rliz.cfm.recorder.mbs.service.MbsService
 import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.auth.demandOwnership
@@ -46,6 +48,9 @@ class PlaybackBoundary {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var fingerprintBoundary: FingerprintBoundary
 
     fun createPlayback(artists: List<String>, recordingTitle: String, releaseTitle: String, trackLength: Long? = null,
                        playTime: Long? = null, discNumber: Int? = null, trackNumber: Int? = null,
@@ -94,6 +99,23 @@ class PlaybackBoundary {
             playbackRepo.findAccumulatedBrokenPlaybacks(userId, pageable)
                     .map { acc -> acc.toDto(objectMapper.readValue(acc.artistsJson, List::class.java) as List<String>) }
 
+    fun fixAccumulatedPlaybacks(occ: Long,
+                                artistsJson: String,
+                                recordingTitle: String,
+                                releaseTitle: String,
+                                rgId: UUID,
+                                recId: UUID): Unit {
+        val changedPlaybacks = playbackRepo.bulkSetRecAndRgIds(
+                artistsJson,
+                recordingTitle,
+                releaseTitle,
+                rgId,
+                recId,
+                userBoundary.getCurrentUser()
+        )
+        if (changedPlaybacks > occ) throw OutdatedException(Playback::class)
+        fingerprintBoundary.putFingerprint(artistsJson, recordingTitle, releaseTitle, recId, rgId)
+    }
 
     fun updatePlayback(playbackId: UUID,
                        skipMbs: Boolean,

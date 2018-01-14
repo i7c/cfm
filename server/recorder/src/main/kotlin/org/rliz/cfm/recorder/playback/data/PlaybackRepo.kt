@@ -1,9 +1,11 @@
 package org.rliz.cfm.recorder.playback.data
 
+import org.rliz.cfm.recorder.user.data.User
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.*
@@ -62,4 +64,26 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
 
     @EntityGraph(attributePaths = arrayOf("originalData", "user"))
     fun findOneByUuid(uuid: UUID): Playback?
+
+    @Modifying
+    @Query(
+            value = """
+        update Playback p
+        set p.releaseGroupUuid = :releaseGroupId, p.recordingUuid = :recordingId
+        where p.originalData in (
+            select o
+            from RawPlaybackData o
+            where o.artistJson = :artistJson
+            and o.recordingTitle = :recording
+            and o.releaseTitle = :release
+        )
+        and p.user = :user
+        """
+    )
+    fun bulkSetRecAndRgIds(@Param("artistJson") artistsJson: String,
+                           @Param("recording") recordingTitle: String,
+                           @Param("release") releaseTitle: String,
+                           @Param("releaseGroupId") rgId: UUID,
+                           @Param("recordingId") recId: UUID,
+                           @Param("user") user: User): Int
 }
