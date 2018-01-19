@@ -57,7 +57,7 @@ sub pause {
     my $track_changed = $self->track->update($track->{artists}, $track->{title}, $track->{release});
     $self->_track_changed($time, $track) if $track_changed;
     my $stopped = $self->watch->stop_at($time);
-    if ($stopped) { # note that $stopped implies !$track_changed
+    if ($stopped) {# note that $stopped implies !$track_changed
         if ($self->last_track->{length_s} - $self->watch->total < $self->gap_to_complete) {
             # This branch covers a nasty corner case of spotify: the player jumps to the first track after it
             # completed the last one and thus *usually* the last track's end event is covered by the track change.
