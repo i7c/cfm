@@ -47,6 +47,13 @@ sub play {
 sub pause {
     my ($self, $time, $track) = @_;
 
+    # Now why do we skip if last track is not set? Some players such as Spotify love to throw around pause events
+    # when they start up, and they actually contain valid metadata. So for PSM it looks like a legit pause event,
+    # just that with an undefined last_track there is nothing we could pause on from our perspective and lots of
+    # subsequent checks would be sort-of illegal. As soon as a track is started, last_track will be set, so we do not
+    #  miss out on any real pause events.
+    $log->info("Ignore pause event") if !defined $self->last_track;
+    return if !defined $self->last_track;
     my $track_changed = $self->track->update($track->{artists}, $track->{title}, $track->{release});
     $self->_track_changed($time, $track) if $track_changed;
     my $stopped = $self->watch->stop_at($time);
