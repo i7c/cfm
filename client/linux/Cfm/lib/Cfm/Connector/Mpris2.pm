@@ -5,12 +5,14 @@ use Moo;
 with 'Cfm::Singleton';
 use Log::Any qw/$log/;
 
+use Data::Dumper;
 use MCE::Flow;
 use MCE::Queue;
-use Net::DBus;
+use Net::DBus::Dumper;
 use Net::DBus::Reactor;
-use Data::Dumper;
+use Net::DBus;
 use Time::HiRes qw/time/;
+use Try::Tiny;
 
 use Cfm::Autowire;
 use Cfm::Playback::Playback;
@@ -22,6 +24,7 @@ has queue => (
         default => sub {MCE::Queue->new}
     );
 
+has config => autowire 'Cfm::Config';
 has psm => autowire 'Cfm::Connector::State::PlayerStateMachine';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
@@ -48,18 +51,31 @@ sub listen {
 sub _mpris_connect {
     my ($self, $dbus_name) = @_;
 
-    $log->debug("Get DBus session");
+    my $wait = $self->config->require_option("mpris-wait");
     my $bus = Net::DBus->session;
-    $log->debug("Get DBus service " . $dbus_name);
-    my $spotify_service = $bus->get_service("org.mpris.MediaPlayer2.$dbus_name");
-    $log->debug("Get DBus interface");
-    my $main_interface = $spotify_service->get_object("/org/mpris/MediaPlayer2",
-        "org.freedesktop.DBus.Properties");
+    $log->info("Getting DBus service $dbus_name ...");
+    while () {
+        try {
+            $log->debug("Try to get DBus service $dbus_name");
+            my $service = $bus->get_service("org.mpris.MediaPlayer2.$dbus_name");
+            my $player = $service->get_object("/org/mpris/MediaPlayer2", "org.mpris.MediaPlayer2.Player");
+            my $event = $service->get_object("/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties");
+            $self->_mpris_listen($player, $event);
+        } catch {
+            $log->debug("DBus Service $dbus_name not found, will sleep for ${wait}s ...");
+            sleep($wait);
+        };
+    }
+}
 
-    my $state = "Playing";
+sub _mpris_listen {
+    my ($self, $player, $event) = @_;
+
+    my $metadata;
+    my $state;
 
     $log->debug("Hook to signal PropertiesChanged");
-    $main_interface->connect_to_signal("PropertiesChanged", sub {
+    $event->connect_to_signal("PropertiesChanged", sub {
             my ($player, $rawdata) = @_;
 
             $log->debug(Dumper(@_));
@@ -78,31 +94,34 @@ sub _mpris_connect {
                     $log->debug(Dumper($metadata));
                     return;
                 }
-                for my $artist ($metadata->{"xesam:artist"}->@*) {
-                    utf8::decode($artist);
-                }
-                utf8::decode($metadata->{"xesam:title"});
-                utf8::decode($metadata->{"xesam:album"});
-                my $data = {
-                    artists     => $metadata->{"xesam:artist"},
-                    title       => $metadata->{"xesam:title"},
-                    album       => $metadata->{"xesam:album"},
-                    release     => $metadata->{"xesam:album"},
-                    length_ms   => $metadata->{"mpris:length"} / 1000, # to ms
-                    length_s    => $metadata->{"mpris:length"} / 1000000, # to s
-                    trackNumber => $metadata->{"xesam:trackNumber"},
-                    rawdata     => $metadata,
-                    state       => $state,
-                    timestamp   => time(),
-                };
-
-                $self->queue->enqueue($data);
+                $self->queue->enqueue($self->_extract_metadata($metadata, $state));
             }
-            return;
         });
     $log->info("Connection to DBus established. Listening ...");
     my $reactor = Net::DBus::Reactor->main();
     $reactor->run();
+}
+
+sub _extract_metadata {
+    my ($self, $metadata, $state) = @_;
+
+    for my $artist ($metadata->{"xesam:artist"}->@*) {
+        utf8::decode($artist);
+    }
+    utf8::decode($metadata->{"xesam:title"});
+    utf8::decode($metadata->{"xesam:album"});
+    + {
+        artists     => $metadata->{"xesam:artist"},
+        title       => $metadata->{"xesam:title"},
+        album       => $metadata->{"xesam:album"},
+        release     => $metadata->{"xesam:album"},
+        length_ms   => $metadata->{"mpris:length"} / 1000, # to ms
+        length_s    => $metadata->{"mpris:length"} / 1000000, # to s
+        trackNumber => $metadata->{"xesam:trackNumber"},
+        rawdata     => $metadata,
+        state       => $state,
+        timestamp   => time(),
+    };
 }
 
 1;
