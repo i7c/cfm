@@ -17,7 +17,7 @@ sub numerical_select {
         $show_data_cb->($data);
         my $elements = $extract_elements_cb->($data);
         my $count = scalar $elements->@*;
-        my $selection = $form->readline("Choose [1..$count/p/n/q]: ");
+        my $selection = $form->readline("Choose [1..$count/p/n/x/q]: ");
 
         return undef unless defined $selection;
         if ($selection =~ /\s*n\s*/) {
@@ -33,6 +33,8 @@ sub numerical_select {
         } elsif ($selection =~ /^\s*\d+\s*$/) {
             next if $selection < 1 || $selection > scalar $elements->@*;
             return $elements->[int($selection) - 1];
+        } elsif ($selection =~ /\s*x\s*/) {
+            die;
         }
     };
 }
