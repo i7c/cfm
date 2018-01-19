@@ -30,7 +30,7 @@ sub update {
 sub clear {
     my ($self) = @_;
 
-    $self->pre_state(0);
+    $self->pre_state(1);
     $self->title(undef);
     $self->artists(undef);
     $self->release(undef);
