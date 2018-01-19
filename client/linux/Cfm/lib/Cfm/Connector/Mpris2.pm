@@ -71,8 +71,10 @@ sub _mpris_connect {
 sub _mpris_listen {
     my ($self, $player, $event) = @_;
 
-    my $metadata;
-    my $state;
+    my $metadata = $player->Metadata();
+    my $state = $player->PlaybackStatus();
+    $log->info("Set initial state and track metadata");
+    $self->queue->enqueue($self->_extract_metadata($metadata, $state));
 
     $log->debug("Hook to signal PropertiesChanged");
     $event->connect_to_signal("PropertiesChanged", sub {
