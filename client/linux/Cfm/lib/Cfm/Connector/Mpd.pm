@@ -64,7 +64,6 @@ sub _mpd_connect {
 sub _mpd_listen {
     my ($self, $mpd) = @_;
 
-    use Data::Dumper;
     my $metadata = $mpd->current_song();
     my $state = $mpd->update_status();
 
