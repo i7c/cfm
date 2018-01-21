@@ -182,5 +182,60 @@ my $config = mock_config({
     is ($mock_h->call_pos(2), undef, "no further calls for bogus signal");
 }
 
+# stop signal translates into complete if > threshold
+{
+    my $mock_h = mock_handler;
+    my $cut = Cfm::Connector::State::PlayerStateMachine->new(
+        handler => $mock_h,
+        config  => $config,
+    );
+
+    $cut->play(1000, $track1);
+    $cut->stop(1006);
+
+    $mock_h->called_pos_ok(1, "track_started", "first track started");
+    $mock_h->called_pos_ok(2, "track_ended", "above threshold is ended");
+}
+
+# stop signal translates into cancel if < threshold
+{
+    my $mock_h = mock_handler;
+    my $cut = Cfm::Connector::State::PlayerStateMachine->new(
+        handler => $mock_h,
+        config  => $config,
+    );
+
+    $cut->play(1000, $track1);
+    $cut->stop(1004);
+
+    $mock_h->called_pos_ok(1, "track_started", "first track started");
+    $mock_h->called_pos_ok(2, "track_cancelled", "below threshold is cancelled");
+}
+
+# initial pause is ignored
+{
+    my $mock_h = mock_handler;
+    my $cut = Cfm::Connector::State::PlayerStateMachine->new(
+        handler => $mock_h,
+        config  => $config,
+    );
+
+    $cut->pause(1000, $track1);
+
+    is($mock_h->call_pos(1), undef, "no calls for ignored initial pause");
+}
+
+# initial pause is ignored
+{
+    my $mock_h = mock_handler;
+    my $cut = Cfm::Connector::State::PlayerStateMachine->new(
+        handler => $mock_h,
+        config  => $config,
+    );
+
+    $cut->stop(1000);
+
+    is($mock_h->call_pos(1), undef, "no calls for ignored initial stop");
+}
 done_testing;
 

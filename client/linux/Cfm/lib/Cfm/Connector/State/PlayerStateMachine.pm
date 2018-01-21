@@ -73,7 +73,23 @@ sub pause {
     }
 }
 
-sub stop {pause(@_);}
+sub stop {
+    my ($self, $time) = @_;
+
+    # always stop the watch and clear track state, but we only go on if we have a last_track, without we cannot
+    # handle the events
+    $self->watch->stop_at($time);
+    $self->track->clear;
+    return if !defined $self->last_track;
+
+    my $elapsed = $self->watch->reset;
+    if ($elapsed / $self->last_track->{length_s} * 100 >= $self->threshold) {
+        $self->handler->track_ended($time, $elapsed, $self->last_track);
+    } else {
+        $self->handler->track_cancelled($time, $elapsed, $self->last_track);
+    }
+    $self->last_track(undef);
+}
 
 sub _track_changed {
     my ($self, $time, $track) = @_;
