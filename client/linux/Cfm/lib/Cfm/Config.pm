@@ -28,6 +28,7 @@ my @cli_args = (
     'option|o=s@',
     'page|p=i',
     'player=s',
+    'players=s',
     'quiet|q',
     'set|s=s@',
     'threshold=i',

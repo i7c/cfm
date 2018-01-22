@@ -8,6 +8,7 @@ use Cfm::Autowire;
 use Cfm::Config;
 use Cfm::Connector::Mpd;
 use Cfm::Connector::Mpris2;
+use Cfm::Connector::Multi;
 use Cfm::Import::CsvImporter;
 use Cfm::Mb::MbService;
 use Cfm::Playback::Playback;
@@ -22,6 +23,7 @@ my %command_mapping = (
     list           => \&cmd_list,
     add            => \&cmd_add,
     'import-csv'   => \&cmd_import_csv,
+    record         => \&cmd_record,
     'record-mpris' => \&cmd_record_mpris,
     'record-mpd'   => \&cmd_record_mpd,
     'create-user'  => \&cmd_create_user,
@@ -39,6 +41,7 @@ has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has mbservice => singleton 'Cfm::Mb::MbService';
 has mpd => singleton 'Cfm::Connector::Mpd';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
+has multi => singleton 'Cfm::Connector::Multi';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has select_playback_wizard => singleton 'Cfm::Ui::Wizard::SelectPlaybackWizard';
 has user_service => singleton 'Cfm::User::UserService';
@@ -117,6 +120,12 @@ sub cmd_import_csv {
         $log->info("Importing playbacks from $file");
         $self->csv_importer->import_csv($file);
     }
+}
+sub cmd_record {
+    my ($self) = @_;
+
+    $self->loglevel->("info") unless $self->config->has_option("quiet");
+    $self->multi->listen();
 }
 
 sub cmd_record_mpris {
