@@ -1,5 +1,6 @@
 package org.rliz.cfm.recorder.user.api
 
+import org.rliz.cfm.recorder.common.api.toHttpResponse
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -18,18 +19,23 @@ class UserApi {
 
     @Transactional
     @RequestMapping(method = arrayOf(RequestMethod.POST))
-    fun createUser(@Valid @RequestBody body: UserRes): ResponseEntity<UserRes> = userBoundary.createUser(
-            name = body.name!!,
-            password = body.password!!,
-            state = body.state!!
-    ).toRes(HttpStatus.OK)
+    fun createUser(@Valid @RequestBody body: UserRes): ResponseEntity<UserRes> =
+            userBoundary.createUser(
+                    name = body.name!!,
+                    password = body.password!!,
+                    state = body.state!!
+            )
+                    .toRes()
+                    .toHttpResponse(HttpStatus.CREATED)
 
     @Transactional(readOnly = true)
     @RequestMapping(path = arrayOf("/current", "/{uuid}"))
     fun getUser(@PathVariable(name = "uuid", required = false) uuid: UUID?): ResponseEntity<UserRes> =
             (uuid?.let { userBoundary.getUser(uuid) }
                     ?: userBoundary.getCurrentUser())
-                    .toRes(HttpStatus.OK)
+                    .toRes()
+                    .toHttpResponse(HttpStatus.OK)
+
 
 }
 

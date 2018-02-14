@@ -1,5 +1,6 @@
 package org.rliz.cfm.recorder.user.api
 
+import org.rliz.cfm.recorder.user.data.User
 import org.rliz.cfm.recorder.user.data.UserState
 import java.util.*
 import javax.validation.constraints.NotNull
@@ -13,3 +14,11 @@ data class UserRes(
         val systemUser: Boolean = false
 )
 
+fun User.toRes(): UserRes =
+        UserRes(
+                name = this.name,
+                password = null, // probably never ever touch this
+                state = this.state,
+                uuid = this.uuid,
+                systemUser = this.systemUser
+        )
