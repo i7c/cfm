@@ -36,6 +36,15 @@ class UserApi {
                     .toRes()
                     .toHttpResponse(HttpStatus.OK)
 
+    @Transactional
+    @RequestMapping(method = [RequestMethod.PATCH], path = ["/current"])
+    fun putUser(@Valid @RequestBody body: UserRes): ResponseEntity<UserRes> =
+            userBoundary.updateUser(
+                    body.name,
+                    body.password
+            )
+                    .toRes()
+                    .toHttpResponse(HttpStatus.OK)
 
 }
 

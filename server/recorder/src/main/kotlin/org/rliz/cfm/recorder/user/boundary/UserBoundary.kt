@@ -44,6 +44,11 @@ class UserBoundary {
 
     fun getCurrentUser(): User = findUser(currentUser().uuid!!) ?: throw NotFoundException(User::class, "self")
 
+    fun updateUser(name: String?, password: String?): User = getCurrentUser().apply {
+        if (name != null) this.name = name
+        if (password != null) this.password = encoder.encode(password)
+    }.let { user -> userRepo.save(user) }
+
     /**
      * Same as createUser() but does not check any authorization.
      * Use with care and only if you are certain that the calling piece of code is authorized.
