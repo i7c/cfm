@@ -1,0 +1,71 @@
+General Notes
+-------------
+
+The directory where you found this file contains the API documentation of cfm.
+The API might be provided by multiple services in the background, but the
+documentation does not reflect this fact. It is structured by endpoints,
+independently of what service provides these endpoints. At the moment of
+writing, all APIs are REST APIs, but might be subject to change in the future.
+
+Currently, there is only a single API version, but as the API develops,
+versioning will kick in. Details on the versioning scheme will be found in this
+document or a document pointed at by this one. If you intend to write an API
+consumer, you should check back from time to time in order to be aware of
+updates.
+
+
+REST API documentation
+----------------------
+
+The files in this directory document one endpoint each. The endpoint is
+mentioned in the very beginning of each document by its relative URL (relative
+to the server domain).
+
+Note the following details:
+* If the document mentions operations (e.g. GET) without an URL, it refers to
+  the URL mentioned in the beginning of the document.
+
+* If the document mentions operations with an URL such as GET /current, this URL
+  is to be understood relatively to the one mentioned in the beginning.
+
+* Read the property descriptions carefully, as the documentation tends to
+  mention things only once and not repeat itself.
+
+
+Guarantees
+----------
+
+There are a few things to note about API guarantees
+
+* API calls are always transactional, so either they succeed or they don't.
+
+* Under virtually all circumstances, the HTTP response code reflects the
+  operation's success. 2xx codes indicate a successful transaction, 4xx and 5xx
+  codes a failure. However, be aware of rare corner cases:
+
+  * inside the service, the actual operation is executed in a transaction, but
+    translation of the internal result into an external representation might be
+    performed *outside* the transaction. This implies, that errors occurring in
+    the translation part might distort the API result. Succeeded transactions
+    might still lead to a negative result, but the opposite is never true. In
+    practice, such distortions rarely occur, but cannot be guaranteed to be
+    absent.
+
+  * If timeouts occur, success of the operation is unclear.
+
+* A safe strategy is to repeat idempotent calls in case of a suspected failure.
+  Non-idempotent calls must be verified before repeating them.
+
+
+Ignored Fields
+--------------
+
+In the documentation, fields might be described as "currently ignored" or "will
+be ignored".
+
+* currently ignored fields are *currently* ignored. There is no guarantee that
+  they will always be ignored, so it is *not* safe to specify them if they
+  should not be interpreted.
+
+* fields that "will be ignored" are not going to be interpreted _within this
+  API version_!

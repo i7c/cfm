@@ -1,0 +1,108 @@
+Endpoint /rec/v1/users
+----------------------
+
+The endpoint can be used to
+* create new users
+* get a  user
+* update one's own user
+
+
+General Note
+------------
+
+Please read general.txt for general notes on how to read this documentation!
+
+
+Resource
+--------
+
+There is only one resource exchanged over this endpoint, the user resource. It
+has the following properties
+
+* name: the user's name as displayed publicly to others and used for
+  authentication
+  Its length limits are 3 to 128
+
+* password: the user's plain text password as used during full authentication.
+  Note, that the password is *never* included in any response, because it is
+  stored one-way encrypted in the backend and we want to avoid accidental
+  logging of plaintext passwords on client-side.
+  Its length limits are 8 to 128
+
+* state: the user's state, possible values are currently ACTIVE and INACTIVE,
+  although they do not have any effect at the moment and are reserved for future
+  use. Conceptually, an INACTIVE user is not authorized for any calls against
+  the API anymore. This field is writable only by system users but readable by
+  everyone.
+
+* uuid: the unique identifier of the user. This field is both read-only on the
+  API and immutable in general. Since the display name is not immutable, this is
+  the only property that truly and uniquely identifies a user in the system.
+
+* systemUser: boolean flag to indicate if the given user is a system user. This
+  property is readable by everyone and conceptually writeable by system users,
+  but currently this feature is not exposed on the API.
+
+Example of a User resource in JSON:
+
+{
+  "name": "cfmadmin",
+  "state": "ACTIVE",
+  "uuid": "789b9650-c886-4801-8dbf-49263240954e",
+  "systemUser": true
+}
+
+
+System Users
+------------
+
+System users are admins. They are authorized for all operations on all
+endpoints. CFM creates an initial system user whose password should be reset
+immediately afterwards. The system user can then promote other users to be
+system users too (endpoint is yet missing).
+Note, that there is no difference between the initial system user and further
+ones. They all have full authorization and thus might be able to kick out the
+initial one. Only promote trusted users to system users.
+
+
+Operations
+----------
+
+POST
+
+Creates a new user. The client must specify name, password and state. The
+remaining properties are currently ignored! Upon success (HTTP 201), a full user
+resource is returned, but the password field is omitted. Only system users can
+perform this operation.
+
+
+GET /{uuid} or /current
+
+Obtains a user with given UUID. There is a special value "current" (which is
+technically not a UUID of course). By specifying it, a client can request the
+own authenticated user.
+
+
+PATCH /current
+
+Updates the authenticated user. Only the two fields "name" and "password" are
+relevant, the remaining fields are currently ignored. You can specify a null
+value or omit a field. In that case the respective field will not be changed.
+
+E.g. the request body
+
+{
+    "name": "banane"
+}
+
+will only change the user name to banane but leave the password unchanged.
+
+Note, that upon success, the name and/or password changes are effective
+immediately!  So the subsequent request must already be performed with the new
+credentials.
+
+For clients, it is possible but not recommended to change both properties at the
+same time. If changes are made by accident, it will be hard to figure out user
+name and password at the same time (e.g. typos). Also be aware of the API
+guarantees described in general.txt. The operation is somewhat idempotent but
+technically not really repeatable since the credentials change.
