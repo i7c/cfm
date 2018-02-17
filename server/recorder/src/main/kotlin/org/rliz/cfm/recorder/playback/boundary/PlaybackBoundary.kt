@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.IdGenerator
 import java.time.Instant
 import java.util.*
@@ -275,6 +276,12 @@ class PlaybackBoundary {
     fun getNowPlaying(): PlaybackDto = (nowPlayingRepo.findOneByUserUuid(userBoundary.getCurrentUser().uuid!!)?.apply {
         if (this.timestamp!! < Instant.now().epochSecond) throw NotFoundException(NowPlaying::class, "user")
     }?.let(this::makePlaybackView)) ?: throw NotFoundException(NowPlaying::class, "user")
+
+
+    @Transactional
+    fun deletePlaybacks(withSource: String?): Long = withSource?.let { source ->
+        playbackRepo.deleteByUserAndSource(currentUser(), source)
+    } ?: 0L
 
     private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { nowPlaying ->
         if (nowPlaying.recordingUuid != null && nowPlaying.releaseGroupUuid != null) {

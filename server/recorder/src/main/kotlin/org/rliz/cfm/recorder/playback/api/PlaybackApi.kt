@@ -118,5 +118,11 @@ class PlaybackApi {
                     rgId = body.releaseGroupId
             ).toHttpResponse(HttpStatus.OK)
 
+    @RequestMapping(method = [RequestMethod.DELETE])
+    fun deletePlaybacks(@RequestParam(required = true) withSource: String?) =
+            playbackBoundary.deletePlaybacks(withSource)
+                    .toRes()
+                    .toHttpResponse(HttpStatus.OK)
+
 }
 

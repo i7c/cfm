@@ -87,4 +87,6 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
                            @Param("recordingId") recId: UUID?,
                            @Param("fixAttempt") fixAttempt: Long,
                            @Param("user") user: User): Int
+
+    fun deleteByUserAndSource(user: User, source: String): Long
 }
