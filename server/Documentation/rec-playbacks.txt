@@ -1,0 +1,99 @@
+Endpoint /rec/v1/playbacks
+----------------------
+
+The endpoint can be used to
+* create playbacks
+* create a batch of playbacks
+* get a list of playbacks
+* get a single playback
+* set a currently playing track
+* get the currently playing track
+* get an accumulation of broken playbacks
+* fix an accumulation of broken playbacks
+
+
+General Note
+------------
+
+Please read general.txt for general notes on how to read this documentation!
+
+
+Resources
+---------
+
+The central resource on this endpoint is a Playback. A Playback represents the
+act of a user playing a specific track at a certain point in time.
+
+A Playback comprises the following properties:
+
+* artists: a list of strings representing artist names. The minimum size of the
+  list is 1 for both writing and reading.
+
+* recordingTitle: the title of the played recording. The minimum length of the
+  string is 1 character for both writing and reading.
+
+* releaseTitle: the title of the release (album/single/...) from which the
+  played recording is played back. The minimum length of the string is 1
+  character for both writing and reading.
+
+* timestamp: a UTC time stamp in seconds (epoch seconds since 1970) specifying
+  when the playback occurred.  This field is optional. If you do not specify it,
+  the server will use the current time as time stamp.
+
+* playTime: Time in seconds specifying how long the track was actually played.
+  The time can be lesser or greater than trackLength (e.g. if you seek back in
+  the track and listen to some parts of it twice, it will be greater than
+  trackLength). Please read the notes about 'Playback Threshold' below. If you
+  do not specify this property, it will be set to trackLength.
+
+* trackLength: length of the track being played, as reported by the music
+  player. This information can help to identify the track in the musicbrainz
+  database. The field is optional, if you do not specify it, it will be
+  "undefined".
+
+* discNumber: Number of the disc on which this track resides. This is merely
+  useful to identify the track on musicbrainz. The field is optional.
+
+* trackNumber: track number on the disc can be used to identify the track on
+  musicbrainz. The field is optional.
+
+* broken: Read-only field indicating whether the recording could be identified
+  in the musicbrainz database. If 'broken' is true, then no recording was found
+  that matched well enough. You can read below about how to "fix" "broken
+  playbacks". Also read the implications of broken playbacks below.
+
+* id: A unique immutable identifier of this playback. You can specify the id
+  when writing Playback resources. If you omit it, the server will assign an
+  identifier.
+
+* source: a string indicating "where this Playback came from". For usual
+  playbacks this might be the host or device where the track was played (cfm
+  perl client uses the hostname as default). There is one special value "lastfm"
+  which indicates that the Playback was imported from lastfm. This is useful to
+  detect duplicates when reimporting. Other than this value, clients can set
+  anything they like. The information can be used to drop all playbacks from one
+  source for example.
+
+
+Playback Threshold
+------------------
+
+Clients can specify both trackLength and playTime. The former indicates the
+length of the track as such and the latter indicates how many seconds of the
+track were actually played. Please note: while the absolute value of trackLength
+might be significant to identify the track on musicbrainz, the relation between
+trackLength and playTime is insignificant for the server.
+
+We recommend to only create a playback if playTime/trackLength > 1/2 holds true,
+but the server does not enforce that. Playback thresholds are for the client to
+decide.
+
+
+Broken Playbacks
+----------------
+
+Fixing Playbacks
+----------------
+
+Operations
+----------
