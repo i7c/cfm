@@ -47,6 +47,12 @@ sub release_groups {
     ));
 }
 
+sub affected {
+    my ($self, $affected) = @_;
+
+    $self->_print(encode_json(Cfm::Common::AffectedRes->to_hash($affected)));
+}
+
 sub _list {
     my ($self, $list, $trans) = @_;
 

@@ -26,6 +26,7 @@ my %command_mapping = (
     'record-mpd'   => \&cmd_record_mpd,
     'record-mpris' => \&cmd_record_mpris,
     add            => \&cmd_add,
+    delete         => \&cmd_delete,
     fix            => \&cmd_fix,
     list           => \&cmd_list,
     now            => \&cmd_now,
@@ -111,6 +112,14 @@ sub cmd_add {
     );
     my $response = $self->playback_service->create_playback($playback);
     $self->formatter->playback($response);
+}
+
+sub cmd_delete {
+    my ($self) = @_;
+
+    my $source = $self->config->require_option("source");
+    my $affected = $self->playback_service->delete($source);
+    $self->formatter->affected($affected);
 }
 
 sub cmd_import_csv {

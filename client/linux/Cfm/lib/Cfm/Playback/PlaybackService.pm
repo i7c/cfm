@@ -63,4 +63,10 @@ sub mark_unfixable {
     $self->client->post_accumulated_playbacks($acc);
 }
 
+sub delete {
+    my ($self, $source) = @_;
+
+    $self->client->delete_playbacks($source);
+}
+
 1;

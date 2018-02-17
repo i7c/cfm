@@ -51,4 +51,10 @@ sub release_groups {
     }
 }
 
+sub affected {
+    my ($self, $affected) = @_;
+
+    $self->csv->print(\*STDOUT, [ $affected->affected ]);
+}
+
 1;

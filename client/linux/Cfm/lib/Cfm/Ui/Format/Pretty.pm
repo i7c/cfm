@@ -148,4 +148,11 @@ sub review_acc_fix {
     print $table;
 }
 
+sub affected {
+    my ($self, $affected) = @_;
+
+    my $num = $affected->affected;
+    print "$num elements affected.\n";
+}
+
 1;

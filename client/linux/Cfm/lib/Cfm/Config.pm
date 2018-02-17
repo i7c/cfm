@@ -31,6 +31,7 @@ my @cli_args = (
     'players=s',
     'quiet|q',
     'set|s=s@',
+    'source=s',
     'threshold=i',
 );
 
