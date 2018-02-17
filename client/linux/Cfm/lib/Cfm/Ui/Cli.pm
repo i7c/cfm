@@ -20,16 +20,16 @@ use Cfm::User::User;
 use Cfm::User::UserService;
 
 my %command_mapping = (
-    list           => \&cmd_list,
-    add            => \&cmd_add,
-    'import-csv'   => \&cmd_import_csv,
-    record         => \&cmd_record,
-    'record-mpris' => \&cmd_record_mpris,
-    'record-mpd'   => \&cmd_record_mpd,
     'create-user'  => \&cmd_create_user,
-    now            => \&cmd_now,
     'find-rg'      => \&cmd_find_rg,
+    'import-csv'   => \&cmd_import_csv,
+    'record-mpd'   => \&cmd_record_mpd,
+    'record-mpris' => \&cmd_record_mpris,
+    add            => \&cmd_add,
     fix            => \&cmd_fix,
+    list           => \&cmd_list,
+    now            => \&cmd_now,
+    record         => \&cmd_record,
 );
 
 has loglevel => inject 'loglevel';
