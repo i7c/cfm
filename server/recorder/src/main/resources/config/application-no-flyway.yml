@@ -1,0 +1,4 @@
+flyway:
+  enabled: false
+
+spring.jpa.hibernate.ddl-auto: create

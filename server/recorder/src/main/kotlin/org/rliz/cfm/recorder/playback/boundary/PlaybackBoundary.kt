@@ -6,12 +6,13 @@ import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
 import org.rliz.cfm.recorder.common.exception.OutdatedException
 import org.rliz.cfm.recorder.common.log.logger
+import org.rliz.cfm.recorder.common.security.currentUser
 import org.rliz.cfm.recorder.fingerprint.boundary.FingerprintBoundary
 import org.rliz.cfm.recorder.mbs.service.MbsService
 import org.rliz.cfm.recorder.playback.api.PlaybackRes
-import org.rliz.cfm.recorder.playback.auth.demandOwnership
 import org.rliz.cfm.recorder.playback.data.*
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
+import org.rliz.cfm.recorder.user.data.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -131,8 +132,8 @@ class PlaybackBoundary {
                        trackNumber: Int? = null,
                        playbackTimestamp: Long? = null): PlaybackDto {
 
-        val playback = playbackRepo.findOneByUuid(playbackId) ?: throw NotFoundException(Playback::class)
-        demandOwnership(playback)
+        val playback = playbackRepo.findOneByUserAndUuid(currentUser(), playbackId)
+                ?: throw NotFoundException(Playback::class)
 
         val originalData = playback.originalData!!
         if (artists != null) {
@@ -172,11 +173,10 @@ class PlaybackBoundary {
     }
 
     fun getPlayback(playbackId: UUID): PlaybackDto =
-            findPlayback(playbackId) ?: throw NotFoundException(Playback::class)
+            findPlayback(currentUser(), playbackId) ?: throw NotFoundException(Playback::class)
 
-    fun findPlayback(playbackId: UUID): PlaybackDto? = playbackRepo.findOneByUuid(playbackId)?.let {
-        makePlaybackView(listOf(it)).first()
-    }
+    fun findPlayback(user: User, playbackId: UUID): PlaybackDto? =
+            playbackRepo.findOneByUserAndUuid(user, playbackId)?.let { makePlaybackView(listOf(it)).first() }
 
     fun batchCreatePlaybacks(batch: List<PlaybackRes>): List<BatchResultItem> = batch.map { playbackRes ->
 

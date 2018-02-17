@@ -62,8 +62,8 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
                 """)
     fun findAccumulatedBrokenPlaybacks(@Param("userId") userId: UUID, pageable: Pageable): Page<AccumulatedPlaybacks>
 
-    @EntityGraph(attributePaths = arrayOf("originalData", "user"))
-    fun findOneByUuid(uuid: UUID): Playback?
+    @EntityGraph(attributePaths = ["originalData", "user"])
+    fun findOneByUserAndUuid(user: User, uuid: UUID): Playback?
 
     @Modifying
     @Query(

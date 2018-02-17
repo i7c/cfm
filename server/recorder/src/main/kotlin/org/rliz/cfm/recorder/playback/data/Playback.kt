@@ -11,8 +11,8 @@ import javax.validation.constraints.NotNull
 @Table(
         indexes = arrayOf(
                 Index(
-                        name = "IX_Playback_uuid",
-                        columnList = "uuid",
+                        name = "IX_Playback_user_uuid",
+                        columnList = "user_oid, uuid",
                         unique = true
                 ),
 
