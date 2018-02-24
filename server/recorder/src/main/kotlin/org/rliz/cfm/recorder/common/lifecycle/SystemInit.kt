@@ -35,9 +35,9 @@ class SystemInit : SmartLifecycle {
 
     override fun isAutoStartup(): Boolean = true
 
-    override fun stop(callback: Runnable?) {
+    override fun stop(callback: Runnable) {
         running = false
-        callback!!.run()
+        callback.run()
     }
 
     override fun stop() {

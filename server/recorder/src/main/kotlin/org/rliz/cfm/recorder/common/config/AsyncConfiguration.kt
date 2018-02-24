@@ -18,7 +18,6 @@ class AsyncConfiguration : AsyncConfigurer {
         corePoolSize = 4
         maxPoolSize = 16
         setQueueCapacity(128)
-        threadNamePrefix = "recorder-async-"
         initialize()
     }
 }

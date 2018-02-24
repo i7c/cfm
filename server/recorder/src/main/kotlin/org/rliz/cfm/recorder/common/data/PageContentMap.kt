@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest
 
 fun <T, R> Page<T>.contentMap(transform: (List<T>) -> (List<R>)) = PageImpl(
         transform(this.content),
-        PageRequest(
+        PageRequest.of(
                 this.number,
                 this.size,
                 this.sort

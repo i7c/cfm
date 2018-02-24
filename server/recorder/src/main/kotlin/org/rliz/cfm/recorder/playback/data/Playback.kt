@@ -47,7 +47,7 @@ import javax.validation.constraints.NotNull
                 )
         )
 )
-open class Playback : AbstractModel {
+class Playback : AbstractModel {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

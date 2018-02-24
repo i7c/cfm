@@ -16,7 +16,7 @@ import javax.persistence.*
                 )
         )
 )
-open class User : AbstractModel {
+class User : AbstractModel {
 
     @Column(length = 128, nullable = false)
     var name: String? = null

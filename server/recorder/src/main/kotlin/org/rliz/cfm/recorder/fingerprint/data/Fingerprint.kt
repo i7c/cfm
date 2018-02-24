@@ -20,7 +20,7 @@ import javax.validation.constraints.Size
             )
         ]
 )
-open class Fingerprint : AbstractModel {
+class Fingerprint : AbstractModel {
 
     @NotNull
     @ManyToOne

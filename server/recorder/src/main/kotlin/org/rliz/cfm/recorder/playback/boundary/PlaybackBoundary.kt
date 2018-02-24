@@ -169,7 +169,7 @@ class PlaybackBoundary {
                 playback.releaseGroupUuid = null
             }
         }
-        playback.originalData = rawPlaybackDataRepo.save(playback.originalData)
+        playback.originalData = rawPlaybackDataRepo.save(originalData)
         return makePlaybackView(playbackRepo.save(playback))
     }
 
@@ -283,10 +283,10 @@ class PlaybackBoundary {
         playbackRepo.deleteByUserAndSource(currentUser(), source)
     } ?: 0L
 
-    private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { nowPlaying ->
-        if (nowPlaying.recordingUuid != null && nowPlaying.releaseGroupUuid != null) {
-            val recordingViewFuture = mbsService.getRecordingView(listOf(nowPlaying.recordingUuid!!))
-            val releaseGroupViewFuture = mbsService.getReleaseGroupView(listOf(nowPlaying.releaseGroupUuid!!))
+    private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { it ->
+        if (it.recordingUuid != null && it.releaseGroupUuid != null) {
+            val recordingViewFuture = mbsService.getRecordingView(listOf(it.recordingUuid!!))
+            val releaseGroupViewFuture = mbsService.getReleaseGroupView(listOf(it.releaseGroupUuid!!))
 
             try {
                 val recordingView = recordingViewFuture.get().elements.first()
@@ -296,7 +296,7 @@ class PlaybackBoundary {
                         artists = recordingView.artists,
                         recordingTitle = recordingView.name,
                         releaseTitle = releaseGroupView.name,
-                        timestamp = nowPlaying.timestamp,
+                        timestamp = it.timestamp,
                         broken = false
                 )
             } catch (e: ExecutionException) {
@@ -304,10 +304,10 @@ class PlaybackBoundary {
             }
         }
         PlaybackDto(
-                artists = nowPlaying.artists!!,
-                recordingTitle = nowPlaying.recordingTitle!!,
-                releaseTitle = nowPlaying.releaseTitle!!,
-                timestamp = nowPlaying.timestamp,
+                artists = it.artists!!,
+                recordingTitle = it.recordingTitle!!,
+                releaseTitle = it.releaseTitle!!,
+                timestamp = it.timestamp,
                 broken = true
         )
     }

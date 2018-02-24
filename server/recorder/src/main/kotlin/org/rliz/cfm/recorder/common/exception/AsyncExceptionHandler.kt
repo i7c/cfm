@@ -10,7 +10,7 @@ class AsyncExceptionHandler : AsyncUncaughtExceptionHandler {
         val log = logger<AsyncExceptionHandler>()
     }
 
-    override fun handleUncaughtException(e: Throwable?, m: Method?, vararg args: Any?) {
+    override fun handleUncaughtException(e: Throwable, m: Method, vararg args: Any?) {
         log.error("Uncaught async exception: {}", e)
     }
 
