@@ -56,7 +56,7 @@ public class ReleaseGroupBoundary {
         if (pageable.getOffset() >= releaseGroups.size()) {
             return new PageImpl<ReleaseGroup>(new ArrayList<>(), pageable, releaseGroups.size());
         }
-        int first = pageable.getOffset();
+        int first = (int) pageable.getOffset();
         int last = Math.min(first + pageable.getPageSize(), releaseGroups.size());
         return new PageImpl<ReleaseGroup>(releaseGroups.subList(first, last), pageable, releaseGroups.size());
     }

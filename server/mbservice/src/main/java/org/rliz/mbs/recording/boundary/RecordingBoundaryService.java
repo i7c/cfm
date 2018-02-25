@@ -73,7 +73,7 @@ public class RecordingBoundaryService {
         if (pageable.getOffset() >= recordings.size()) {
             return new PageImpl<>(new ArrayList<>(), pageable, recordings.size());
         }
-        int first = pageable.getOffset();
+        int first = (int) pageable.getOffset();
         int last = Math.min(first + pageable.getPageSize(), recordings.size());
         return new PageImpl<Recording>(recordings.subList(first, last), pageable, recordings.size());
     }
