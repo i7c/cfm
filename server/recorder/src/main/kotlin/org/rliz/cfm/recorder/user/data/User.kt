@@ -1,20 +1,31 @@
 package org.rliz.cfm.recorder.user.data
 
 import org.rliz.cfm.recorder.common.data.AbstractModel
-import java.util.*
-import javax.persistence.*
+import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.Index
+import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 
 @Entity
 @Table(
-        name = "cfm_user",
-        uniqueConstraints = arrayOf(UniqueConstraint(name = "UC_User_name", columnNames = arrayOf("name"))),
-        indexes = arrayOf(
-                Index(
-                        name = "IX_User_uuid",
-                        columnList = "uuid",
-                        unique = true
-                )
+    name = "cfm_user",
+    uniqueConstraints = arrayOf(
+        UniqueConstraint(
+            name = "UC_User_name",
+            columnNames = arrayOf("name")
         )
+    ),
+    indexes = arrayOf(
+        Index(
+            name = "IX_User_uuid",
+            columnList = "uuid",
+            unique = true
+        )
+    )
 )
 class User : AbstractModel {
 
@@ -31,11 +42,16 @@ class User : AbstractModel {
 
     constructor() : super()
 
-    constructor(uuid: UUID, name: String, password: String, state: UserState, systemUser: Boolean) : super(uuid) {
+    constructor(
+        uuid: UUID,
+        name: String,
+        password: String,
+        state: UserState,
+        systemUser: Boolean
+    ) : super(uuid) {
         this.name = name
         this.password = password
         this.state = state
         this.systemUser = systemUser
     }
-
 }

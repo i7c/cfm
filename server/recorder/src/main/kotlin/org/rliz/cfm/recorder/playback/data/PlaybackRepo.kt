@@ -8,11 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.*
+import java.util.UUID
 
 interface PlaybackRepo : JpaRepository<Playback, Long> {
 
-    @Query(value = """
+    @Query(
+        value = """
         select distinct p
         from Playback p
         join fetch p.originalData o
@@ -23,10 +24,12 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
         from Playback p
         join p.user u
         where u.uuid = :userId
-                """)
+                """
+    )
     fun findPlaybacksForUser(@Param("userId") userId: UUID, pageable: Pageable): Page<Playback>
 
-    @Query(value = """
+    @Query(
+        value = """
         select distinct p
         from Playback p
         join fetch p.originalData o
@@ -39,10 +42,12 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
         join p.user u
         where u.uuid = :userId
         and p.recordingUuid is null
-                """)
+                """
+    )
     fun findBrokenPlaybacksForUser(@Param("userId") userId: UUID, pageable: Pageable): Page<Playback>
 
-    @Query(value = """
+    @Query(
+        value = """
         select
         new org.rliz.cfm.recorder.playback.data.AccumulatedPlaybacks(count(p), o.artistJson, o.recordingTitle, o.releaseTitle, max(p.fixAttempt))
         from Playback p
@@ -52,14 +57,15 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
         having u.uuid = :userId and p.recordingUuid is null and p.releaseGroupUuid is null
         order by max(p.fixAttempt) asc, count(p) desc, o.artistJson asc
         """,
-            countQuery = """
+        countQuery = """
         select count(p)
         from Playback p
         join p.originalData o
         join p.user u
         group by o.artistJson, o.recordingTitle, o.releaseTitle, u.uuid, p.recordingUuid, p.releaseGroupUuid
         having u.uuid = :userId and p.recordingUuid is null and p.releaseGroupUuid is null
-                """)
+                """
+    )
     fun findAccumulatedBrokenPlaybacks(@Param("userId") userId: UUID, pageable: Pageable): Page<AccumulatedPlaybacks>
 
     @EntityGraph(attributePaths = ["originalData", "user"])
@@ -67,7 +73,7 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
 
     @Modifying
     @Query(
-            value = """
+        value = """
         update Playback p
         set p.releaseGroupUuid = :releaseGroupId, p.recordingUuid = :recordingId, p.fixAttempt = :fixAttempt
         where p.originalData in (
@@ -80,13 +86,15 @@ interface PlaybackRepo : JpaRepository<Playback, Long> {
         and p.user = :user
         """
     )
-    fun bulkSetRecAndRgIds(@Param("artistJson") artistsJson: String,
-                           @Param("recording") recordingTitle: String,
-                           @Param("release") releaseTitle: String,
-                           @Param("releaseGroupId") rgId: UUID?,
-                           @Param("recordingId") recId: UUID?,
-                           @Param("fixAttempt") fixAttempt: Long,
-                           @Param("user") user: User): Int
+    fun bulkSetRecAndRgIds(
+        @Param("artistJson") artistsJson: String,
+        @Param("recording") recordingTitle: String,
+        @Param("release") releaseTitle: String,
+        @Param("releaseGroupId") rgId: UUID?,
+        @Param("recordingId") recId: UUID?,
+        @Param("fixAttempt") fixAttempt: Long,
+        @Param("user") user: User
+    ): Int
 
     fun deleteByUserAndSource(user: User, source: String): Long
 }

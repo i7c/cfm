@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 @Service
@@ -21,54 +21,56 @@ class MbsService {
 
     @Async
     fun getRecordingView(ids: List<UUID>): CompletableFuture<MbsRecordingViewListRes> =
-            UriComponentsBuilder.fromHttpUrl(mbsUrl)
-                    .pathSegment("mbs", "v1", "recordings")
-                    .let { uriBuilder ->
-                        ids.forEach { uriBuilder.queryParam("id", it) }
-                        CompletableFuture.completedFuture(
-                                RestTemplate().getForObject(
-                                        uriBuilder.build().toUri(),
-                                        MbsRecordingViewListRes::class.java
-                                )
-                        )
-                    }
+        UriComponentsBuilder.fromHttpUrl(mbsUrl)
+            .pathSegment("mbs", "v1", "recordings")
+            .let { uriBuilder ->
+                ids.forEach { uriBuilder.queryParam("id", it) }
+                CompletableFuture.completedFuture(
+                    RestTemplate().getForObject(
+                        uriBuilder.build().toUri(),
+                        MbsRecordingViewListRes::class.java
+                    )
+                )
+            }
 
     @Async
     fun getReleaseGroupView(ids: List<UUID>): CompletableFuture<MbsReleaseGroupViewListRes> =
-            UriComponentsBuilder.fromHttpUrl(mbsUrl)
-                    .pathSegment("mbs", "v1", "releasegroups")
-                    .let { uriBuilder ->
-                        ids.forEach { uriBuilder.queryParam("id", it) }
-                        CompletableFuture.completedFuture(
-                                RestTemplate().getForObject(
-                                        uriBuilder.build().toUri(),
-                                        MbsReleaseGroupViewListRes::class.java
-                                )
-                        )
-                    }
+        UriComponentsBuilder.fromHttpUrl(mbsUrl)
+            .pathSegment("mbs", "v1", "releasegroups")
+            .let { uriBuilder ->
+                ids.forEach { uriBuilder.queryParam("id", it) }
+                CompletableFuture.completedFuture(
+                    RestTemplate().getForObject(
+                        uriBuilder.build().toUri(),
+                        MbsReleaseGroupViewListRes::class.java
+                    )
+                )
+            }
 
     @Async
     fun identifyPlayback(recordingTitle: String, releaseTitle: String, artists: List<String>):
-            CompletableFuture<MbsIdentifiedPlaybackDto> =
-            UriComponentsBuilder.fromHttpUrl(mbsUrl)
-                    .pathSegment("mbs", "v1", "playbacks", "identify")
-                    .queryParam("title", recordingTitle)
-                    .queryParam("release", releaseTitle)
-                    .apply {
-                        artists.forEach { queryParam("artist", it) }
-                    }
-                    .build()
-                    .toUri()
-                    .let { uri ->
-                        val future = CompletableFuture<MbsIdentifiedPlaybackDto>()
-                        try {
-                            future.complete(
-                                    RestTemplate().getForObject(uri, MbsIdentifiedPlaybackRes::class.java)!!.toDto()
-                            )
-                        } catch (e: Exception) {
-                            future.completeExceptionally(MbsLookupFailedException(e))
-                        }
-                        future
-                    }
-
+        CompletableFuture<MbsIdentifiedPlaybackDto> =
+        UriComponentsBuilder.fromHttpUrl(mbsUrl)
+            .pathSegment("mbs", "v1", "playbacks", "identify")
+            .queryParam("title", recordingTitle)
+            .queryParam("release", releaseTitle)
+            .apply {
+                artists.forEach { queryParam("artist", it) }
+            }
+            .build()
+            .toUri()
+            .let { uri ->
+                val future = CompletableFuture<MbsIdentifiedPlaybackDto>()
+                try {
+                    future.complete(
+                        RestTemplate().getForObject(
+                            uri,
+                            MbsIdentifiedPlaybackRes::class.java
+                        )!!.toDto()
+                    )
+                } catch (e: Exception) {
+                    future.completeExceptionally(MbsLookupFailedException(e))
+                }
+                future
+            }
 }

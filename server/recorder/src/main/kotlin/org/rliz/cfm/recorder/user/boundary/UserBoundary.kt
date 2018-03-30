@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.util.IdGenerator
-import java.util.*
-
+import java.util.UUID
 
 @Service
 class UserBoundary {
@@ -25,7 +24,12 @@ class UserBoundary {
     private val encoder = BCryptPasswordEncoder()
 
     @AdminAuth
-    fun createUser(name: String, password: String, state: UserState, systemUser: Boolean = false): User {
+    fun createUser(
+        name: String,
+        password: String,
+        state: UserState,
+        systemUser: Boolean = false
+    ): User {
         val user = User(idgen.generateId(), name, encoder.encode(password), state, systemUser)
         return userRepo.save(user)
     }
@@ -40,9 +44,15 @@ class UserBoundary {
 
     private fun findUser(uuid: UUID): User? = userRepo.findOneByUuid(uuid)
 
-    fun getUser(uuid: UUID): User = findUser(uuid) ?: throw NotFoundException(User::class, "uuid $uuid")
+    fun getUser(uuid: UUID): User = findUser(uuid) ?: throw NotFoundException(
+        User::class,
+        "uuid $uuid"
+    )
 
-    fun getCurrentUser(): User = findUser(currentUser().uuid!!) ?: throw NotFoundException(User::class, "self")
+    fun getCurrentUser(): User = findUser(currentUser().uuid!!) ?: throw NotFoundException(
+        User::class,
+        "self"
+    )
 
     fun updateUser(name: String?, password: String?): User = getCurrentUser().apply {
         if (name != null) this.name = name
@@ -53,8 +63,13 @@ class UserBoundary {
      * Same as createUser() but does not check any authorization.
      * Use with care and only if you are certain that the calling piece of code is authorized.
      */
-    fun createUserNoAuthCheck(name: String, password: String, state: UserState, systemUser: Boolean = false): User =
-            createUser(name, password, state, systemUser)
+    fun createUserNoAuthCheck(
+        name: String,
+        password: String,
+        state: UserState,
+        systemUser: Boolean = false
+    ): User =
+        createUser(name, password, state, systemUser)
 
     /**
      * Same as promoteToSystemUser() but does not check any authorization.

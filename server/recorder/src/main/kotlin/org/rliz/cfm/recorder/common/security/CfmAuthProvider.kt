@@ -42,9 +42,8 @@ class CfmAuthProvider : AuthenticationProvider {
     }
 
     override fun supports(authentication: Class<*>?): Boolean =
-            authentication!!.isAssignableFrom(UsernamePasswordAuthenticationToken::class.java)
-
+        authentication!!.isAssignableFrom(UsernamePasswordAuthenticationToken::class.java)
 }
 
 fun determineRoles(u: User) = (if (u.systemUser) listOf(SimpleGrantedAuthority("ROLE_ADMIN")) else emptyList())
-        .plus(SimpleGrantedAuthority("ROLE_USER"))
+    .plus(SimpleGrantedAuthority("ROLE_USER"))

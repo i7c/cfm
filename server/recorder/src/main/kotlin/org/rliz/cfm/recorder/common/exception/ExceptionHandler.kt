@@ -15,7 +15,7 @@ class ExceptionHandler {
         val log = logger<ExceptionHandler>()
     }
 
-    fun <E: Exception> logged(e: E): E {
+    fun <E : Exception> logged(e: E): E {
         log.info("${e.message} [${currentUser().uuid}]")
         log.info("Uncaught exception", e)
         return e

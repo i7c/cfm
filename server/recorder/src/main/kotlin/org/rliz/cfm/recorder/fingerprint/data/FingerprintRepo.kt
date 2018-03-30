@@ -6,5 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface FingerprintRepo : JpaRepository<Fingerprint, Long> {
 
     fun findOneByUserAndFingerprint(user: User, fingerprint: String): Fingerprint?
-
 }

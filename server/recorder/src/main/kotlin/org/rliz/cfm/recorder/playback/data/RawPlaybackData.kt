@@ -2,7 +2,12 @@ package org.rliz.cfm.recorder.playback.data
 
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.ElementCollection
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
@@ -40,8 +45,15 @@ class RawPlaybackData {
 
     constructor()
 
-    constructor(artists: List<String>?, artistJson: String?, recordingTitle: String?, releaseTitle: String?,
-                length: Long? = null, discNumber: Int? = null, trackNumber: Int? = null) : this() {
+    constructor(
+        artists: List<String>?,
+        artistJson: String?,
+        recordingTitle: String?,
+        releaseTitle: String?,
+        length: Long? = null,
+        discNumber: Int? = null,
+        trackNumber: Int? = null
+    ) : this() {
         this.artists = artists
         this.artistJson = artistJson
         this.recordingTitle = recordingTitle

@@ -4,5 +4,4 @@ class MbsLookupFailedException : RuntimeException {
 
     constructor() : super()
     constructor(e: Throwable) : super(e)
-
 }

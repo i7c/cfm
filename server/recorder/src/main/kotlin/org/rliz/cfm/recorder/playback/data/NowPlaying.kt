@@ -3,21 +3,30 @@ package org.rliz.cfm.recorder.playback.data
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.rliz.cfm.recorder.user.data.User
-import java.util.*
-import javax.persistence.*
+import java.util.UUID
+import javax.persistence.ElementCollection
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.ForeignKey
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.Index
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Entity
 @Table(
-        indexes = arrayOf(
+    indexes = arrayOf(
 
-                Index(
-                        name = "IX_NowPlaying_User",
-                        columnList = "user_oid",
-                        unique = true
-                )
+        Index(
+            name = "IX_NowPlaying_User",
+            columnList = "user_oid",
+            unique = true
         )
+    )
 )
 class NowPlaying {
 
@@ -53,13 +62,15 @@ class NowPlaying {
 
     constructor()
 
-    constructor(artists: List<String>,
-                recordingTitle: String,
-                releaseTitle: String,
-                timestamp: Long,
-                user: User,
-                recordingUuid: UUID? = null,
-                releaseGroupUuid: UUID? = null) {
+    constructor(
+        artists: List<String>,
+        recordingTitle: String,
+        releaseTitle: String,
+        timestamp: Long,
+        user: User,
+        recordingUuid: UUID? = null,
+        releaseGroupUuid: UUID? = null
+    ) {
         this.user = user
         this.timestamp = timestamp
         this.artists = artists

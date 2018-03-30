@@ -13,5 +13,4 @@ class AsyncExceptionHandler : AsyncUncaughtExceptionHandler {
     override fun handleUncaughtException(e: Throwable, m: Method, vararg args: Any?) {
         log.error("Uncaught async exception: {}", e)
     }
-
 }

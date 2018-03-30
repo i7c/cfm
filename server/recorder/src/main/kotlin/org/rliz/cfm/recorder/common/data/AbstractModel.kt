@@ -1,7 +1,10 @@
 package org.rliz.cfm.recorder.common.data
 
-import java.util.*
-import javax.persistence.*
+import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.MappedSuperclass
 
 @MappedSuperclass
 open class AbstractModel {

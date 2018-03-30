@@ -2,23 +2,28 @@ package org.rliz.cfm.recorder.fingerprint.data
 
 import org.rliz.cfm.recorder.common.data.AbstractModel
 import org.rliz.cfm.recorder.user.data.User
-import java.util.*
-import javax.persistence.*
+import java.util.UUID
+import javax.persistence.Entity
+import javax.persistence.ForeignKey
+import javax.persistence.Index
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Entity
 @Table(
-        indexes = [
-            Index(
-                    name = "IX_Fingerprint_fingerprint",
-                    columnList = "fingerprint"
-            ),
-            Index(
-                    name = "IX_Fingerprint_user_fingerprint",
-                    columnList = "user_oid, fingerprint"
-            )
-        ]
+    indexes = [
+        Index(
+            name = "IX_Fingerprint_fingerprint",
+            columnList = "fingerprint"
+        ),
+        Index(
+            name = "IX_Fingerprint_user_fingerprint",
+            columnList = "user_oid, fingerprint"
+        )
+    ]
 )
 class Fingerprint : AbstractModel {
 
@@ -34,11 +39,13 @@ class Fingerprint : AbstractModel {
 
     var releaseGroupUuid: UUID? = null
 
-    constructor(uuid: UUID,
-                user: User,
-                fingerprint: String,
-                recordingUuid: UUID? = null,
-                releaseGroupUuid: UUID? = null) : super(uuid) {
+    constructor(
+        uuid: UUID,
+        user: User,
+        fingerprint: String,
+        recordingUuid: UUID? = null,
+        releaseGroupUuid: UUID? = null
+    ) : super(uuid) {
         this.user = user
         this.fingerprint = fingerprint
         this.recordingUuid = recordingUuid

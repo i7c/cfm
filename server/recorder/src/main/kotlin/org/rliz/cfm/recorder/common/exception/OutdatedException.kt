@@ -6,6 +6,5 @@ import kotlin.reflect.KClass
 class OutdatedException : RuntimeException {
 
     constructor(clazz: KClass<*> = AbstractModel::class)
-            : super("$clazz(s) outdated, operation canceled")
-
+        : super("$clazz(s) outdated, operation canceled")
 }
