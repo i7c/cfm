@@ -1,4 +1,4 @@
-package org.rliz.mbs.release.model
+package org.rliz.mbs.release.data
 
 import java.util.Date
 

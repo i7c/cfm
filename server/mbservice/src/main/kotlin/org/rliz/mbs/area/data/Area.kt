@@ -1,4 +1,4 @@
-package org.rliz.mbs.area.model
+package org.rliz.mbs.area.data
 
 import java.util.UUID
 

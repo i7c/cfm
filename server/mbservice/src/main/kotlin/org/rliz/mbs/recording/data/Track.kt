@@ -1,7 +1,7 @@
 package org.rliz.mbs.recording.data
 
-import org.rliz.mbs.artist.model.ArtistCredit
-import org.rliz.mbs.release.model.Medium
+import org.rliz.mbs.artist.data.ArtistCredit
+import org.rliz.mbs.release.data.Medium
 import java.util.Date
 import java.util.UUID
 

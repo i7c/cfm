@@ -1,4 +1,4 @@
-package org.rliz.mbs.artist.model
+package org.rliz.mbs.artist.data
 
 import java.io.Serializable
 import java.util.Date

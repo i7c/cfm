@@ -1,6 +1,6 @@
-package org.rliz.mbs.release.model
+package org.rliz.mbs.release.data
 
-import org.rliz.mbs.artist.model.ArtistCredit
+import org.rliz.mbs.artist.data.ArtistCredit
 import java.util.Date
 import java.util.UUID
 

@@ -1,6 +1,6 @@
-package org.rliz.mbs.artist.model
+package org.rliz.mbs.artist.data
 
-import org.rliz.mbs.area.model.Area
+import org.rliz.mbs.area.data.Area
 import java.util.Date
 import java.util.UUID
 
