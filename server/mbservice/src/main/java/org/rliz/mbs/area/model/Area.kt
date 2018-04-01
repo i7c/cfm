@@ -1,21 +1,12 @@
 package org.rliz.mbs.area.model
 
-import org.rliz.mbs.common.model.FirstClassEntity
+import java.util.UUID
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Index
-import javax.persistence.Table
+class Area {
 
-@Entity
-@Table(
-    name = "area",
-    indexes = [(Index(name = "area_pkey", columnList = "id")), (Index(
-        name = "area_idx_gid",
-        columnList = "gid"
-    )), (Index(name = "area_idx_name", columnList = "name"))]
-)
-class Area : FirstClassEntity() {
+    val id: Long? = null
+
+    val gid: UUID? = null
 
     // Not mapped:
     //    type             | integer
@@ -29,9 +20,7 @@ class Area : FirstClassEntity() {
     //    end_date_day     | smallint
     //    ended            | boolean
 
-    @Column(name = "name")
     val name: String? = null
 
-    @Column(name = "comment")
     val comment: String? = null
 }
