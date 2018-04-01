@@ -14,4 +14,3 @@ class MbServiceApplication
 fun main(args: Array<String>) {
     SpringApplication.run(MbServiceApplication::class.java, *args)
 }
-
