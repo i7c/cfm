@@ -73,4 +73,31 @@ class MbsService {
                 }
                 future
             }
+
+    @Async
+    fun identifyPlayback(
+        artist: String,
+        release: String,
+        recording: String,
+        length: Long
+    ): CompletableFuture<IdentifiedPlayback> =
+        UriComponentsBuilder.fromHttpUrl(mbsUrl)
+            .pathSegment("mbs", "v2", "playbacks")
+            .queryParam("artist", artist)
+            .queryParam("release", release)
+            .queryParam("recording", recording)
+            .queryParam("length", length)
+            .build()
+            .toUri()
+            .let { uri ->
+                val future = CompletableFuture<IdentifiedPlayback>()
+                try {
+                    future.complete(
+                        RestTemplate().getForObject(uri, IdentifiedPlayback::class.java)
+                    )
+                } catch (e: Exception) {
+                    future.completeExceptionally(MbsLookupFailedException(e))
+                }
+                future
+            }
 }
