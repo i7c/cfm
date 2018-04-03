@@ -31,7 +31,7 @@ class PlaybackBoundary {
                     it.recordingSim > minRecordingSim
             }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun findBestMatch(
         artist: String,
         release: String,
