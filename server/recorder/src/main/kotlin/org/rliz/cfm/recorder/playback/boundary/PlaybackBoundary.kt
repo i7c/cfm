@@ -256,6 +256,7 @@ class PlaybackBoundary {
         } else false
     }.map { BatchResultItem(it) }
 
+    @Transactional
     fun setNowPlaying(
         artists: List<String>,
         title: String,
@@ -292,6 +293,7 @@ class PlaybackBoundary {
             makePlaybackView(nowPlayingRepo.save(nowPlaying))
         }
 
+    @Transactional(readOnly = true)
     fun getNowPlaying(): PlaybackDto = (nowPlayingRepo.findOneByUserUuid(userBoundary.getCurrentUser().uuid!!)?.apply {
         if (this.timestamp!! < Instant.now().epochSecond) throw NotFoundException(
             NowPlaying::class,

@@ -92,7 +92,6 @@ class PlaybackApi {
             .toRes()
             .toHttpResponse(HttpStatus.OK)
 
-    @Transactional
     @RequestMapping(method = [RequestMethod.PUT], path = ["/now"])
     fun putNowPlaying(@RequestBody body: PlaybackRes) =
         playbackBoundary.setNowPlaying(
@@ -102,7 +101,6 @@ class PlaybackApi {
             .toRes()
             .toHttpResponse(HttpStatus.OK)
 
-    @Transactional(readOnly = true)
     @RequestMapping(method = [RequestMethod.GET], path = ["/now"])
     fun getNowPlaying() =
         playbackBoundary.getNowPlaying()
