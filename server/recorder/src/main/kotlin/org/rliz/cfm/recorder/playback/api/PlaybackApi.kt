@@ -29,7 +29,6 @@ class PlaybackApi {
     @Autowired
     lateinit var playbackBoundary: PlaybackBoundary
 
-    @Transactional
     @RequestMapping(method = [RequestMethod.POST])
     fun postPlayback(@Valid @RequestBody body: PlaybackRes): ResponseEntity<PlaybackRes> =
         playbackBoundary.createPlayback(

@@ -59,6 +59,7 @@ class PlaybackBoundary {
     @Autowired
     lateinit var fingerprintBoundary: FingerprintBoundary
 
+    @Transactional
     fun createPlayback(
         artists: List<String>,
         recordingTitle: String,
