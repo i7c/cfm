@@ -262,7 +262,8 @@ class PlaybackBoundary {
         title: String,
         release: String,
         timestamp: Long?,
-        trackLength: Long?
+        trackLength: Long?,
+        idMethod: String?
     ) =
         userBoundary.getCurrentUser().let { user ->
 
@@ -277,10 +278,18 @@ class PlaybackBoundary {
             }
 
             try {
-                mbsService.identifyPlayback(title, release, artists)
-                    .get().apply {
-                    nowPlaying.recordingUuid = this.recordingId
-                    nowPlaying.releaseGroupUuid = this.releaseGroupId
+                if (idMethod == "trigram") {
+                    mbsService.identifyPlayback(artists[0], release, title, trackLength ?: 0)
+                        .get().apply {
+                            nowPlaying.recordingUuid = recordingId
+                            nowPlaying.releaseGroupUuid = releaseGroupId
+                        }
+                } else {
+                    mbsService.identifyPlayback(title, release, artists)
+                        .get().apply {
+                            nowPlaying.recordingUuid = this.recordingId
+                            nowPlaying.releaseGroupUuid = this.releaseGroupId
+                        }
                 }
             } catch (e: ExecutionException) {
                 log.info(
