@@ -69,7 +69,8 @@ class PlaybackBoundary {
         discNumber: Int? = null,
         trackNumber: Int? = null,
         playbackTimestamp: Long? = null,
-        source: String?
+        source: String?,
+        idMethod: String?
     ): PlaybackDto {
 
         val rawPlaybackData = rawPlaybackDataRepo.save(
@@ -90,12 +91,24 @@ class PlaybackBoundary {
 
         val playback = Playback(idgen.generateId(), user, timestamp, time, rawPlaybackData, source)
         try {
-            mbsService.identifyPlayback(recordingTitle, releaseTitle, artists)
-                .get()
-                .apply {
-                    playback.recordingUuid = recordingId
-                    playback.releaseGroupUuid = releaseGroupId
-                }
+            if (idMethod == "trigram") {
+                mbsService.identifyPlayback(
+                    artists[0],
+                    releaseTitle,
+                    recordingTitle,
+                    trackLength ?: 0
+                )
+                    .get().apply {
+                        playback.recordingUuid = recordingId
+                        playback.releaseGroupUuid = releaseGroupId
+                    }
+            } else {
+                mbsService.identifyPlayback(recordingTitle, releaseTitle, artists)
+                    .get().apply {
+                        playback.recordingUuid = this.recordingId
+                        playback.releaseGroupUuid = this.releaseGroupId
+                    }
+            }
         } catch (e: ExecutionException) {
             log.info("Failed to lookup details via mbs service for new playback")
             log.debug("Causing exception for failed lookup during create playback", e)

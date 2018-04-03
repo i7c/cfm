@@ -30,7 +30,10 @@ class PlaybackApi {
     lateinit var playbackBoundary: PlaybackBoundary
 
     @RequestMapping(method = [RequestMethod.POST])
-    fun postPlayback(@Valid @RequestBody body: PlaybackRes): ResponseEntity<PlaybackRes> =
+    fun postPlayback(
+        @Valid @RequestBody body: PlaybackRes,
+        @RequestParam(name = "id-method", required = false) idMethod: String?
+    ): ResponseEntity<PlaybackRes> =
         playbackBoundary.createPlayback(
             artists = body.artists,
             recordingTitle = body.recordingTitle!!,
@@ -40,7 +43,8 @@ class PlaybackApi {
             discNumber = body.discNumber,
             trackNumber = body.trackNumber,
             playbackTimestamp = body.timestamp,
-            source = body.source
+            source = body.source,
+            idMethod = idMethod
         )
             .toRes()
             .toHttpResponse(HttpStatus.CREATED)
