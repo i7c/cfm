@@ -86,7 +86,6 @@ class PlaybackApi {
             .toRes()
             .toHttpResponse(HttpStatus.OK)
 
-    @Transactional
     @RequestMapping(method = [RequestMethod.POST], path = ["/batch"])
     fun postPlaybackBatch(@RequestBody batch: PlaybackBatchRes) =
         playbackBoundary.batchCreatePlaybacks(batch.playbacks)

@@ -215,6 +215,7 @@ class PlaybackBoundary {
             playbackId
         )?.let { makePlaybackView(listOf(it)).first() }
 
+    @Transactional
     fun batchCreatePlaybacks(batch: List<PlaybackRes>): List<BatchResultItem> = batch.map { playbackRes ->
 
         /* We try to prevent here anything that could fail the entire transaction. The batch import is handled in one
@@ -227,57 +228,33 @@ class PlaybackBoundary {
             playbackRes.releaseTitle != null &&
             playbackRes.releaseTitle.isNotBlank()) {
 
-            val identifiedPlaybackFuture =
-                mbsService.identifyPlayback(
-                    playbackRes.recordingTitle,
-                    playbackRes.releaseTitle,
-                    playbackRes.artists
+            val rawPlaybackData = rawPlaybackDataRepo.save(
+                RawPlaybackData(
+                    artists = playbackRes.artists,
+                    artistJson = objectMapper.writeValueAsString(playbackRes.artists),
+                    recordingTitle = playbackRes.recordingTitle,
+                    releaseTitle = playbackRes.releaseTitle,
+                    length = playbackRes.trackLength,
+                    discNumber = playbackRes.discNumber,
+                    trackNumber = playbackRes.trackNumber
                 )
-            return@map {
-                val rawPlaybackData = rawPlaybackDataRepo.save(
-                    RawPlaybackData(
-                        artists = playbackRes.artists,
-                        artistJson = objectMapper.writeValueAsString(playbackRes.artists),
-                        recordingTitle = playbackRes.recordingTitle,
-                        releaseTitle = playbackRes.releaseTitle,
-                        length = playbackRes.trackLength,
-                        discNumber = playbackRes.discNumber,
-                        trackNumber = playbackRes.trackNumber
-                    )
-                )
-                val user = userBoundary.getCurrentUser()
-                val timestamp = playbackRes.timestamp ?: Instant.now().epochSecond
-                val time = playbackRes.playTime ?: playbackRes.trackLength
+            )
+            val user = userBoundary.getCurrentUser()
+            val timestamp = playbackRes.timestamp ?: Instant.now().epochSecond
+            val time = playbackRes.playTime ?: playbackRes.trackLength
 
-                val playback = Playback(
-                    playbackRes.id ?: idgen.generateId(),
-                    user,
-                    timestamp,
-                    time,
-                    rawPlaybackData,
-                    playbackRes.source
-                )
-                try {
-                    identifiedPlaybackFuture
-                        .get()
-                        .apply {
-                            playback.recordingUuid = recordingId
-                            playback.releaseGroupUuid = releaseGroupId
-                        }
-                } catch (e: ExecutionException) {
-                    log.info(
-                        "Failed to lookup details via mbs service for new playback ({},{},{})",
-                        playbackRes.recordingTitle,
-                        playbackRes.releaseTitle,
-                        playbackRes.artists
-                    )
-                    log.debug("Causing exception for failed lookup during create playback", e)
-                }
-                playbackRepo.save(playback)
-                BatchResultItem(true)
-            }
-        } else return@map { BatchResultItem(false) }
-    }.map { it() }
+            val playback = Playback(
+                playbackRes.id ?: idgen.generateId(),
+                user,
+                timestamp,
+                time,
+                rawPlaybackData,
+                playbackRes.source
+            )
+            playbackRepo.save(playback)
+            true
+        } else false
+    }.map { BatchResultItem(it) }
 
     fun setNowPlaying(
         artists: List<String>,
