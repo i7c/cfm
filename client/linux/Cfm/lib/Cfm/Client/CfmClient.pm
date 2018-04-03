@@ -68,7 +68,11 @@ sub put_now_playing {
     my ($self, $playback) = @_;
 
     Cfm::Playback::Playback->from_hash(
-        $self->put_json("/rec/v1/playbacks/now", Cfm::Playback::Playback->to_hash($playback)),
+        $self->put_json(
+            "/rec/v1/playbacks/now",
+            Cfm::Playback::Playback->to_hash($playback),
+            [ "id-method" => $self->config->require_option("id-method") ],
+        ),
         1 # skip field checks
     );
 }

@@ -39,6 +39,7 @@ my %conf_default = (
     'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'gap-to-complete' => 3,
+    'id-method'       => 'rated',
     'mpd-host'        => $ENV{MPD_HOST} // 'localhost',
     'mpd-wait'        => 10,
     'mpris-wait'      => 10,
