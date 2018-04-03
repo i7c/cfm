@@ -44,7 +44,11 @@ sub create_playback {
     my ($self, $playback) = @_;
 
     Cfm::Playback::Playback->from_hash(
-        $self->post_json("/rec/v1/playbacks", Cfm::Playback::Playback->to_hash($playback))
+        $self->post_json(
+            "/rec/v1/playbacks",
+            Cfm::Playback::Playback->to_hash($playback),
+            [ "id-method" => $self->config->require_option("id-method") ],
+        )
     );
 }
 
