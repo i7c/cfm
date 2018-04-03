@@ -82,12 +82,13 @@ class MbsService {
         length: Long
     ): CompletableFuture<IdentifiedPlayback> =
         UriComponentsBuilder.fromHttpUrl(mbsUrl)
-            .pathSegment("mbs", "v2", "playbacks")
+            .pathSegment("mbs", "v2", "playbacks", "best")
             .queryParam("artist", artist)
             .queryParam("release", release)
             .queryParam("recording", recording)
             .queryParam("length", length)
             .build()
+            .encode()
             .toUri()
             .let { uri ->
                 val future = CompletableFuture<IdentifiedPlayback>()
