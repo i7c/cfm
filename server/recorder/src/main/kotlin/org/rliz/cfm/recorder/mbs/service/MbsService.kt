@@ -36,7 +36,7 @@ class MbsService {
     @Async
     fun getReleaseGroupView(ids: List<UUID>): CompletableFuture<MbsReleaseGroupViewListRes> =
         UriComponentsBuilder.fromHttpUrl(mbsUrl)
-            .pathSegment("mbs", "v1", "releasegroups")
+            .pathSegment("mbs", "v2", "release-groups")
             .let { uriBuilder ->
                 ids.forEach { uriBuilder.queryParam("id", it) }
                 CompletableFuture.completedFuture(
