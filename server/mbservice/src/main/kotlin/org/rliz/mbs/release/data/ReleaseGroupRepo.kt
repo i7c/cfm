@@ -11,35 +11,6 @@ class ReleaseGroupRepo {
     @Autowired
     lateinit var jdbc: JdbcOperations
 
-    fun getReleaseGroup(id: UUID): ReleaseGroupWithArtists? =
-        jdbc.query(
-            """
-                select
-                    rg.gid rg_gid,
-                    rg.name as rg_name,
-                    acn.name as acn_name,
-                    acn.join_phrase as acn_jp
-                from musicbrainz.release_group rg
-                join musicbrainz.artist_credit ac on (rg.artist_credit = ac.id)
-                join musicbrainz.artist_credit_name acn on (acn.artist_credit = ac.id)
-                where rg.gid = ?
-                order by
-                    acn.position asc
-            """.trimIndent(),
-            { rs, _ ->
-                ReleaseGroupWithArtist(
-                    UUID.fromString(rs.getString("rg_gid")),
-                    rs.getString("rg_name"),
-                    rs.getString("acn_jp"),
-                    rs.getString("acn_name")
-                )
-            },
-            arrayOf(id)
-        ).let {
-            if (it.isEmpty()) return null
-            accumulate(it)
-        }
-
     fun getReleaseGroups(ids: List<UUID>): List<ReleaseGroupWithArtists> =
         jdbc.query(
             """
@@ -65,6 +36,13 @@ class ReleaseGroupRepo {
             },
             ids.toTypedArray()
         ).groupBy(ReleaseGroupWithArtist::id).map { accumulate(it.value) }
+
+    fun getReleaseGroup(id: UUID): ReleaseGroupWithArtists? =
+        getReleaseGroups(listOf(id))
+            .let {
+                if (it.isEmpty()) return null
+                it[0]
+            }
 
     private fun accumulate(flatLines: List<ReleaseGroupWithArtist>): ReleaseGroupWithArtists =
         ReleaseGroupWithArtists(
