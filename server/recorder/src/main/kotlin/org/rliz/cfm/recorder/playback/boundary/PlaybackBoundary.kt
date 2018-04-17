@@ -13,7 +13,7 @@ import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.data.NowPlaying
 import org.rliz.cfm.recorder.playback.data.NowPlayingRepo
 import org.rliz.cfm.recorder.playback.data.Playback
-import org.rliz.cfm.recorder.playback.data.PlaybackRepo
+import org.rliz.cfm.recorder.playback.data.PlaybackJpaRepo
 import org.rliz.cfm.recorder.playback.data.RawPlaybackData
 import org.rliz.cfm.recorder.playback.data.RawPlaybackDataRepo
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
@@ -42,7 +42,7 @@ class PlaybackBoundary {
     lateinit var rawPlaybackDataRepo: RawPlaybackDataRepo
 
     @Autowired
-    lateinit var playbackRepo: PlaybackRepo
+    lateinit var playbackJpaRepo: PlaybackJpaRepo
 
     @Autowired
     lateinit var idgen: IdGenerator
@@ -114,21 +114,21 @@ class PlaybackBoundary {
             log.debug("Causing exception for failed lookup during create playback", e)
         }
 
-        return makePlaybackView(playbackRepo.save(playback))
+        return makePlaybackView(playbackJpaRepo.save(playback))
     }
 
     fun getPlaybacksForUser(userId: UUID, broken: Boolean, pageable: Pageable): Page<PlaybackDto> =
         makePlaybackView(
             if (broken)
-                playbackRepo.findBrokenPlaybacksForUser(userId, pageable)
-            else playbackRepo.findPlaybacksForUser(userId, pageable)
+                playbackJpaRepo.findBrokenPlaybacksForUser(userId, pageable)
+            else playbackJpaRepo.findPlaybacksForUser(userId, pageable)
         )
 
     fun getAccumulatedBrokenPlaybacks(
         userId: UUID,
         pageable: Pageable
     ): Page<AccumulatedPlaybacksDto> =
-        playbackRepo.findAccumulatedBrokenPlaybacks(userId, pageable)
+        playbackJpaRepo.findAccumulatedBrokenPlaybacks(userId, pageable)
             .map { acc ->
                 acc.toDto(
                     objectMapper.readValue(
@@ -146,7 +146,7 @@ class PlaybackBoundary {
         rgId: UUID?,
         recId: UUID?
     ) {
-        val changedPlaybacks = playbackRepo.bulkSetRecAndRgIds(
+        val changedPlaybacks = playbackJpaRepo.bulkSetRecAndRgIds(
             artistsJson,
             recordingTitle,
             releaseTitle,
@@ -180,7 +180,7 @@ class PlaybackBoundary {
         playbackTimestamp: Long? = null
     ): PlaybackDto {
 
-        val playback = playbackRepo.findOneByUserAndUuid(currentUser(), playbackId)
+        val playback = playbackJpaRepo.findOneByUserAndUuid(currentUser(), playbackId)
             ?: throw NotFoundException(Playback::class)
 
         val originalData = playback.originalData!!
@@ -217,14 +217,14 @@ class PlaybackBoundary {
             }
         }
         playback.originalData = rawPlaybackDataRepo.save(originalData)
-        return makePlaybackView(playbackRepo.save(playback))
+        return makePlaybackView(playbackJpaRepo.save(playback))
     }
 
     fun getPlayback(playbackId: UUID): PlaybackDto =
         findPlayback(currentUser(), playbackId) ?: throw NotFoundException(Playback::class)
 
     fun findPlayback(user: User, playbackId: UUID): PlaybackDto? =
-        playbackRepo.findOneByUserAndUuid(
+        playbackJpaRepo.findOneByUserAndUuid(
             user,
             playbackId
         )?.let { makePlaybackView(listOf(it)).first() }
@@ -265,7 +265,7 @@ class PlaybackBoundary {
                 rawPlaybackData,
                 playbackRes.source
             )
-            playbackRepo.save(playback)
+            playbackJpaRepo.save(playback)
             true
         } else false
     }.map { BatchResultItem(it) }
@@ -326,7 +326,7 @@ class PlaybackBoundary {
 
     @Transactional
     fun deletePlaybacks(withSource: String?): Long = withSource?.let { source ->
-        playbackRepo.deleteByUserAndSource(currentUser(), source)
+        playbackJpaRepo.deleteByUserAndSource(currentUser(), source)
     } ?: 0L
 
     private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { it ->
