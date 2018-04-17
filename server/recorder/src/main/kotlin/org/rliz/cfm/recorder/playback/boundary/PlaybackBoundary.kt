@@ -36,28 +36,28 @@ class PlaybackBoundary {
     }
 
     @Autowired
-    lateinit var userBoundary: UserBoundary
+    private lateinit var userBoundary: UserBoundary
 
     @Autowired
-    lateinit var rawPlaybackDataRepo: RawPlaybackDataRepo
+    private lateinit var rawPlaybackDataRepo: RawPlaybackDataRepo
 
     @Autowired
-    lateinit var playbackJpaRepo: PlaybackJpaRepo
+    private lateinit var playbackJpaRepo: PlaybackJpaRepo
 
     @Autowired
-    lateinit var idgen: IdGenerator
+    private lateinit var idgen: IdGenerator
 
     @Autowired
-    lateinit var mbsService: MbsService
+    private lateinit var mbsService: MbsService
 
     @Autowired
-    lateinit var nowPlayingRepo: NowPlayingRepo
+    private lateinit var nowPlayingRepo: NowPlayingRepo
 
     @Autowired
-    lateinit var objectMapper: ObjectMapper
+    private lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var fingerprintBoundary: FingerprintBoundary
+    private lateinit var fingerprintBoundary: FingerprintBoundary
 
     @Transactional
     fun createPlayback(
