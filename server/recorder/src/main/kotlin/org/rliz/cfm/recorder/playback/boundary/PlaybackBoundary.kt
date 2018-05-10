@@ -13,7 +13,9 @@ import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.data.NowPlaying
 import org.rliz.cfm.recorder.playback.data.NowPlayingRepo
 import org.rliz.cfm.recorder.playback.data.Playback
+import org.rliz.cfm.recorder.playback.data.PlaybackGroup
 import org.rliz.cfm.recorder.playback.data.PlaybackJpaRepo
+import org.rliz.cfm.recorder.playback.data.PlaybackRepo
 import org.rliz.cfm.recorder.playback.data.RawPlaybackData
 import org.rliz.cfm.recorder.playback.data.RawPlaybackDataRepo
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
@@ -43,6 +45,9 @@ class PlaybackBoundary {
 
     @Autowired
     private lateinit var playbackJpaRepo: PlaybackJpaRepo
+
+    @Autowired
+    private lateinit var playbackRepo: PlaybackRepo
 
     @Autowired
     private lateinit var idgen: IdGenerator
@@ -328,6 +333,10 @@ class PlaybackBoundary {
     fun deletePlaybacks(withSource: String?): Long = withSource?.let { source ->
         playbackJpaRepo.deleteByUserAndSource(currentUser(), source)
     } ?: 0L
+
+    @Transactional(readOnly = true)
+    fun getUnattachedPlaybackGroups(atMost: Int): List<PlaybackGroup> =
+        playbackRepo.getUnattachedPlaybackGroups(atMost)
 
     private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { it ->
         if (it.recordingUuid != null && it.releaseGroupUuid != null) {
