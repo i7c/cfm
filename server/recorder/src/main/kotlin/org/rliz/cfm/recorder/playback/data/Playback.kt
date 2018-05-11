@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull
 
 @Entity
 @Table(
-    indexes = arrayOf(
+    indexes = [
         Index(
             name = "IX_Playback_user_uuid",
             columnList = "user_oid, uuid",
@@ -53,7 +53,7 @@ import javax.validation.constraints.NotNull
             columnList = "original_data_oid",
             unique = true
         )
-    )
+    ]
 )
 class Playback : AbstractModel {
 
