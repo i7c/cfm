@@ -384,8 +384,10 @@ class PlaybackBoundary {
 
             it.map {
                 if (it.recordingUuid != null) {
-                    val recordingView = recordings[it.recordingUuid!!] ?: throw MbsLookupFailedException()
-                    val releaseGroupView = releaseGroups[it.releaseGroupUuid!!] ?: throw MbsLookupFailedException()
+                    val recordingView = recordings[it.recordingUuid!!]
+                        ?: throw MbsLookupFailedException()
+                    val releaseGroupView = releaseGroups[it.releaseGroupUuid!!]
+                        ?: throw MbsLookupFailedException()
                     PlaybackDto(
                         artists = recordingView.artists,
                         recordingTitle = recordingView.name,
