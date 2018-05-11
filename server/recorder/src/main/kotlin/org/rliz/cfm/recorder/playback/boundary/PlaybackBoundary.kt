@@ -338,6 +338,35 @@ class PlaybackBoundary {
     fun getUnattachedPlaybackGroups(atMost: Int): List<PlaybackGroup> =
         playbackRepo.getUnattachedPlaybackGroups(atMost)
 
+    /**
+     * Call this method to update recording/release group IDs on a group of playbacks. The first
+     * parameters are used to *identify* the playback group and will never be updated. The last
+     * two parameters are written to all playbacks in the identified group.
+     *
+     * This will also set the fix_attempt field to the current time!
+     *
+     * Note, that it is allowed to pass null for the last two parameters. This can be used to
+     * unattach a playback group as well as register a failed fix attempt for it.
+     *
+     * The method is user-agnostic and may update playbacks for many users at the same time.
+     */
+    @Transactional
+    fun updateMbsOnPlaybackGroup(
+        artists: List<String>,
+        releaseTitle: String,
+        recordingTitle: String,
+        length: Long?,
+        rgId: UUID?,
+        recId: UUID?
+    ): Int = playbackRepo.updateMbsOnPlaybackGroup(
+        artists,
+        releaseTitle,
+        recordingTitle,
+        length,
+        rgId,
+        recId
+    )
+
     private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { it ->
         if (it.recordingUuid != null && it.releaseGroupUuid != null) {
             val recordingViewFuture = mbsService.getRecordingView(listOf(it.recordingUuid!!))
