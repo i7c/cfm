@@ -335,8 +335,11 @@ class PlaybackBoundary {
     } ?: 0L
 
     @Transactional(readOnly = true)
-    fun getUnattachedPlaybackGroups(atMost: Int): List<PlaybackGroup> =
-        playbackRepo.getUnattachedPlaybackGroups(atMost)
+    fun getUnattachedPlaybackGroups(
+        atMost: Int,
+        before: Long = Instant.now().epochSecond
+    ): List<PlaybackGroup> =
+        playbackRepo.getUnattachedPlaybackGroups(before, atMost)
 
     /**
      * Call this method to update recording/release group IDs on a group of playbacks. The first

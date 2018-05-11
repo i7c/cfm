@@ -17,7 +17,7 @@ class PlaybackRepo {
     @Autowired
     private lateinit var mapper: ObjectMapper
 
-    fun getUnattachedPlaybackGroups(amount: Int): List<PlaybackGroup> =
+    fun getUnattachedPlaybackGroups(before: Long, amount: Int): List<PlaybackGroup> =
         jdbc.query(
             """
                 select
@@ -29,13 +29,16 @@ class PlaybackRepo {
                     raw.length len
                 from playback p
                 join raw_playback_data raw on p.original_data_oid = raw.oid
-                where recording_uuid is null
-                or release_group_uuid is null
+                where (
+                    recording_uuid is null
+                    or release_group_uuid is null
+                    )
                 group by
                     raw.recording_title,
                     raw.release_title,
                     raw.artist_json,
                     raw.length
+                having max(p.fix_attempt) < ?
                 order by
                     last_attempt asc,
                     count desc
@@ -54,7 +57,7 @@ class PlaybackRepo {
                     length = rs.getNullable("len")
                 )
             },
-            arrayOf(amount)
+            arrayOf(before, amount)
         )
 
     fun updateMbsOnPlaybackGroup(
