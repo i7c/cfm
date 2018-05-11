@@ -10,6 +10,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 @Service
 class AutoFixer {
@@ -45,8 +46,11 @@ class AutoFixer {
                     group.releaseTitle,
                     group.recordingTitle,
                     group.length ?: 0
-                ).get(5, TimeUnit.SECONDS).let { Pair(it.releaseGroupId, it.recordingId) }
+                ).get(10, TimeUnit.SECONDS).let { Pair(it.releaseGroupId, it.recordingId) }
             } catch (e: ExecutionException) {
+                Pair(null, null)
+            } catch (e: TimeoutException) {
+                log.warn("Timed out for $group with message ${e.message}")
                 Pair(null, null)
             }
             playbackBoundary.updateMbsOnPlaybackGroup(
