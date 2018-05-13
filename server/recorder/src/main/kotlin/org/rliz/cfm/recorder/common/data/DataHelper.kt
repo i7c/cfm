@@ -11,4 +11,4 @@ import java.sql.ResultSet
  */
 inline fun <reified T> ResultSet.getNullable(label: String): T? =
     JdbcUtils.getResultSetValue(this, this.findColumn(label), T::class.java)
-        .let { if (this.wasNull()) null else it as T }
+        .takeUnless { wasNull() } as T
