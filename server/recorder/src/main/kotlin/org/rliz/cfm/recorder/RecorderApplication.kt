@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableAutoConfiguration
 @ComponentScan("org.rliz.cfm")
-@EnableScheduling
 class RecorderApplication
 
 fun main(args: Array<String>) {
