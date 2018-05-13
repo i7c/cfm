@@ -10,5 +10,5 @@ data class MbsRecordingViewRes(
 )
 
 data class MbsRecordingViewListRes(
-    val elements: List<MbsReleaseGroupViewRes> = emptyList()
+    val elements: List<MbsRecordingViewRes> = emptyList()
 )
