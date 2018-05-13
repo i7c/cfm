@@ -12,7 +12,7 @@ import java.util.UUID
  */
 inline fun <reified T> ResultSet.getNullable(label: String): T? =
     JdbcUtils.getResultSetValue(this, this.findColumn(label), T::class.java)
-        .let { if (this.wasNull()) null else it as T }
+        .takeUnless { wasNull() } as T
 
 fun Int.assertAffectedRows(expected: Int): Int =
     if (this != expected)
