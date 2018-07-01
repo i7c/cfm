@@ -1,23 +1,18 @@
 package org.rliz.cfm.recorder.playback.boundary
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.rliz.cfm.recorder.common.data.contentMap
-import org.rliz.cfm.recorder.common.exception.MbsLookupFailedException
 import org.rliz.cfm.recorder.common.exception.NotFoundException
-import org.rliz.cfm.recorder.common.exception.OutdatedException
 import org.rliz.cfm.recorder.common.log.logger
 import org.rliz.cfm.recorder.common.security.currentUser
-import org.rliz.cfm.recorder.fingerprint.boundary.FingerprintBoundary
+import org.rliz.cfm.recorder.mbs.api.MbsRecordingViewRes
+import org.rliz.cfm.recorder.mbs.api.MbsReleaseGroupViewRes
 import org.rliz.cfm.recorder.mbs.service.MbsService
 import org.rliz.cfm.recorder.playback.api.PlaybackRes
 import org.rliz.cfm.recorder.playback.data.NowPlaying
 import org.rliz.cfm.recorder.playback.data.NowPlayingRepo
 import org.rliz.cfm.recorder.playback.data.Playback
 import org.rliz.cfm.recorder.playback.data.PlaybackGroup
-import org.rliz.cfm.recorder.playback.data.PlaybackJpaRepo
 import org.rliz.cfm.recorder.playback.data.PlaybackRepo
-import org.rliz.cfm.recorder.playback.data.RawPlaybackData
-import org.rliz.cfm.recorder.playback.data.RawPlaybackDataRepo
 import org.rliz.cfm.recorder.user.boundary.UserBoundary
 import org.rliz.cfm.recorder.user.data.User
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,12 +36,6 @@ class PlaybackBoundary {
     private lateinit var userBoundary: UserBoundary
 
     @Autowired
-    private lateinit var rawPlaybackDataRepo: RawPlaybackDataRepo
-
-    @Autowired
-    private lateinit var playbackJpaRepo: PlaybackJpaRepo
-
-    @Autowired
     private lateinit var playbackRepo: PlaybackRepo
 
     @Autowired
@@ -58,181 +47,64 @@ class PlaybackBoundary {
     @Autowired
     private lateinit var nowPlayingRepo: NowPlayingRepo
 
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
-
-    @Autowired
-    private lateinit var fingerprintBoundary: FingerprintBoundary
-
     @Transactional
     fun createPlayback(
+        id: UUID?,
         artists: List<String>,
-        recordingTitle: String,
-        releaseTitle: String,
-        trackLength: Long? = null,
-        playTime: Long? = null,
-        discNumber: Int? = null,
-        trackNumber: Int? = null,
-        playbackTimestamp: Long? = null,
-        source: String?,
+        release: String,
+        recording: String,
+        length: Long? = null,
+        playtime: Long? = null,
+        timestamp: Long?,
+        source: String? = null,
         idMethod: String?
-    ): PlaybackDto {
-
-        val rawPlaybackData = rawPlaybackDataRepo.save(
-            RawPlaybackData(
-                artists = artists,
-                artistJson = objectMapper.writeValueAsString(artists),
-                recordingTitle = recordingTitle,
-                releaseTitle = releaseTitle,
-                length = trackLength,
-                discNumber = discNumber,
-                trackNumber = trackNumber
-            )
-        )
+    ): Playback {
+        val (rgId, recId) = identify(idMethod, artists, release, recording, length)
 
         val user = userBoundary.getCurrentUser()
-        val timestamp = playbackTimestamp ?: Instant.now().epochSecond
-        val time = playTime ?: trackLength
-
-        val playback = Playback(idgen.generateId(), user, timestamp, time, rawPlaybackData, source)
-        try {
-            if (idMethod == "trigram") {
-                mbsService.identifyPlayback(
-                    artists[0],
-                    releaseTitle,
-                    recordingTitle,
-                    trackLength ?: 0
-                )
-                    .get().apply {
-                        playback.recordingUuid = recordingId
-                        playback.releaseGroupUuid = releaseGroupId
-                    }
-            } else {
-                mbsService.identifyPlayback(recordingTitle, releaseTitle, artists)
-                    .get().apply {
-                        playback.recordingUuid = this.recordingId
-                        playback.releaseGroupUuid = this.releaseGroupId
-                    }
-            }
-        } catch (e: ExecutionException) {
-            log.info("Failed to lookup details via mbs service for new playback")
-            log.debug("Causing exception for failed lookup during create playback", e)
-        }
-
-        return makePlaybackView(playbackJpaRepo.save(playback))
-    }
-
-    fun getPlaybacksForUser(userId: UUID, broken: Boolean, pageable: Pageable): Page<PlaybackDto> =
-        makePlaybackView(
-            if (broken)
-                playbackJpaRepo.findBrokenPlaybacksForUser(userId, pageable)
-            else playbackJpaRepo.findPlaybacksForUser(userId, pageable)
+        val sanitizedUuid = id ?: idgen.generateId()
+        val sanitizedTimestamp = timestamp ?: Instant.now().epochSecond
+        val sanitizedPlaytime = playtime ?: length
+        playbackRepo.save(
+            id = sanitizedUuid,
+            playTime = sanitizedPlaytime,
+            releaseGroupUuid = rgId,
+            recordingUuid = recId,
+            source = source,
+            timestamp = sanitizedTimestamp,
+            userOid = user.oid!!,
+            rawArtists = artists,
+            rawRelease = release,
+            rawRecording = recording,
+            rawLength = length
         )
 
-    fun getAccumulatedBrokenPlaybacks(
-        userId: UUID,
-        pageable: Pageable
-    ): Page<AccumulatedPlaybacksDto> =
-        playbackJpaRepo.findAccumulatedBrokenPlaybacks(userId, pageable)
-            .map { acc ->
-                acc.toDto(
-                    objectMapper.readValue(
-                        acc.artistsJson,
-                        List::class.java
-                    ) as List<String>
-                )
-            }
-
-    fun fixAccumulatedPlaybacks(
-        occ: Long,
-        artistsJson: String,
-        recordingTitle: String,
-        releaseTitle: String,
-        rgId: UUID?,
-        recId: UUID?
-    ) {
-        val changedPlaybacks = playbackJpaRepo.bulkSetRecAndRgIds(
-            artistsJson,
-            recordingTitle,
-            releaseTitle,
-            rgId,
-            recId,
-            Instant.now().epochSecond,
-            userBoundary.getCurrentUser()
-        )
-        if (changedPlaybacks > occ) throw OutdatedException(Playback::class)
-        // fingerprint only if this was a successful fix
-        if (recId != null && rgId != null)
-            fingerprintBoundary.putFingerprint(
-                artistsJson,
-                recordingTitle,
-                releaseTitle,
+        return sanitizeView(
+            Playback(
+                sanitizedUuid,
+                artists,
+                release,
+                recording,
+                sanitizedPlaytime,
+                rgId,
                 recId,
-                rgId
+                sanitizedTimestamp,
+                artists,
+                release,
+                recording
             )
+        )
     }
 
-    fun updatePlayback(
-        playbackId: UUID,
-        skipMbs: Boolean,
-        artists: List<String>? = null,
-        recordingTitle: String? = null,
-        releaseTitle: String? = null,
-        trackLength: Long? = null,
-        playTime: Long? = null,
-        discNumber: Int? = null,
-        trackNumber: Int? = null,
-        playbackTimestamp: Long? = null
-    ): PlaybackDto {
+    @Transactional(readOnly = true)
+    fun getPlaybacksForUser(userId: UUID, broken: Boolean, pageable: Pageable): Page<Playback> =
+        sanitizeView(playbackRepo.getByUser(userBoundary.getUser(userId).oid!!, broken, pageable))
 
-        val playback = playbackJpaRepo.findOneByUserAndUuid(currentUser(), playbackId)
-            ?: throw NotFoundException(Playback::class)
-
-        val originalData = playback.originalData!!
-        if (artists != null) {
-            originalData.artists = artists
-            originalData.artistJson = objectMapper.writeValueAsString(artists)
-        }
-        if (recordingTitle != null) originalData.recordingTitle = recordingTitle
-        if (releaseTitle != null) originalData.releaseTitle = releaseTitle
-        if (trackLength != null) originalData.length = trackLength
-        if (playTime != null) playback.playTime = playTime
-        if (discNumber != null) originalData.discNumber = discNumber
-        if (trackNumber != null) originalData.trackNumber = trackNumber
-        if (playbackTimestamp != null) playback.timestamp = playbackTimestamp
-
-        // Detect mbs details again, if not skipped
-        if (!skipMbs) {
-            try {
-                mbsService.identifyPlayback(
-                    originalData.recordingTitle!!,
-                    originalData.releaseTitle!!,
-                    originalData.artists!!
-                )
-                    .get()
-                    .apply {
-                        playback.recordingUuid = recordingId
-                        playback.releaseGroupUuid = releaseGroupId
-                    }
-            } catch (e: ExecutionException) {
-                log.info("Failed to lookup details via mbs service during PATCH; Fallback to broken playback")
-                log.debug("Causing issue for failed lookup was", e)
-                playback.recordingUuid = null
-                playback.releaseGroupUuid = null
-            }
-        }
-        playback.originalData = rawPlaybackDataRepo.save(originalData)
-        return makePlaybackView(playbackJpaRepo.save(playback))
-    }
-
-    fun getPlayback(playbackId: UUID): PlaybackDto =
-        findPlayback(currentUser(), playbackId) ?: throw NotFoundException(Playback::class)
-
-    fun findPlayback(user: User, playbackId: UUID): PlaybackDto? =
-        playbackJpaRepo.findOneByUserAndUuid(
-            user,
-            playbackId
-        )?.let { makePlaybackView(listOf(it)).first() }
+    @Transactional(readOnly = true)
+    fun getPlayback(playbackId: UUID): Playback =
+        sanitizeView(
+            findPlayback(currentUser(), playbackId) ?: throw NotFoundException(Playback::class)
+        )
 
     @Transactional
     fun batchCreatePlaybacks(batch: List<PlaybackRes>): List<BatchResultItem> = batch.map { playbackRes ->
@@ -247,92 +119,60 @@ class PlaybackBoundary {
             playbackRes.releaseTitle != null &&
             playbackRes.releaseTitle.isNotBlank()) {
 
-            val rawPlaybackData = rawPlaybackDataRepo.save(
-                RawPlaybackData(
-                    artists = playbackRes.artists,
-                    artistJson = objectMapper.writeValueAsString(playbackRes.artists),
-                    recordingTitle = playbackRes.recordingTitle,
-                    releaseTitle = playbackRes.releaseTitle,
-                    length = playbackRes.trackLength,
-                    discNumber = playbackRes.discNumber,
-                    trackNumber = playbackRes.trackNumber
-                )
-            )
             val user = userBoundary.getCurrentUser()
-            val timestamp = playbackRes.timestamp ?: Instant.now().epochSecond
-            val time = playbackRes.playTime ?: playbackRes.trackLength
+            val sanitizedTimestamp = playbackRes.timestamp ?: Instant.now().epochSecond
+            val sanitizedPlaytime = playbackRes.playTime ?: playbackRes.trackLength
 
-            val playback = Playback(
-                playbackRes.id ?: idgen.generateId(),
-                user,
-                timestamp,
-                time,
-                rawPlaybackData,
-                playbackRes.source
+            playbackRepo.save(
+                id = playbackRes.id ?: idgen.generateId(),
+                playTime = sanitizedPlaytime,
+                releaseGroupUuid = null,
+                recordingUuid = null,
+                source = playbackRes.source,
+                timestamp = sanitizedTimestamp,
+                userOid = user.oid!!,
+                rawArtists = playbackRes.artists,
+                rawRelease = playbackRes.releaseTitle,
+                rawRecording = playbackRes.recordingTitle,
+                rawLength = playbackRes.trackLength
             )
-            playbackJpaRepo.save(playback)
-            true
-        } else false
-    }.map { BatchResultItem(it) }
+            BatchResultItem(true)
+        } else BatchResultItem(false)
+    }
 
     @Transactional
     fun setNowPlaying(
         artists: List<String>,
-        title: String,
         release: String,
+        recording: String,
         timestamp: Long?,
         trackLength: Long?,
         idMethod: String?
     ) =
         userBoundary.getCurrentUser().let { user ->
-
+            val (rgId, recId) = identify(idMethod, artists, release, recording, trackLength)
             val nowPlaying = (nowPlayingRepo.findOneByUserUuid(user.uuid!!) ?: NowPlaying()).apply {
                 this.artists = artists
-                this.recordingTitle = title
+                this.recordingTitle = recording
                 this.releaseTitle = release
                 this.timestamp = (timestamp ?: Instant.now().epochSecond) + (trackLength ?: 600)
                 this.user = user
-                this.recordingUuid = null
-                this.releaseGroupUuid = null
+                this.recordingUuid = recId
+                this.releaseGroupUuid = rgId
             }
-
-            try {
-                if (idMethod == "trigram") {
-                    mbsService.identifyPlayback(artists[0], release, title, trackLength ?: 0)
-                        .get().apply {
-                            nowPlaying.recordingUuid = recordingId
-                            nowPlaying.releaseGroupUuid = releaseGroupId
-                        }
-                } else {
-                    mbsService.identifyPlayback(title, release, artists)
-                        .get().apply {
-                            nowPlaying.recordingUuid = this.recordingId
-                            nowPlaying.releaseGroupUuid = this.releaseGroupId
-                        }
-                }
-            } catch (e: ExecutionException) {
-                log.info(
-                    "Failed to lookup details via mbs service for new playback ({},{},{})",
-                    title,
-                    release,
-                    artists
-                )
-            }
-            makePlaybackView(nowPlayingRepo.save(nowPlaying))
+            sanitizeView(nowPlayingRepo.save(nowPlaying))
         }
 
     @Transactional(readOnly = true)
-    fun getNowPlaying(): PlaybackDto = (nowPlayingRepo.findOneByUserUuid(userBoundary.getCurrentUser().uuid!!)?.apply {
-        if (this.timestamp!! < Instant.now().epochSecond) throw NotFoundException(
-            NowPlaying::class,
-            "user"
-        )
-    }?.let(this::makePlaybackView)) ?: throw NotFoundException(NowPlaying::class, "user")
+    fun getNowPlaying(): Playback =
+        (nowPlayingRepo.findOneByUserUuid(userBoundary.getCurrentUser().uuid!!)
+            ?: throw NotFoundException(NowPlaying::class, "id")
+            ).let { sanitizeView(it) }
 
     @Transactional
-    fun deletePlaybacks(withSource: String?): Long = withSource?.let { source ->
-        playbackJpaRepo.deleteByUserAndSource(currentUser(), source)
-    } ?: 0L
+    fun deletePlaybacks(withSource: String?): Long {
+        throw NotImplementedError()
+    }
 
     @Transactional(readOnly = true)
     fun getUnattachedPlaybackGroups(
@@ -370,75 +210,76 @@ class PlaybackBoundary {
         recId
     )
 
-    private fun makePlaybackView(nowPlaying: NowPlaying): PlaybackDto = nowPlaying.let { it ->
-        if (it.recordingUuid != null && it.releaseGroupUuid != null) {
-            val recordingViewFuture = mbsService.getRecordingView(listOf(it.recordingUuid!!))
-            val releaseGroupViewFuture = mbsService.getReleaseGroupView(listOf(it.releaseGroupUuid!!))
+    private fun findPlayback(user: User, playbackId: UUID): Playback? =
+        playbackRepo.getByIdAndUser(playbackId, user.oid!!)
 
-            try {
-                val recordingView = recordingViewFuture.get().elements.first()
-                val releaseGroupView = releaseGroupViewFuture.get().elements.first()
-
-                return@let PlaybackDto(
-                    artists = recordingView.artists,
-                    recordingTitle = recordingView.name,
-                    releaseTitle = releaseGroupView.name,
-                    timestamp = it.timestamp,
-                    broken = false
-                )
-            } catch (e: ExecutionException) {
-                // nothing
-            }
-        }
-        PlaybackDto(
-            artists = it.artists!!,
-            recordingTitle = it.recordingTitle!!,
-            releaseTitle = it.releaseTitle!!,
-            timestamp = it.timestamp,
-            broken = true
-        )
+    private fun identify(
+        idMethod: String?,
+        artists: List<String>,
+        release: String,
+        recording: String,
+        length: Long?
+    ): Pair<UUID?, UUID?> = try {
+        if (idMethod == "trigram")
+            mbsService.identifyPlayback(artists[0], release, recording, length ?: 0).get()
+                .let { Pair(it.releaseGroupId, it.recordingId) }
+        else mbsService.identifyPlayback(recording, release, artists).get()
+            .let { Pair(it.releaseGroupId, it.recordingId) }
+    } catch (e: ExecutionException) {
+        log.info("Failed to lookup details via mbs service for new playback")
+        log.debug("Causing exception for failed lookup during create playback", e)
+        Pair(null, null)
     }
 
-    private fun makePlaybackView(playback: Playback): PlaybackDto = playback.let {
-        makePlaybackView(
-            listOf(it)
-        )
-    }.first()
+    private fun sanitizeView(nowPlaying: NowPlaying): Playback =
+        Playback(
+            id = nowPlaying.user!!.uuid!!,
+            artists = nowPlaying.artists!!,
+            release = nowPlaying.releaseTitle!!,
+            recording = nowPlaying.recordingTitle!!,
 
-    private fun makePlaybackView(playbacks: Page<Playback>): Page<PlaybackDto> =
-        playbacks.contentMap { it -> makePlaybackView(it) }
+            releaseGroupUuid = nowPlaying.releaseGroupUuid,
+            recordingUuid = nowPlaying.recordingUuid,
 
-    private fun makePlaybackView(playbacks: List<Playback>): List<PlaybackDto> =
+            timestamp = nowPlaying.timestamp!!,
+
+            rawArtists = nowPlaying.artists!!,
+            rawRelease = nowPlaying.releaseTitle!!,
+            rawRecording = nowPlaying.recordingTitle!!
+        ).let(::sanitizeView)
+
+    private fun sanitizeView(playback: Playback): Playback =
+        listOf(playback).let(::sanitizeView).first()
+
+    private fun sanitizeView(playbacks: Page<Playback>): Page<Playback> =
+        playbacks.contentMap(::sanitizeView)
+
+    private fun sanitizeView(playbacks: List<Playback>): List<Playback> =
         if (playbacks.isEmpty()) emptyList()
-        else playbacks.let {
-            val releaseGroupsFuture = mbsService.getReleaseGroupView(it.mapNotNull { it.releaseGroupUuid })
-            val recordingsFuture = mbsService.getRecordingView(it.mapNotNull { it.recordingUuid })
+        else playbacks.let { originalPlaybacks ->
 
-            val (recordings, releaseGroups) = try {
+            val releaseGroupsFuture =
+                mbsService.getReleaseGroupView(originalPlaybacks.mapNotNull(Playback::releaseGroupUuid))
+            val recordingsFuture =
+                mbsService.getRecordingView(originalPlaybacks.mapNotNull(Playback::recordingUuid))
+
+            try {
                 Pair(
-                    recordingsFuture.get().elements.map { it.id to it }.toMap(),
-                    releaseGroupsFuture.get().elements.map { it.id to it }.toMap()
+                    releaseGroupsFuture.get().elements.map { it.id to it }.toMap(),
+                    recordingsFuture.get().elements.map { it.id to it }.toMap()
                 )
             } catch (e: Exception) {
-                return@let it.map { it.toDto() }
-            }
-
-            it.map {
-                if (it.recordingUuid != null) {
-                    val recordingView = recordings[it.recordingUuid!!]
-                        ?: throw MbsLookupFailedException()
-                    val releaseGroupView = releaseGroups[it.releaseGroupUuid!!]
-                        ?: throw MbsLookupFailedException()
-                    PlaybackDto(
-                        artists = recordingView.artists,
-                        recordingTitle = recordingView.name,
-                        releaseTitle = releaseGroupView.name,
-                        timestamp = it.timestamp,
-                        playTime = it.playTime,
-                        broken = false,
-                        id = it.uuid
+                Pair(mapOf<UUID, MbsReleaseGroupViewRes>(), mapOf<UUID, MbsRecordingViewRes>())
+            }.let { (rgs, recs) ->
+                originalPlaybacks.map {
+                    val releaseGroupView = rgs[it.releaseGroupUuid]
+                    val recordingView = recs[it.recordingUuid]
+                    it.copy(
+                        artists = recordingView?.artists ?: it.artists,
+                        release = releaseGroupView?.name ?: it.release,
+                        recording = recordingView?.name ?: it.recording
                     )
-                } else it.toDto()
+                }
             }
         }
 }

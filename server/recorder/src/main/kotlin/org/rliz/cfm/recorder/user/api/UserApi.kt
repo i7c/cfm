@@ -33,9 +33,9 @@ class UserApi {
             .toHttpResponse(HttpStatus.CREATED)
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = [RequestMethod.GET], path = ["/current", "/{uuid}"])
+    @RequestMapping(method = [RequestMethod.GET], path = ["/current", "/{id}"])
     fun getUser(
-        @PathVariable(name = "uuid", required = false) uuid: UUID?
+        @PathVariable(name = "id", required = false) uuid: UUID?
     ): ResponseEntity<UserRes> =
         (uuid?.let { userBoundary.getUser(uuid) }
             ?: userBoundary.getCurrentUser())

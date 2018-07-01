@@ -46,7 +46,7 @@ class UserBoundary {
 
     fun getUser(uuid: UUID): User = findUser(uuid) ?: throw NotFoundException(
         User::class,
-        "uuid $uuid"
+        "id $uuid"
     )
 
     fun getCurrentUser(): User = findUser(currentUser().uuid!!) ?: throw NotFoundException(

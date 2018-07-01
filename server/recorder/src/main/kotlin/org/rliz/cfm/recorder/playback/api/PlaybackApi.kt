@@ -3,16 +3,14 @@ package org.rliz.cfm.recorder.playback.api
 import org.rliz.cfm.recorder.common.api.toHttpResponse
 import org.rliz.cfm.recorder.common.api.toRes
 import org.rliz.cfm.recorder.common.security.currentUser
-import org.rliz.cfm.recorder.playback.boundary.AccumulatedPlaybacksDto
 import org.rliz.cfm.recorder.playback.boundary.PlaybackBoundary
-import org.rliz.cfm.recorder.playback.boundary.PlaybackDto
+import org.rliz.cfm.recorder.playback.data.Playback
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.SortDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -35,65 +33,33 @@ class PlaybackApi {
         @RequestParam(name = "id-method", required = false) idMethod: String?
     ): ResponseEntity<PlaybackRes> =
         playbackBoundary.createPlayback(
+            id = body.id,
             artists = body.artists,
-            recordingTitle = body.recordingTitle!!,
-            releaseTitle = body.releaseTitle!!,
-            trackLength = body.trackLength,
-            playTime = body.playTime,
-            discNumber = body.discNumber,
-            trackNumber = body.trackNumber,
-            playbackTimestamp = body.timestamp,
+            release = body.releaseTitle!!,
+            recording = body.recordingTitle!!,
+            length = body.trackLength,
+            playtime = body.playTime,
+            timestamp = body.timestamp,
             source = body.source,
             idMethod = idMethod
-        )
-            .toRes()
-            .toHttpResponse(HttpStatus.CREATED)
+        ).toRes().toHttpResponse(HttpStatus.CREATED)
 
-    @Transactional
-    @RequestMapping(method = [RequestMethod.PATCH], path = ["/{playbackId}"])
-    fun patchPlayback(
-        @PathVariable(name = "playbackId", required = true) playbackId: UUID,
-        @RequestParam(name = "skipMbs", required = false) skipMbs: Boolean?,
-        @RequestBody body: PatchPlaybackRes
-    ): ResponseEntity<PlaybackRes> =
-        playbackBoundary.updatePlayback(
-            playbackId,
-            skipMbs ?: false,
-            artists = body.artists,
-            recordingTitle = body.recordingTitle,
-            releaseTitle = body.releaseTitle,
-            trackLength = body.trackLength,
-            playTime = body.playTime,
-            discNumber = body.discNumber,
-            trackNumber = body.trackNumber,
-            playbackTimestamp = body.timestamp
-        )
-            .toRes()
-            .toHttpResponse(HttpStatus.OK)
-
-    @Transactional(readOnly = true)
     @RequestMapping(method = [RequestMethod.GET])
     fun getPlaybacks(
-        @RequestParam("userId", required = false) userUuid: UUID?,
-        @RequestParam("broken", required = false, defaultValue = "false") broken: Boolean,
+        @RequestParam("userId", required = false) userId: UUID?,
+        @RequestParam("broken", required = false, defaultValue = "false") unattached: Boolean,
         @SortDefault(sort = ["timestamp"], direction = Sort.Direction.DESC) pageable: Pageable
     ) =
-        playbackBoundary.getPlaybacksForUser(userUuid ?: currentUser().uuid!!, broken, pageable)
-            .toRes(PlaybackDto::toRes)
-            .toHttpResponse(HttpStatus.OK)
+        playbackBoundary.getPlaybacksForUser(userId ?: currentUser().uuid!!, unattached, pageable)
+            .toRes(Playback::toRes).toHttpResponse(HttpStatus.OK)
 
-    @Transactional(readOnly = true)
     @RequestMapping(method = [RequestMethod.GET], path = ["/{playbackId}"])
     fun getPlayback(@PathVariable("playbackId") playbackId: UUID): ResponseEntity<PlaybackRes> =
-        playbackBoundary.getPlayback(playbackId)
-            .toRes()
-            .toHttpResponse(HttpStatus.OK)
+        playbackBoundary.getPlayback(playbackId).toRes().toHttpResponse(HttpStatus.OK)
 
     @RequestMapping(method = [RequestMethod.POST], path = ["/batch"])
     fun postPlaybackBatch(@RequestBody batch: PlaybackBatchRes) =
-        playbackBoundary.batchCreatePlaybacks(batch.playbacks)
-            .toRes()
-            .toHttpResponse(HttpStatus.OK)
+        playbackBoundary.batchCreatePlaybacks(batch.playbacks).toRes().toHttpResponse(HttpStatus.OK)
 
     @RequestMapping(method = [RequestMethod.PUT], path = ["/now"])
     fun putNowPlaying(
@@ -101,44 +67,18 @@ class PlaybackApi {
         @RequestParam(name = "id-method", required = false) idMethod: String?
     ) =
         playbackBoundary.setNowPlaying(
-            body.artists,
-            body.recordingTitle!!,
-            body.releaseTitle!!,
-            body.timestamp,
-            body.trackLength,
-            idMethod
-        )
-            .toRes()
-            .toHttpResponse(HttpStatus.OK)
+            artists = body.artists,
+            release = body.releaseTitle!!,
+            recording = body.recordingTitle!!,
+            timestamp = body.timestamp,
+            trackLength = body.trackLength,
+            idMethod = idMethod
+        ).toRes().toHttpResponse(HttpStatus.OK)
 
     @RequestMapping(method = [RequestMethod.GET], path = ["/now"])
-    fun getNowPlaying() =
-        playbackBoundary.getNowPlaying()
-            .toRes()
-            .toHttpResponse(HttpStatus.OK)
-
-    @Transactional(readOnly = true)
-    @RequestMapping(method = [RequestMethod.GET], path = ["/acc"])
-    fun getAccumulatedBroken(pageable: Pageable) =
-        playbackBoundary.getAccumulatedBrokenPlaybacks(currentUser().uuid!!, pageable)
-            .toRes(AccumulatedPlaybacksDto::toRes)
-            .toHttpResponse(HttpStatus.OK)
-
-    @Transactional
-    @RequestMapping(method = [RequestMethod.POST], path = ["/acc"])
-    fun postAccumulatedPlaybacks(@Valid @RequestBody body: AccumulatedPlaybackRes) = playbackBoundary
-        .fixAccumulatedPlaybacks(
-            occ = body.occurrences,
-            artistsJson = body.artistsJson,
-            releaseTitle = body.releaseTitle,
-            recordingTitle = body.recordingTitle,
-            recId = body.recordingId,
-            rgId = body.releaseGroupId
-        ).toHttpResponse(HttpStatus.OK)
+    fun getNowPlaying() = playbackBoundary.getNowPlaying().toRes().toHttpResponse(HttpStatus.OK)
 
     @RequestMapping(method = [RequestMethod.DELETE])
     fun deletePlaybacks(@RequestParam(required = true) withSource: String?) =
-        playbackBoundary.deletePlaybacks(withSource)
-            .toRes()
-            .toHttpResponse(HttpStatus.OK)
+        playbackBoundary.deletePlaybacks(withSource).toRes().toHttpResponse(HttpStatus.OK)
 }
