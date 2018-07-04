@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.SortDefault
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,7 +30,7 @@ class PlaybackApi {
     fun postPlayback(
         @Valid @RequestBody body: PlaybackRes,
         @RequestParam(name = "id-method", required = false) idMethod: String?
-    ): ResponseEntity<PlaybackRes> =
+    ) =
         playbackBoundary.createPlayback(
             id = body.id,
             artists = body.artists,
@@ -54,7 +53,7 @@ class PlaybackApi {
             .toRes(Playback::toRes).toHttpResponse(HttpStatus.OK)
 
     @RequestMapping(method = [RequestMethod.GET], path = ["/{playbackId}"])
-    fun getPlayback(@PathVariable("playbackId") playbackId: UUID): ResponseEntity<PlaybackRes> =
+    fun getPlayback(@PathVariable("playbackId") playbackId: UUID) =
         playbackBoundary.getPlayback(playbackId).toRes().toHttpResponse(HttpStatus.OK)
 
     @RequestMapping(method = [RequestMethod.POST], path = ["/batch"])
