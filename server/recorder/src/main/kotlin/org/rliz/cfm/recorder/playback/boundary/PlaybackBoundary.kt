@@ -182,9 +182,9 @@ class PlaybackBoundary {
         playbackRepo.getUnattachedPlaybackGroups(before, atMost)
 
     /**
-     * Call this method to update recording/release group IDs on a group of playbacks. The first
-     * parameters are used to *identify* the playback group and will never be updated. The last
-     * two parameters are written to all playbacks in the identified group.
+     * Call this method to update recording/release group IDs on a group of playbacks. All but the
+     * last two parameters are used to *identify* the playback group and will never be updated.
+     * The last two parameters are written to all playbacks in the identified group.
      *
      * This will also set the fix_attempt field to the current time!
      *
