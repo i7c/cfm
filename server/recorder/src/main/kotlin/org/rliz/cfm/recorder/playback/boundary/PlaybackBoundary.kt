@@ -53,11 +53,11 @@ class PlaybackBoundary {
         artists: List<String>,
         release: String,
         recording: String,
+        timestamp: Long?,
+        idMethod: String?,
         length: Long? = null,
         playtime: Long? = null,
-        timestamp: Long?,
-        source: String? = null,
-        idMethod: String?
+        source: String? = null
     ): Playback {
         val (rgId, recId) = identify(idMethod, artists, release, recording, length)
 

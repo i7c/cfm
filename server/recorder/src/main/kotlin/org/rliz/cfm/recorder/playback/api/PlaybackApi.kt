@@ -36,11 +36,11 @@ class PlaybackApi {
             artists = body.artists,
             release = body.releaseTitle!!,
             recording = body.recordingTitle!!,
+            timestamp = body.timestamp,
+            idMethod = idMethod,
             length = body.trackLength,
             playtime = body.playTime,
-            timestamp = body.timestamp,
-            source = body.source,
-            idMethod = idMethod
+            source = body.source
         ).toRes().toHttpResponse(HttpStatus.CREATED)
 
     @RequestMapping(method = [RequestMethod.GET])
