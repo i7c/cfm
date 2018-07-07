@@ -33,6 +33,7 @@ my @cli_args = (
     'set|s=s@',
     'source=s',
     'threshold=i',
+    'verbose|v'
 );
 
 my %conf_default = (

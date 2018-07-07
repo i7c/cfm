@@ -90,7 +90,7 @@ sub cmd_list {
     } else {
         my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
             $self->config->get_option("broken"));
-        $self->formatter->playback_list($playbacks);
+        $self->formatter->playback_list($playbacks, $self->config->get_option("verbose"));
     }
 }
 
