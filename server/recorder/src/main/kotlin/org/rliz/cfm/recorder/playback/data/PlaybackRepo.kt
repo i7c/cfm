@@ -182,6 +182,7 @@ class PlaybackRepo {
                 where
                     p.recording_uuid is not null
                     and p.release_group_uuid is not null
+                    and p.fix_attempt is not null
                     and p.user_oid = ?
             """, { rs, _ -> rs.getLong("c") }, arrayOf(userOid)
             ).first()
