@@ -28,6 +28,7 @@ my %command_mapping = (
     add            => \&cmd_add,
     delete         => \&cmd_delete,
     fix            => \&cmd_fix,
+    fixlog         => \&cmd_fixlog,
     list           => \&cmd_list,
     now            => \&cmd_now,
     record         => \&cmd_record,
@@ -194,6 +195,15 @@ sub cmd_fix {
         return unless defined $acc;
         $self->fix_acc_playback_wizard->run($acc);
     }
+}
+
+sub cmd_fixlog {
+    my ($self) = @_;
+
+    my $fixlog = $self->playback_service->fixlog(
+        $self->config->get_option("page") - 1
+    );
+    $self->formatter->playback_list($fixlog, $self->config->get_option("verbose"), 1);
 }
 
 1;

@@ -117,4 +117,16 @@ sub delete_playbacks {
     );
 }
 
+sub get_fixlog {
+    my ($self, $page) = @_;
+
+    my @params = ();
+    push @params, page => $page if $page > 0;
+
+    Cfm::Common::ListRes->from_hash(
+        $self->get_json("/rec/v1/playbacks/fixlog", \@params),
+        sub { Cfm::Playback::Playback->from_hash($_) }
+    );
+}
+
 1;

@@ -17,13 +17,14 @@ has row_count => (
     );
 
 sub playback_list {
-    my ($self, $pbl, $verbose) = @_;
+    my ($self, $pbl, $verbose, $fix_attempt) = @_;
 
     my $table = Text::ASCIITable->new;
     my @cols = (" ", "Artist", "Title", "Album", "Time");
     # add left
     unshift @cols, "No" if $self->row_count;
     # add right
+    push @cols, "Fix" if $fix_attempt;
     push @cols, "Id" if $verbose;
     $table->setCols(@cols);
 
@@ -44,6 +45,7 @@ sub playback_list {
             $self->common->time($pb->timestamp),
         );
         unshift @vals, $i++ if $self->row_count;
+        push @vals, $self->common->time($pb->fixAttempt) if $fix_attempt;
         push @vals, $pb->id if $verbose;
         $table->addRow(@vals);
     }

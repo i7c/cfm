@@ -69,4 +69,10 @@ sub delete {
     $self->client->delete_playbacks($source);
 }
 
+sub fixlog {
+    my ($self, $page) = @_;
+
+    $self->client->get_fixlog($page);
+}
+
 1;

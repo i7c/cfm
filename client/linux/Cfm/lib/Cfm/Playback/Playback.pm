@@ -38,6 +38,7 @@ has trackNumber => (is => 'ro');
 has broken => (is => 'ro');
 has id => (is => 'ro');
 has source => (is => 'ro');
+has fixAttempt => (is => 'ro');
 
 sub valid {
     my ($self) = @_;
