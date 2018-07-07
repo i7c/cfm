@@ -16,7 +16,8 @@ data class PlaybackRes(
     val trackNumber: Int? = null,
     val broken: Boolean? = null,
     val id: UUID? = null,
-    val source: String? = null
+    val source: String? = null,
+    val fixAttempt: Long? = null
 )
 
 fun Playback.toRes(): PlaybackRes = PlaybackRes(
@@ -26,5 +27,6 @@ fun Playback.toRes(): PlaybackRes = PlaybackRes(
     timestamp = this.timestamp,
     playTime = this.playTime,
     broken = this.releaseGroupUuid == null || this.recordingUuid == null,
-    id = this.id
+    id = this.id,
+    fixAttempt = this.fixAttempt
 )

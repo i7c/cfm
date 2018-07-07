@@ -210,6 +210,9 @@ class PlaybackBoundary {
         recId
     )
 
+    fun getFixLog(user: User, pageable: Pageable): Page<Playback> =
+        sanitizeView(playbackRepo.getRecentlyFixedByUser(user.oid!!, pageable))
+
     private fun findPlayback(user: User, playbackId: UUID): Playback? =
         playbackRepo.getByIdAndUser(playbackId, user.oid!!)
 

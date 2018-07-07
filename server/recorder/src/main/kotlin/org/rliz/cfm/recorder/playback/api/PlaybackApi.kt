@@ -80,4 +80,8 @@ class PlaybackApi {
     @RequestMapping(method = [RequestMethod.DELETE])
     fun deletePlaybacks(@RequestParam(required = true) withSource: String?) =
         playbackBoundary.deletePlaybacks(withSource).toRes().toHttpResponse(HttpStatus.OK)
+
+    @RequestMapping(method = [RequestMethod.GET], path = ["/fixlog"])
+    fun getFixLog(pageable: Pageable) = playbackBoundary.getFixLog(currentUser(), pageable)
+        .toRes(Playback::toRes)
 }

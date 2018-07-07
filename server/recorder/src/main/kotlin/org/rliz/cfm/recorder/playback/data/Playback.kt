@@ -16,5 +16,7 @@ data class Playback(
 
     val rawArtists: List<String>,
     val rawRelease: String,
-    val rawRecording: String
+    val rawRecording: String,
+
+    val fixAttempt: Long? = null
 )

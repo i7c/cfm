@@ -30,7 +30,8 @@ class PlaybackRepo {
                         play_time pt,
                         release_group_uuid rgId,
                         recording_uuid recId,
-                        timestamp t
+                        timestamp t,
+                        fix_attempt fa
                         """
 
     fun save(
@@ -153,6 +154,39 @@ class PlaybackRepo {
         return PageImpl(result, pageable, total)
     }
 
+    fun getRecentlyFixedByUser(userOid: Long, pageable: Pageable): PageImpl<Playback> =
+        PageImpl(
+            jdbc.query(
+                """
+            select $playbackViewColumns
+            from playback p
+            where
+                p.recording_uuid is not null
+                and p.release_group_uuid is not null
+                and p.fix_attempt is not null
+                and p.user_oid = ?
+            order by
+                p.fix_attempt desc,
+                p.oid desc
+            limit ?
+            offset ?
+            """,
+                playbackView(),
+                arrayOf(userOid, pageable.pageSize, pageable.offset)
+            ),
+            pageable,
+            jdbc.query(
+                """
+                select count(*) c
+                from playback p
+                where
+                    p.recording_uuid is not null
+                    and p.release_group_uuid is not null
+                    and p.user_oid = ?
+            """, { rs, _ -> rs.getLong("c") }, arrayOf(userOid)
+            ).first()
+        )
+
     fun getByIdAndUser(uuid: UUID, userOid: Long): Playback? =
         jdbc.query(
             """
@@ -252,7 +286,8 @@ class PlaybackRepo {
                 rs.getLong("t"),
                 artists,
                 release,
-                recording
+                recording,
+                rs.getNullable("fa")
             )
         }
     }
