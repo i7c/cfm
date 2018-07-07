@@ -22,6 +22,17 @@ class PlaybackRepo {
     @Autowired
     private lateinit var mapper: ObjectMapper
 
+    private val playbackViewColumns = """
+                        uuid id,
+                        raw_artists arts,
+                        raw_release rel,
+                        raw_recording rec,
+                        play_time pt,
+                        release_group_uuid rgId,
+                        recording_uuid recId,
+                        timestamp t
+                        """
+
     fun save(
         id: UUID,
         playTime: Long? = null,
@@ -127,15 +138,7 @@ class PlaybackRepo {
 
         val result = jdbc.query(
             """
-                select
-                    uuid id,
-                    raw_artists arts,
-                    raw_release rel,
-                    raw_recording rec,
-                    play_time pt,
-                    release_group_uuid rgId,
-                    recording_uuid recId,
-                    timestamp t
+                select $playbackViewColumns
                 from playback p
                 where p.user_oid = ?
                 $whereUnattached
@@ -153,15 +156,7 @@ class PlaybackRepo {
     fun getByIdAndUser(uuid: UUID, userOid: Long): Playback? =
         jdbc.query(
             """
-                select
-                    uuid id,
-                    raw_artists arts,
-                    raw_release rel,
-                    raw_recording rec,
-                    play_time pt,
-                    release_group_uuid rgId,
-                    recording_uuid recId,
-                    timestamp t
+                select $playbackViewColumns
                 from playback p
                 where p.uuid = ?
                 and p.user_oid = ?
