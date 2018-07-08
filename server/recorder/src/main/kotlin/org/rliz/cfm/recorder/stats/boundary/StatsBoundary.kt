@@ -26,8 +26,8 @@ class StatsBoundary {
             pageable = pageable
         ).let { page ->
             when (type) {
-                FirstClassStatsType.RECORDING -> translateRecordingStats(page)
-                FirstClassStatsType.RELEASE_GROUP -> translateReleaseGroupStats(page)
+                FirstClassStatsType.RECORDINGS -> translateRecordingStats(page)
+                FirstClassStatsType.RELEASE_GROUPS -> translateReleaseGroupStats(page)
             }
         }
 

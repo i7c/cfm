@@ -54,11 +54,11 @@ class StatsRepo {
 
 enum class FirstClassStatsType {
 
-    RECORDING {
+    RECORDINGS {
         override fun column(): String = "recording_uuid"
     },
 
-    RELEASE_GROUP {
+    RELEASE_GROUPS {
         override fun column(): String = "release_group_uuid"
     };
 
