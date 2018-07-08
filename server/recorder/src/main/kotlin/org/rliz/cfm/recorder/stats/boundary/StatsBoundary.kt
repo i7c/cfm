@@ -22,7 +22,7 @@ class StatsBoundary {
     fun getFirstClassStats(type: FirstClassStatsType, user: User?, pageable: Pageable) =
         statsRepo.getFirstClassStats(
             type = type,
-            forUserOid = user?.oid,
+            userOid = user?.oid,
             pageable = pageable
         ).let { page ->
             when (type) {

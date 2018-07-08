@@ -13,7 +13,7 @@ class StatsRepo {
     @Autowired
     lateinit var jdbc: JdbcOperations
 
-    fun getFirstClassStats(type: FirstClassStatsType, forUserOid: Long?, pageable: Pageable) =
+    fun getFirstClassStats(type: FirstClassStatsType, userOid: Long?, pageable: Pageable) =
         PageImpl(
             jdbc.query(
                 """
@@ -23,7 +23,7 @@ class StatsRepo {
                 from playback p
                 where
                     ${type.column()} is not null
-                    ${forUserOid?.let { "and user_oid = $it" } ?: ""}
+                    ${maybeWhereUserEquals(userOid)}
                 group by ${type.column()}
                 order by c desc
                 limit ?
@@ -36,12 +36,20 @@ class StatsRepo {
             jdbc.query(
                 """
                 select count(*) c
-                from playback p
-                ${forUserOid?.let { "where user_oid = $it" } ?: ""}
-                group by ${type.column()}
+                from (
+                    select 1
+                    from playback p
+                    where
+                        ${type.column()} is not null
+                        ${maybeWhereUserEquals(userOid)}
+                    group by ${type.column()}
+                ) sq;
             """
             ) { rs, _ -> rs.getLong("c") }.first()
         )
+
+    private fun maybeWhereUserEquals(forUserOid: Long?) =
+        forUserOid?.let { "and user_oid = $it" } ?: ""
 }
 
 enum class FirstClassStatsType {
