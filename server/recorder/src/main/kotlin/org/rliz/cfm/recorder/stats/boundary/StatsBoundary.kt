@@ -25,9 +25,13 @@ class StatsBoundary {
             userOid = user?.oid,
             pageable = pageable
         ).let { page ->
-            when (type) {
-                FirstClassStatsType.RECORDINGS -> translateRecordingStats(page)
-                FirstClassStatsType.RELEASE_GROUPS -> translateReleaseGroupStats(page)
+            if (page.hasContent()) {
+                when (type) {
+                    FirstClassStatsType.RECORDINGS -> translateRecordingStats(page)
+                    FirstClassStatsType.RELEASE_GROUPS -> translateReleaseGroupStats(page)
+                }
+            } else {
+                PageImpl<FirstClassStatsEntry>(emptyList(), pageable, page.totalElements)
             }
         }
 
