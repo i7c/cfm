@@ -10,4 +10,6 @@ data class MbsReleaseGroupViewRes(
 
 data class MbsReleaseGroupViewListRes(
     val elements: List<MbsReleaseGroupViewRes> = emptyList()
-)
+) {
+    fun toIdMap() = elements.map { it.id to it }.toMap()
+}

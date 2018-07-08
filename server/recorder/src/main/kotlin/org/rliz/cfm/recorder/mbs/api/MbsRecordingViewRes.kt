@@ -11,4 +11,7 @@ data class MbsRecordingViewRes(
 
 data class MbsRecordingViewListRes(
     val elements: List<MbsRecordingViewRes> = emptyList()
-)
+) {
+
+    fun toIdMap() = elements.map { it.id!! to it }.toMap()
+}
