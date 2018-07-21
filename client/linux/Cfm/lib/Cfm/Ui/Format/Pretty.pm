@@ -9,8 +9,6 @@ use Cfm::Autowire;
 use Cfm::Ui::Format::Common;
 use Text::ASCIITable;
 
-has common => singleton "Cfm::Ui::Format::Common";
-
 has row_count => (
         is      => 'lazy',
         default => sub {0},
@@ -42,15 +40,15 @@ sub playback_list {
             $artist_list,
             $title,
             $album,
-            $self->common->time($pb->timestamp),
+            Cfm::Ui::Format::Common::time($pb->timestamp),
         );
         unshift @vals, $i++ if $self->row_count;
-        push @vals, $self->common->time($pb->fixAttempt) if $fix_attempt;
+        push @vals, Cfm::Ui::Format::Common::time($pb->fixAttempt) if $fix_attempt;
         push @vals, $pb->id if $verbose;
         $table->addRow(@vals);
     }
     print $table;
-    print $self->common->list_details($pbl);
+    print Cfm::Ui::Format::Common::list_details($pbl);
 }
 
 sub playback {
@@ -61,8 +59,8 @@ sub playback {
     $table->addRow("Artist(s)", join(";", $pb->artists->@*));
     $table->addRow("Title", $pb->recordingTitle);
     $table->addRow("Release", $pb->releaseTitle);
-    $table->addRow("Time", $self->common->time($pb->timestamp));
-    $table->addRow("Broken", $self->common->boolean($pb->broken));
+    $table->addRow("Time", Cfm::Ui::Format::Common::time($pb->timestamp));
+    $table->addRow("Broken", Cfm::Ui::Format::Common::boolean($pb->broken));
     print $table;
 }
 
@@ -86,7 +84,7 @@ sub accumulated_playbacks {
         $table->addRow($acc->occurrences, join("; ", $acc->artists->@*), $acc->recordingTitle, $acc->releaseTitle);
     }
     print $table;
-    print $self->common->list_details($acc_playbacks);
+    print Cfm::Ui::Format::Common::list_details($acc_playbacks);
 }
 
 sub accumulated_playback {
@@ -118,7 +116,7 @@ sub release_groups {
         $table->addRow(@vals);
     }
     print $table;
-    print $self->common->list_details($rgs);
+    print Cfm::Ui::Format::Common::list_details($rgs);
 }
 
 sub recordings {
@@ -136,7 +134,7 @@ sub recordings {
         $table->addRow(@vals);
     }
     print $table;
-    print $self->common->list_details($recs);
+    print Cfm::Ui::Format::Common::list_details($recs);
 }
 
 sub review_acc_fix {
