@@ -6,9 +6,11 @@ with 'Cfm::Singleton';
 with 'Cfm::Ui::Format::Formatter';
 
 use Cfm::Autowire;
+use Cfm::Config;
 use Cfm::Ui::Format::Common;
 use Text::ASCIITable;
 
+has config => singleton 'Cfm::Config';
 has row_count => (
         is      => 'lazy',
         default => sub {0},
@@ -17,51 +19,44 @@ has row_count => (
 sub playback_list {
     my ($self, $pbl, $verbose, $fix_attempt) = @_;
 
-    my $table = Text::ASCIITable->new;
-    my @cols = (" ", "Artist", "Title", "Album", "Time");
-    # add left
-    unshift @cols, "No" if $self->row_count;
-    # add right
-    push @cols, "Fix" if $fix_attempt;
-    push @cols, "Id" if $verbose;
-    $table->setCols(@cols);
+    my @cols = ('!', 'Artist', 'Title', 'Album', 'Time');
+    @cols = _append_missing("Fix", @cols) if $fix_attempt;
+    @cols = _append_missing("Id", @cols) if $verbose;
 
-    my $i = 1;
-    for my $pb (@{$pbl->elements}) {
-        my ($sound, $artist_list, $title, $album) = ("");
-
-        $sound .= "!" if $pb->broken;
-        $artist_list = join "; ", $pb->artists->@*;
-        $title = $pb->recordingTitle;
-        $album = $pb->releaseTitle;
-
-        my @vals = (
-            $sound,
-            $artist_list,
-            $title,
-            $album,
-            Cfm::Ui::Format::Common::time($pb->timestamp),
-        );
-        unshift @vals, $i++ if $self->row_count;
-        push @vals, Cfm::Ui::Format::Common::time($pb->fixAttempt) if $fix_attempt;
-        push @vals, $pb->id if $verbose;
-        $table->addRow(@vals);
-    }
-    print $table;
+    _print_table(
+        $pbl->elements,
+        [@cols],
+        '.' => sub{ $_[0]->broken ? '  !' : "\x{2713}  " },
+        '!' => sub{ $_[0]->broken ? '!' : undef },
+        Artist => sub{join("; ", $_[0]->artists->@*)},
+        Title => 'recordingTitle',
+        Album => 'releaseTitle',
+        Time => sub{ Cfm::Ui::Format::Common::time($_[0]->timestamp) },
+        Id => 'id',
+        Fix => sub{ Cfm::Ui::Format::Common::time($_[0]->fixAttempt) },
+        '#' => sub{ $_[2] + 1 },
+    );
     print Cfm::Ui::Format::Common::list_details($pbl);
 }
 
 sub playback {
     my ($self, $pb) = @_;
 
-    my $table = Text::ASCIITable->new;
-    $table->setCols("Property", "Value");
-    $table->addRow("Artist(s)", join(";", $pb->artists->@*));
-    $table->addRow("Title", $pb->recordingTitle);
-    $table->addRow("Release", $pb->releaseTitle);
-    $table->addRow("Time", Cfm::Ui::Format::Common::time($pb->timestamp));
-    $table->addRow("Broken", Cfm::Ui::Format::Common::boolean($pb->broken));
-    print $table;
+    _print_table(
+        [
+            [Artists => join("; ", $pb->artists->@*)],
+            [Title => $pb->recordingTitle],
+            [Release => $pb->releaseTitle],
+            [Time => Cfm::Ui::Format::Common::time($pb->timestamp)],
+            [Attached => Cfm::Ui::Format::Common::boolean(!$pb->broken)],
+            [Id => $pb->id],
+            [Source => $pb->source],
+            ['Last fix attempt' => $pb->fixAttempt],
+        ],
+        ["Property", "Value"],
+        Property => sub{ $_[0]->[0] },
+        Value => sub{ $_[0]->[1] },
+    );
 }
 
 sub user {
@@ -156,6 +151,43 @@ sub affected {
 
     my $num = $affected->affected;
     print "$num elements affected.\n";
+}
+
+sub _print_table {
+    my ($data, $cols, %mappings) = @_;
+
+    my $table = Text::ASCIITable->new;
+    $table->setCols($cols->@*);
+
+    my $index = 0;
+    for my $e ($data->@*) {
+        my @row;
+        for my $c ($cols->@*) {
+            my $accessor = $mappings{$c};
+            if (ref $accessor eq 'CODE') {
+                push @row, $accessor->($e, $data, $index);
+            } elsif (!ref $accessor && defined $accessor) {
+                push @row, $e->{$accessor};
+            } elsif (defined $e->{$c}) {
+                push @row, $e->{$c};
+            } else {
+                push @row, undef;
+            }
+        }
+        $table->addRow(@row);
+        $index++;
+    }
+
+    print $table;
+}
+
+sub _append_missing {
+    my ($col, @cols) = @_;
+
+    if (! grep /^$col$/, @cols) {
+        push @cols, $col;
+    }
+    @cols;
 }
 
 1;
