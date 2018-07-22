@@ -2,6 +2,7 @@ package Cfm::Common::Res;
 
 use strict;
 use warnings;
+use JSON;
 use Moo::Role;
 
 sub _check_mandatory_fields {
@@ -84,6 +85,10 @@ sub _field_projection {
 
 sub _ds_boolean {
     $_[0] + 0
+}
+
+sub _s_boolean {
+    $_[0] ? JSON::true : JSON::false
 }
 
 1;

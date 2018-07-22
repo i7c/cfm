@@ -19,6 +19,10 @@ with "Cfm::Common::Res";
     broken => \&Cfm::Common::Res::_ds_boolean
 );
 
+%Cfm::Playback::Playback::projection = (
+    broken => \&Cfm::Common::Res::_s_boolean,
+);
+
 has artists => (
         is     => 'ro',
         coerce => sub {

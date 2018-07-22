@@ -15,6 +15,10 @@ $Cfm::User::User::inactive = "INACTIVE";
     systemUser => \&Cfm::Common::Res::_ds_boolean
 );
 
+%Cfm::User::User::projection = (
+    systemUser => \&Cfm::Common::Res::_s_boolean,
+);
+
 has name => (is => 'ro');
 has password => (is => 'ro');
 has state => (is => 'ro');
