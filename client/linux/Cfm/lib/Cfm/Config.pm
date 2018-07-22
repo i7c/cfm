@@ -37,6 +37,7 @@ my @cli_args = (
 );
 
 my %conf_default = (
+    'list-cols'       => ['!', 'Artist', 'Title', 'Album', 'Time'],
     'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'gap-to-complete' => 3,

@@ -19,7 +19,7 @@ has row_count => (
 sub playback_list {
     my ($self, $pbl, $verbose, $fix_attempt) = @_;
 
-    my @cols = ('!', 'Artist', 'Title', 'Album', 'Time');
+    my @cols = $self->config->require_option("list-cols")->@*;
     @cols = _append_missing("Fix", @cols) if $fix_attempt;
     @cols = _append_missing("Id", @cols) if $verbose;
 
