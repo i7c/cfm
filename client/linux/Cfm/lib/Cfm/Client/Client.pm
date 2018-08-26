@@ -19,13 +19,18 @@ has auth_pass => (is => 'ro');
 has headers => (is => 'rw');
 has agent => (is => 'rw');
 
-sub BUILD {
-    my ($self, $args) = @_;
+sub init {
+    my ($self, $base_url, $user, $pass) = @_;
 
     $log->debug("Initialising generic HTTP client");
+
+    $self->url($base_url);
+
     my $headers = HTTP::Headers->new;
     $headers->content_type("application/json");
+    $headers->authorization_basic($user, $pass);
     $self->headers($headers);
+
     my $ua = LWP::UserAgent->new;
     $self->agent($ua);
 }

@@ -21,10 +21,11 @@ has config => singleton 'Cfm::Config';
 sub BUILD {
     my ($self, $args) = @_;
 
-    $self->url($self->config->require_option("url"));
-    my $user = $self->config->require_option("user");
-    my $pass = $self->config->require_option("pass");
-    $self->headers->authorization_basic($user, $pass);
+    $self->init(
+        $self->config->require_option("url"),
+        $self->config->require_option("user"),
+        $self->config->require_option("pass"),
+    );
 }
 
 sub my_playbacks {

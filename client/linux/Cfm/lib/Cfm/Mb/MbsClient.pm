@@ -15,10 +15,12 @@ has config => singleton 'Cfm::Config';
 sub BUILD {
     my ($self, $args) = @_;
 
-    $self->url($self->config->require_option("url"));
-    my $user = $self->config->require_option("user");
-    my $pass = $self->config->require_option("pass");
-    $self->headers->authorization_basic($user, $pass);
+    $self->init(
+        $self->config->require_option("url"),
+        "/mbs/v1",
+        $self->config->require_option("user"),
+        $self->config->require_option("pass"),
+    );
 }
 
 sub get_identified_release_groups {
@@ -33,7 +35,7 @@ sub get_identified_release_groups {
     push @params, page => $page if defined $page;
 
     Cfm::Common::ListRes->from_hash(
-        $self->get_json("/mbs/v1/releasegroups/identify", \@params), sub {Cfm::Mb::ReleaseGroup->from_hash($_)}
+        $self->get_json("/releasegroups/identify", \@params), sub {Cfm::Mb::ReleaseGroup->from_hash($_)}
     );
 }
 
@@ -45,7 +47,7 @@ sub get_identified_recordings {
     push @params, title => $title;
     push @params, page => $page if defined $page;
     Cfm::Common::ListRes->from_hash(
-        $self->get_json("/mbs/v1/recordings/identify", \@params), sub {Cfm::Mb::Recording->from_hash($_)}
+        $self->get_json("/recordings/identify", \@params), sub {Cfm::Mb::Recording->from_hash($_)}
     );
 }
 
