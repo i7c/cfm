@@ -6,11 +6,9 @@ with 'Cfm::Connector::PlayerEventHandler';
 use Log::Any qw/$log/;
 
 use Cfm::Autowire;
-use Cfm::Client::CfmClient;
 use Cfm::Playback::PlaybackService;
 use Sys::Hostname;
 
-has client => singleton 'Cfm::Client::CfmClient';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 
 sub track_started {
