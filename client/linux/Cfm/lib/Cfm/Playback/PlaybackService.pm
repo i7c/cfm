@@ -7,9 +7,9 @@ use Moo;
 with 'Cfm::Singleton';
 use Cfm::Autowire;
 
-use Cfm::Client::CfmClient;
+use Cfm::Playback::PlaybackClient;
 
-has client => singleton "Cfm::Client::CfmClient";
+has client => singleton "Cfm::Playback::PlaybackClient";
 
 sub my_playbacks {
     my ($self, $page, $broken) = @_;

@@ -14,17 +14,22 @@ use Data::Dumper;
 use URI;
 
 has url => (is => 'rw');
+has url_path_prefix => (is => 'rw');
 has auth_user => (is => 'ro');
 has auth_pass => (is => 'ro');
 has headers => (is => 'rw');
 has agent => (is => 'rw');
 
 sub init {
-    my ($self, $base_url, $user, $pass) = @_;
+    my ($self, $url, $url_path_prefix, $user, $pass) = @_;
 
     $log->debug("Initialising generic HTTP client");
+    $log->debug("url=$url");
+    $log->debug("url_path_prefix=$url_path_prefix");
+    $log->debug("user=$user");
 
-    $self->url($base_url);
+    $self->url($url);
+    $self->url_path_prefix($url_path_prefix);
 
     my $headers = HTTP::Headers->new;
     $headers->content_type("application/json");
@@ -39,7 +44,7 @@ sub _generic_request {
     my ($self, $method, $path, $content, $params) = @_;
 
     my $uri = URI->new($self->url);
-    $uri->path($path);
+    $uri->path($self->url_path_prefix . $path);
     $uri->query_form(@$params);
 
     my $request = HTTP::Request->new($method, $uri, $self->headers);
