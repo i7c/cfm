@@ -8,6 +8,7 @@ with 'Cfm::Ui::Format::Formatter';
 use Cfm::Autowire;
 use Cfm::Playback::AccumulatedPlaybacks;
 use Cfm::Playback::Playback;
+use Cfm::Stats::FirstClassStats;
 use Encode;
 use JSON::MaybeXS;
 
@@ -73,6 +74,14 @@ sub _print {
     # utf8 flag. This leads to perl's IO layer trying to encode everything *again*. Not nice, but works for now. :)
     Encode::_utf8_on($x);
     print $x;
+}
+
+sub first_class_stats_list {
+    my ($self, $fcsl) = @_;
+
+    $self->_print(encode_json(
+        $self->_list($fcsl, sub {Cfm::Stats::FirstClassStats->to_hash($_)})
+    ));
 }
 
 1;

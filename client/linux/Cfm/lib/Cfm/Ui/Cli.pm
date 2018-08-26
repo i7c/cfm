@@ -13,6 +13,7 @@ use Cfm::Import::CsvImporter;
 use Cfm::Mb::MbService;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackService;
+use Cfm::Stats::StatsService;
 use Cfm::Ui::Format::Formatter;
 use Cfm::Ui::Wizard::FixAccPlaybackWizard;
 use Cfm::Ui::Wizard::SelectPlaybackWizard;
@@ -20,18 +21,20 @@ use Cfm::User::User;
 use Cfm::User::UserService;
 
 my %command_mapping = (
+    'add'          => \&cmd_add,
     'create-user'  => \&cmd_create_user,
+    'delete'       => \&cmd_delete,
     'find-rg'      => \&cmd_find_rg,
+    'fix'          => \&cmd_fix,
+    'fixlog'       => \&cmd_fixlog,
     'import-csv'   => \&cmd_import_csv,
+    'list'         => \&cmd_list,
+    'now'          => \&cmd_now,
+    'record'       => \&cmd_record,
     'record-mpd'   => \&cmd_record_mpd,
     'record-mpris' => \&cmd_record_mpris,
-    add            => \&cmd_add,
-    delete         => \&cmd_delete,
-    fix            => \&cmd_fix,
-    fixlog         => \&cmd_fixlog,
-    list           => \&cmd_list,
-    now            => \&cmd_now,
-    record         => \&cmd_record,
+    'recs'         => \&cmd_recs,
+    'rgs'          => \&cmd_rgs,
 );
 
 has loglevel => inject 'loglevel';
@@ -46,6 +49,7 @@ has mpris2 => singleton 'Cfm::Connector::Mpris2';
 has multi => singleton 'Cfm::Connector::Multi';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has select_playback_wizard => singleton 'Cfm::Ui::Wizard::SelectPlaybackWizard';
+has stats_service => singleton 'Cfm::Stats::StatsService';
 has user_service => singleton 'Cfm::User::UserService';
 
 sub run {
@@ -204,6 +208,22 @@ sub cmd_fixlog {
         $self->config->get_option("page") - 1
     );
     $self->formatter->playback_list($fixlog, $self->config->get_option("verbose"), 1);
+}
+
+sub cmd_rgs {
+    my ($self) = @_;
+
+    $self->formatter->show(
+        $self->stats_service->top_release_groups
+    );
+}
+
+sub cmd_recs {
+    my ($self) = @_;
+
+    $self->formatter->show(
+        $self->stats_service->top_recordings
+    );
 }
 
 1;

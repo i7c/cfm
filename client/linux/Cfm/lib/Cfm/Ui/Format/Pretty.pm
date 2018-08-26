@@ -2,8 +2,7 @@ package Cfm::Ui::Format::Pretty;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
-with 'Cfm::Singleton';
-with 'Cfm::Ui::Format::Formatter';
+with 'Cfm::Singleton', 'Cfm::Ui::Format::Formatter';
 
 use Cfm::Autowire;
 use Cfm::Config;
@@ -15,6 +14,20 @@ has row_count => (
         is      => 'lazy',
         default => sub {0},
     );
+
+sub first_class_stats_list {
+    my ($self, $fcsl) = @_;
+
+    my @cols = ('Count', 'Artists', 'Title');
+
+    _print_table(
+        $fcsl->elements,
+        [@cols],
+        Count => 'count',
+        Artists => sub { join("; ", $_[0]->artists->@*)},
+        Title => 'title',
+    );
+}
 
 sub playback_list {
     my ($self, $pbl, $verbose, $fix_attempt) = @_;

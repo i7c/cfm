@@ -57,4 +57,12 @@ sub affected {
     $self->csv->print(\*STDOUT, [ $affected->affected ]);
 }
 
+sub first_class_stats_list {
+    my ($self, $fcsl) = @_;
+
+    for my $fcs ($fcsl->elements->@*) {
+        $self->csv->print(\*STDOUT, [ $fcs->count, $fcs->artist->[0], $fcs->title ]);
+    }
+}
+
 1;
