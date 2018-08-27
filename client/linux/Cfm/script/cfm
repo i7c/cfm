@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use warnings FATAL => 'all';
 use strict;
+use Cfm::Bean;
 use Cfm::Common::Logging;
 use Cfm::Ui::Cli;
 
@@ -17,6 +18,22 @@ $logger->info('
 '
 );
 $logger->info("Starting CLI ...");
+
+bean 'formatter' => sub {
+    use Cfm::Ui::Format::Pretty;
+    use Cfm::Ui::Format::Csv;
+    use Cfm::Ui::Format::Json;
+    my %formatters = (
+        pretty => sub {Cfm::Ui::Format::Pretty->instance},
+        csv    => sub {Cfm::Ui::Format::Csv->instance},
+        json   => sub {Cfm::Ui::Format::Json->instance},
+    );
+
+    my $format = Cfm::Config->instance()->require_option("format");
+    $logger->debug("Choose format: $format");
+    ($formatters{$format} // die "Unknown format: $format")->();
+};
+
 Cfm::Ui::Cli->new()->run(@ARGV);
 $logger->info("Application is terminating normally.");
 exit 0;

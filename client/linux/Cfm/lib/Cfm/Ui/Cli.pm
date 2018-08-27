@@ -35,11 +35,11 @@ my %command_mapping = (
 );
 
 has loglevel => inject 'loglevel';
+has formatter => inject 'formatter';
 
 has config => singleton 'Cfm::Config';
 has csv_importer => singleton 'Cfm::Import::CsvImporter';
 has fix_acc_playback_wizard => singleton 'Cfm::Ui::Wizard::FixAccPlaybackWizard';
-has formatter => singleton 'Cfm::Ui::Format::Formatter';
 has mbservice => singleton 'Cfm::Mb::MbService';
 has mpd => singleton 'Cfm::Connector::Mpd';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
