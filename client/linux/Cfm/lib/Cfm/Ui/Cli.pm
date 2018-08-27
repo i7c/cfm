@@ -87,16 +87,9 @@ sub greedy_match_command {
 sub cmd_list {
     my ($self) = @_;
 
-    # if the user specifies --acc, we use the service method to get accumulated broken playbacks, rather than the
-    # regular list. --broken then has no effect on the result.
-    if ($self->config->has_option('acc')) {
-        my $acc_playbacks = $self->playback_service->accumulated_broken_playbacks($self->config->get_option('page') - 1);
-        $self->formatter->accumulated_playbacks($acc_playbacks);
-    } else {
-        my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
-            $self->config->get_option("broken"));
-        $self->formatter->playback_list($playbacks, $self->config->get_option("verbose"));
-    }
+    my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
+        $self->config->get_option("broken"));
+    $self->formatter->show($playbacks, $self->config->get_option("verbose"));
 }
 
 sub cmd_add {
@@ -116,7 +109,7 @@ sub cmd_add {
         source         => $kv->{source},
     );
     my $response = $self->playback_service->create_playback($playback);
-    $self->formatter->playback($response);
+    $self->formatter->show($response);
 }
 
 sub cmd_delete {
@@ -174,21 +167,21 @@ sub cmd_create_user {
         systemUser => 0,
     );
     my $response = $self->user_service->create_user($user);
-    $self->formatter->user($response);
+    $self->formatter->show($response);
 }
 
 sub cmd_now {
     my ($self) = @_;
 
     my $np = $self->playback_service->get_now_playing;
-    $self->formatter->playback($np);
+    $self->formatter->show($np);
 }
 
 sub cmd_find_rg {
     my ($self, $rg, @artists) = @_;
 
     my $rgs = $self->mbservice->identify_release_group(\@artists, $rg, $self->config->get_option("page") - 1);
-    $self->formatter->release_groups($rgs);
+    $self->formatter->show($rgs);
 }
 
 sub cmd_fix {

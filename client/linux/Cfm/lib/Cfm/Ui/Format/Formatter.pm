@@ -17,7 +17,10 @@ sub show {
     my ($self, $any) = @_;
 
     switch (ref $any) {
+        case 'Cfm::Common::AffectedRes' { $self->affected($any); }
         case 'Cfm::Common::ListRes' { $self->show_list($any); }
+        case 'Cfm::Playback::Playback' { $self->playback($any); }
+        case 'Cfm::User::User' { $self->user($any); }
     }
 }
 
@@ -30,6 +33,8 @@ sub show_list {
         case 'Cfm::Stats::FirstClassStats' {
             $self->first_class_stats_list($any_list);
         }
+        case 'Cfm::Playback::Playback' { $self->playback_list($any_list); }
+        case 'Cfm::Mb::ReleaseGroup' { $self->release_groups($any_list); }
     }
 }
 

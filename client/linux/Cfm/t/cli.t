@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 37;
+use Test::More tests => 32;
 use Test::Exception;
 use Test::MockObject;
 
@@ -49,7 +49,7 @@ sub mock_config {
         ->mock("my_playbacks", sub {478;});
 
     my $mock_f = Test::MockObject->new()
-        ->set_true("playback_list");
+        ->set_true("show");
 
     my $mock_c = mock_config({
         page   => 3,
@@ -65,34 +65,8 @@ sub mock_config {
     $mock_p->called_pos_ok(1, "my_playbacks", "called my_playbacks on service");
     $mock_p->called_args_pos_is(1, 2, 2, "page arg");
     $mock_p->called_args_pos_is(1, 3, 0, "broken arg");
-    $mock_f->called_pos_ok(1, "playback_list", "called playback_list on formatter");
+    $mock_f->called_pos_ok(1, "show", "called show on formatter");
     $mock_f->called_args_pos_is(1, 2, 478, "formatter called with playback list result");
-    is ($mock_f->call_pos(2), undef, "no further calls on formatter");
-}
-
-# list --acc command
-{
-    my $mock_p = Test::MockObject->new()
-        ->mock("accumulated_broken_playbacks", sub {945612;});
-
-    my $mock_f = Test::MockObject->new()
-        ->set_true("accumulated_playbacks");
-
-    my $mock_c = mock_config({
-        page => 9,
-        acc  => 1,
-    });
-
-    cut(
-        playback_service => $mock_p,
-        formatter        => $mock_f,
-        config           => $mock_c,
-    )->run("list");
-
-    $mock_p->called_pos_ok(1, "accumulated_broken_playbacks", "called accumulated_broken_playbacks on service");
-    $mock_p->called_args_pos_is(1, 2, 8, "page arg");
-    $mock_f->called_pos_ok(1, "accumulated_playbacks", "called accumulated_playbacks on formatter");
-    $mock_f->called_args_pos_is(1, 2, 945612, "formatter called with accumulated playbacks result");
     is ($mock_f->call_pos(2), undef, "no further calls on formatter");
 }
 
@@ -101,8 +75,7 @@ sub mock_config {
     my $mock_pbs = Test::MockObject->new()
         ->mock("create_playback", sub {849;});
 
-    my $mock_f = Test::MockObject->new()
-        ->set_true("playback");
+    my $mock_f = Test::MockObject->new()->set_true("show");
 
     my $mock_c = mock_config()
         ->mock("kv_store", sub {
@@ -128,7 +101,7 @@ sub mock_config {
     ok ($actual_pb->releaseTitle eq "R", "release title");
     ok ($actual_pb->playTime == 5, "play time");
 
-    $mock_f->called_pos_ok(1, "playback", "called playback on formatter");
+    $mock_f->called_pos_ok(1, "show", "called show on formatter");
     $mock_f->called_args_pos_is(1, 2, 849, "formatter called with playback result")
 }
 
@@ -167,8 +140,7 @@ sub mock_config {
 {
     my $mock_pbs = Test::MockObject->new
         ->mock("get_now_playing", sub {994;});
-    my $mock_f = Test::MockObject->new
-        ->set_true("playback");
+    my $mock_f = Test::MockObject->new->set_true("show");
 
     cut(
         playback_service => $mock_pbs,
@@ -184,8 +156,7 @@ sub mock_config {
 {
     my $mock_m = Test::MockObject->new
         ->mock("identify_release_group", sub {31300;});
-    my $mock_f = Test::MockObject->new
-        ->set_true("release_groups");
+    my $mock_f = Test::MockObject->new->set_true("show");
 
     cut(
         mbservice => $mock_m,
@@ -201,6 +172,6 @@ sub mock_config {
     is ($mock_m->call_args_pos(1, 2)->[2], "d", "third artist");
     is ($mock_m->call_args_pos(1, 3), "a", "release group");
     is ($mock_m->call_args_pos(1, 4), - 1, "page");
-    $mock_f->called_pos_ok(1, "release_groups", "find-rg calls release_groups formatter");
+    $mock_f->called_pos_ok(1, "show", "find-rg calls show on formatter");
     $mock_f->called_args_pos_is(1, 2, 31300, "release groups list is passed to formatter");
 }
