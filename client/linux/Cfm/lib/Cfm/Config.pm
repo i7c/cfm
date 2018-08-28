@@ -23,6 +23,7 @@ my @cli_args = (
     'debug-dump-config',
     'fail-log=s',
     'format=s',
+    'help|h',
     'import-source=s',
     'mpris-wait=i',
     'option|o=s@',
@@ -33,7 +34,7 @@ my @cli_args = (
     'set|s=s@',
     'source=s',
     'threshold=i',
-    'verbose|v'
+    'verbose|v',
 );
 
 my %conf_default = (

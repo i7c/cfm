@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 32;
+use Test::More tests => 26;
 use Test::Exception;
 use Test::MockObject;
 
@@ -41,33 +41,6 @@ sub mock_config {
 # Unknown command should die
 {
     dies_ok {cut()->greedy_match_command([ "blub" ])} "die with unknown command";
-}
-
-# list command with args
-{
-    my $mock_p = Test::MockObject->new()
-        ->mock("my_playbacks", sub {478;});
-
-    my $mock_f = Test::MockObject->new()
-        ->set_true("show");
-
-    my $mock_c = mock_config({
-        page   => 3,
-        broken => 0,
-    });
-
-    cut(
-        playback_service => $mock_p,
-        formatter        => $mock_f,
-        config           => $mock_c,
-    )->run("list");
-
-    $mock_p->called_pos_ok(1, "my_playbacks", "called my_playbacks on service");
-    $mock_p->called_args_pos_is(1, 2, 2, "page arg");
-    $mock_p->called_args_pos_is(1, 3, 0, "broken arg");
-    $mock_f->called_pos_ok(1, "show", "called show on formatter");
-    $mock_f->called_args_pos_is(1, 2, 478, "formatter called with playback list result");
-    is ($mock_f->call_pos(2), undef, "no further calls on formatter");
 }
 
 # add command with args

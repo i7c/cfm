@@ -2,6 +2,7 @@ package Cfm::Ui::Cli;
 use strict;
 use warnings FATAL => 'all';
 use Moo;
+use Module::Runtime;
 use Log::Any qw($log);
 
 use Cfm::Autowire;
@@ -16,13 +17,16 @@ my %command_mapping = (
     'fix'          => \&cmd_fix,
     'fixlog'       => \&cmd_fixlog,
     'import-csv'   => \&cmd_import_csv,
-    'list'         => \&cmd_list,
     'now'          => \&cmd_now,
     'record'       => \&cmd_record,
     'record-mpd'   => \&cmd_record_mpd,
     'record-mpris' => \&cmd_record_mpris,
     'recs'         => \&cmd_recs,
     'rgs'          => \&cmd_rgs,
+);
+
+my %subcommand_mapping = (
+    'list' => 'Cfm::Ui::Cli::List',
 );
 
 has loglevel => inject 'loglevel';
@@ -47,7 +51,19 @@ sub run {
     my ($cmd, $cmdargs) = $self->greedy_match_command(\@args);
     $log->debug("$cmd args: " . join " ", $cmdargs->@*);
 
-    $command_mapping{$cmd}->($self, $cmdargs->@*);
+    if (my $cmdref = $command_mapping{$cmd}) {
+        return $cmdref->($self, $cmdargs->@*);
+    }
+    if (my $subcmd = $subcommand_mapping{$cmd}) {
+        Module::Runtime::use_module($subcmd);
+        my $instance = $subcmd->instance();
+
+        if ($self->config->has_option('help')) {
+            $instance->help($cmdargs->@*);
+        } else {
+            $instance->run($cmdargs->@*);
+        }
+    }
 }
 
 sub greedy_match_command {
@@ -58,7 +74,7 @@ sub greedy_match_command {
 
     for (my $i = 0; $i < $c; $i++) {
         my $candidate = join "-", @{$command}[0 .. $i];
-        if (defined $command_mapping{$candidate}) {
+        if (defined $command_mapping{$candidate} || defined $subcommand_mapping{$candidate}) {
             $match_index = $i;
             $match = $candidate;
         }
@@ -71,14 +87,6 @@ sub greedy_match_command {
 }
 
 ### Commands ###
-
-sub cmd_list {
-    my ($self) = @_;
-
-    my $playbacks = $self->playback_service->my_playbacks($self->config->get_option('page') - 1,
-        $self->config->get_option("broken"));
-    $self->formatter->show($playbacks, $self->config->get_option("verbose"));
-}
 
 sub cmd_add {
     my ($self) = @_;
