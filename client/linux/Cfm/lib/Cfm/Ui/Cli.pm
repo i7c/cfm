@@ -5,20 +5,8 @@ use Moo;
 use Log::Any qw($log);
 
 use Cfm::Autowire;
-use Cfm::Config;
-use Cfm::Connector::Mpd;
-use Cfm::Connector::Mpris2;
-use Cfm::Connector::Multi;
-use Cfm::Import::CsvImporter;
-use Cfm::Mb::MbService;
 use Cfm::Playback::Playback;
-use Cfm::Playback::PlaybackService;
-use Cfm::Stats::StatsService;
-use Cfm::Ui::Format::Formatter;
-use Cfm::Ui::Wizard::FixAccPlaybackWizard;
-use Cfm::Ui::Wizard::SelectPlaybackWizard;
 use Cfm::User::User;
-use Cfm::User::UserService;
 
 my %command_mapping = (
     'add'          => \&cmd_add,

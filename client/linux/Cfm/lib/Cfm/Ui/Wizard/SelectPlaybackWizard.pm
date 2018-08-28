@@ -5,7 +5,6 @@ use Moo;
 with 'Cfm::Singleton';
 
 use Cfm::Autowire;
-use Cfm::Playback::PlaybackService;
 
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 

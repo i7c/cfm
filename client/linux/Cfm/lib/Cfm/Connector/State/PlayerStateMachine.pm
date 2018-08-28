@@ -5,9 +5,6 @@ use Moo;
 use Log::Any qw/$log/;
 
 use Cfm::Autowire;
-use Cfm::Connector::State::StopWatch;
-use Cfm::Connector::State::TrackState;
-use Cfm::Connector::SendingEventHandler;
 
 has watch => autowire 'Cfm::Connector::State::StopWatch';
 has track => autowire 'Cfm::Connector::State::TrackState';

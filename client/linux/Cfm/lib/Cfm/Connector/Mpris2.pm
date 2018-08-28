@@ -16,8 +16,6 @@ use Try::Tiny;
 
 use Cfm::Autowire;
 use Cfm::Playback::Playback;
-use Cfm::Playback::PlaybackService;
-use Cfm::Connector::State::PlayerStateMachine;
 
 has queue => (
         is      => 'ro',

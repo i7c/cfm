@@ -6,8 +6,6 @@ use Moo;
 with 'Cfm::Singleton';
 
 use Cfm::Autowire;
-use Cfm::Mb::MbService;
-use Cfm::Playback::PlaybackService;
 use Cfm::Ui::Selector::Selector;
 use Term::Form;
 use Try::Tiny;

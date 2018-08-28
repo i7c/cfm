@@ -6,10 +6,7 @@ with 'Cfm::Singleton';
 use Log::Any qw/$log/;
 
 use Cfm::Autowire;
-use Cfm::Config;
-use Cfm::Connector::State::PlayerStateMachine;
 use Cfm::Playback::Playback;
-use Cfm::Playback::PlaybackService;
 use Data::Dumper;
 use MCE::Flow;
 use MCE::Queue;

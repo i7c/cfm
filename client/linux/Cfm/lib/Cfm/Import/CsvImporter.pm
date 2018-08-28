@@ -6,10 +6,8 @@ use Moo;
 with 'Cfm::Singleton';
 
 use Cfm::Autowire;
-use Cfm::Config;
 use Cfm::Playback::Playback;
 use Cfm::Playback::PlaybackBatchRes;
-use Cfm::Playback::PlaybackService;
 use Time::Piece;
 use Try::Tiny;
 

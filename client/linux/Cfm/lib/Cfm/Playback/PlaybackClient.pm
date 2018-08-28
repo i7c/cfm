@@ -7,7 +7,6 @@ use Cfm::Autowire;
 
 use Cfm::Common::AffectedRes;
 use Cfm::Common::ListRes;
-use Cfm::Config;
 use Cfm::Playback::AccumulatedPlaybacks;
 use Cfm::Playback::BatchResultRes;
 use Cfm::Playback::Playback;

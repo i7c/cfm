@@ -6,7 +6,6 @@ use Moo;
 with 'Cfm::Singleton';
 use Cfm::Autowire;
 
-use Cfm::Stats::StatsClient;
 use Cfm::Common::ListRes;
 use Cfm::Stats::FirstClassStats;
 

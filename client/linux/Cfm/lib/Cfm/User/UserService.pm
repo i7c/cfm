@@ -6,7 +6,6 @@ with 'Cfm::Singleton';
 use Log::Any qw/$log/;
 
 use Cfm::Autowire;
-use Cfm::Client::CfmClient;
 
 has client => singleton "Cfm::Client::CfmClient";
 

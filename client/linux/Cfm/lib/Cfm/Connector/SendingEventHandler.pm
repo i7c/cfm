@@ -6,7 +6,6 @@ with 'Cfm::Connector::PlayerEventHandler';
 use Log::Any qw/$log/;
 
 use Cfm::Autowire;
-use Cfm::Playback::PlaybackService;
 use Sys::Hostname;
 
 has playback_service => singleton 'Cfm::Playback::PlaybackService';

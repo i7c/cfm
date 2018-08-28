@@ -5,7 +5,6 @@ use Moo;
 with 'Cfm::Singleton';
 
 use Cfm::Autowire;
-use Cfm::Mb::MbsClient;
 
 has client => singleton 'Cfm::Mb::MbsClient';
 

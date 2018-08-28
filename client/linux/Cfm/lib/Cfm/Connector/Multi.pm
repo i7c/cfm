@@ -6,7 +6,6 @@ use Moo;
 with 'Cfm::Singleton';
 
 use Cfm::Autowire;
-use Cfm::Config;
 use Cfm::Connector::Mpd;
 use Cfm::Connector::Mpris2;
 use MCE::Flow;

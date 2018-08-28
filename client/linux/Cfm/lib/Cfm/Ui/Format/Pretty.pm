@@ -5,7 +5,6 @@ use Moo;
 with 'Cfm::Singleton', 'Cfm::Ui::Format::Formatter';
 
 use Cfm::Autowire;
-use Cfm::Config;
 use Cfm::Ui::Format::Common;
 use Text::ASCIITable;
 
