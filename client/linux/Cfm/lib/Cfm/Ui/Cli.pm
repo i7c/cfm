@@ -17,7 +17,6 @@ my %command_mapping = (
     'fix'          => \&cmd_fix,
     'fixlog'       => \&cmd_fixlog,
     'import-csv'   => \&cmd_import_csv,
-    'record'       => \&cmd_record,
     'record-mpd'   => \&cmd_record_mpd,
     'record-mpris' => \&cmd_record_mpris,
     'recs'         => \&cmd_recs,
@@ -26,7 +25,8 @@ my %command_mapping = (
 
 my %subcommand_mapping = (
     'list' => 'Cfm::Ui::Cli::List',
-    'now'  => 'Cfm::Ui::Cli::Now',
+    'now' => 'Cfm::Ui::Cli::Now',
+    'record' => 'Cfm::Ui::Cli::Record',
 );
 
 has loglevel => inject 'loglevel';
@@ -38,7 +38,6 @@ has fix_acc_playback_wizard => singleton 'Cfm::Ui::Wizard::FixAccPlaybackWizard'
 has mbservice => singleton 'Cfm::Mb::MbService';
 has mpd => singleton 'Cfm::Connector::Mpd';
 has mpris2 => singleton 'Cfm::Connector::Mpris2';
-has multi => singleton 'Cfm::Connector::Multi';
 has playback_service => singleton 'Cfm::Playback::PlaybackService';
 has select_playback_wizard => singleton 'Cfm::Ui::Wizard::SelectPlaybackWizard';
 has stats_service => singleton 'Cfm::Stats::StatsService';
@@ -123,12 +122,6 @@ sub cmd_import_csv {
         $log->info("Importing playbacks from $file");
         $self->csv_importer->import_csv($file);
     }
-}
-sub cmd_record {
-    my ($self) = @_;
-
-    $self->loglevel->("info") unless $self->config->has_option("quiet");
-    $self->multi->listen();
 }
 
 sub cmd_record_mpris {
