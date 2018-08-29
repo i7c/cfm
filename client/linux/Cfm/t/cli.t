@@ -1,6 +1,6 @@
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 26;
+use Test::More tests => 24;
 use Test::Exception;
 use Test::MockObject;
 
@@ -107,22 +107,6 @@ sub mock_config {
     )->run(qw/record mpris/);
 
     $mock_m->called_args_pos_is(1, 2, "xp", "listen() called with player");
-}
-
-# now
-{
-    my $mock_pbs = Test::MockObject->new
-        ->mock("get_now_playing", sub {994;});
-    my $mock_f = Test::MockObject->new->set_true("show");
-
-    cut(
-        playback_service => $mock_pbs,
-        formatter        => $mock_f,
-        config           => mock_config(),
-    )->run(qw/now/);
-
-    $mock_pbs->called_pos_ok(1, "get_now_playing", "now command asks pbs first");
-    $mock_f->called_args_pos_is(1, 2, 994, "formatter gets returned playback");
 }
 
 # find rg

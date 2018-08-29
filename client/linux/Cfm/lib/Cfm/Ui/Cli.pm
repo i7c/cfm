@@ -17,7 +17,6 @@ my %command_mapping = (
     'fix'          => \&cmd_fix,
     'fixlog'       => \&cmd_fixlog,
     'import-csv'   => \&cmd_import_csv,
-    'now'          => \&cmd_now,
     'record'       => \&cmd_record,
     'record-mpd'   => \&cmd_record_mpd,
     'record-mpris' => \&cmd_record_mpris,
@@ -27,6 +26,7 @@ my %command_mapping = (
 
 my %subcommand_mapping = (
     'list' => 'Cfm::Ui::Cli::List',
+    'now'  => 'Cfm::Ui::Cli::Now',
 );
 
 has loglevel => inject 'loglevel';
@@ -164,13 +164,6 @@ sub cmd_create_user {
     );
     my $response = $self->user_service->create_user($user);
     $self->formatter->show($response);
-}
-
-sub cmd_now {
-    my ($self) = @_;
-
-    my $np = $self->playback_service->get_now_playing;
-    $self->formatter->show($np);
 }
 
 sub cmd_find_rg {
