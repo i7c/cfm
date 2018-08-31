@@ -54,6 +54,12 @@ sub affected {
     $self->_print(encode_json(Cfm::Common::AffectedRes->to_hash($affected)));
 }
 
+sub kv {
+  my ($self, $kv) = @_;
+
+  $self->_print(encode_json($kv));
+}
+
 sub _list {
     my ($self, $list, $trans) = @_;
 

@@ -23,6 +23,7 @@ WriteMakefile(
     PREREQ_PM => {
         "Carp"                                      => "1.38",
         "Config::Simple"                            => "4.58",
+        "DBD::SQLite"                               => "1.58",
         "Data::Printer"                             => "0.40",
         "Date::Format"                              => "2.24",
         "Getopt::Long"                              => "2.50",

@@ -38,17 +38,20 @@ my @cli_args = (
 );
 
 my %conf_default = (
-    'list-cols'       => ['!', 'Artist', 'Title', 'Album', 'Time'],
     'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
+    'db'              => 0,
+    'db-file'         => '/tmp/cfm.sqlite',
+    'format'          => 'pretty',
     'gap-to-complete' => 3,
     'id-method'       => 'rated',
+    'list-cols'       => ['!', 'Artist', 'Title', 'Album', 'Time'],
     'mpd-host'        => $ENV{MPD_HOST} // 'localhost',
     'mpd-wait'        => 10,
     'mpris-wait'      => 10,
-    format            => 'pretty',
-    page              => 0,
-    threshold         => 50,
+    'page'            => 1,
+    'threshold'       => 50,
+    'sync-interval'   => 300,
 );
 
 has conf => (
@@ -80,7 +83,7 @@ sub require_option {
 }
 
 sub has_option {
-    defined $_[0]->conf->{$_[1]};
+    defined $_[0]->conf->{$_[1]} || defined $conf_default{$_[1]};
 }
 
 sub add_flags {

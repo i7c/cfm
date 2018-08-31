@@ -5,13 +5,16 @@ use warnings;
 use Moo;
 use Log::Any qw/$log/;
 
-use LWP::UserAgent;
+use Carp;
+use Cfm::Autowire;
+use Data::Dumper;
 use HTTP::Headers;
 use HTTP::Request;
-use Carp;
 use JSON::MaybeXS;
-use Data::Dumper;
+use LWP::UserAgent;
 use URI;
+
+has kv => singleton 'Cfm::Db::Kv';
 
 has url => (is => 'rw');
 has url_path_prefix => (is => 'rw');
@@ -22,6 +25,8 @@ has agent => (is => 'rw');
 
 sub init {
     my ($self, $url, $url_path_prefix, $user, $pass) = @_;
+
+    if ($self->kv->get('offline')) { die 'Cannot access server in offline mode.'; }
 
     $log->debug("Initialising generic HTTP client");
     $log->debug("url=$url");

@@ -7,6 +7,7 @@ use Switch;
 requires qw/
     affected
     first_class_stats_list
+    kv
     playback
     playback_list
     release_groups
