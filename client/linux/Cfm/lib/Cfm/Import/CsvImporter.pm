@@ -55,7 +55,7 @@ sub import_csv {
 
         try {
             my $batch = $self->_make_playbacks($chunk, $source);
-            my $res = $self->playback_service->batch_create(Cfm::Playback::PlaybackBatchRes->new(playbacks => $batch));
+            my $res = $self->playback_service->batch_create($batch);
             for (my $i = 0; $i < scalar $chunk->@*; $i++) {
                 if ($res->results->[$i]->success) {
                     $count++;
