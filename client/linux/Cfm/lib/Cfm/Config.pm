@@ -42,6 +42,7 @@ my %conf_default = (
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'format'          => 'pretty',
     'gap-to-complete' => 3,
+    'home'            => $ENV{CFM_HOME} // ($ENV{XDG_DATA_HOME} // "$ENV{HOME}/.local/share") . "/cfm",
     'id-method'       => 'rated',
     'list-cols'       => ['!', 'Artist', 'Title', 'Album', 'Time'],
     'mpd-host'        => $ENV{MPD_HOST} // 'localhost',

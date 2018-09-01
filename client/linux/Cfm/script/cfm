@@ -5,6 +5,8 @@ use Cfm::Bean;
 use Cfm::Common::Logging;
 use Cfm::Ui::Cli;
 
+use Module::Runtime qw/use_module/;
+
 binmode STDOUT, ":utf8";
 
 my $logger = Cfm::Common::Logging->setup_logger;
@@ -32,6 +34,23 @@ bean 'formatter' => sub {
     my $format = Cfm::Config->instance()->require_option("format");
     $logger->debug("Choose format: $format");
     ($formatters{$format} // die "Unknown format: $format")->();
+};
+
+bean 'db' => sub {
+    use_module('Cfm::Db::Init');
+    use_module('DBI');
+    use_module('File::Path');
+
+    my $config = Cfm::Config->instance();
+    my $home = $config->require_option('home');
+
+    File::Path::make_path($home);
+    my $dbfile = $home . '/db.sqlite';
+    $logger->info("Open local DB at $dbfile ...");
+    my $db = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
+    Cfm::Db::Init->setup($db);
+
+    $db;
 };
 
 Cfm::Ui::Cli->new()->run(@ARGV);
