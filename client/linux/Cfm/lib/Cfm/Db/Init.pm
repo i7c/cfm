@@ -7,6 +7,14 @@ sub setup {
 
   return unless $class->needs_setup();
 
+  $db->do('
+    create table if not exists kv
+    (
+      k varchar(255),
+      v varchar(1023),
+      primary key (k)
+    );
+  ');
 }
 
 sub needs_setup {

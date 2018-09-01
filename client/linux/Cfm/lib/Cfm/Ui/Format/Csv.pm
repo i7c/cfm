@@ -57,6 +57,14 @@ sub affected {
     $self->csv->print(\*STDOUT, [ $affected->affected ]);
 }
 
+sub kv {
+  my ($self, $kv) = @_;
+
+  for my $k (keys $kv->%*) {
+    $self->csv->print(\*STDOUT, [ $k, $kv->{$k} ]);
+  }
+}
+
 sub first_class_stats_list {
     my ($self, $fcsl) = @_;
 

@@ -165,6 +165,17 @@ sub affected {
     print "$num elements affected.\n";
 }
 
+sub kv {
+  my ($self, $kv) = @_;
+
+  _print_table(
+    [map { [ $_ => $kv->{$_} ] } keys $kv->%*],
+    ['Key', 'Val'],
+    Key => sub { $_[0]->[0] },
+    Val => sub { $_[0]->[1] },
+  );
+}
+
 sub _print_table {
     my ($data, $cols, %mappings) = @_;
 

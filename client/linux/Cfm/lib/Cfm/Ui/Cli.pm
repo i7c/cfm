@@ -24,6 +24,9 @@ my %command_mapping = (
 );
 
 my %subcommand_mapping = (
+    'kv' => 'Cfm::Ui::Cli::Kv',
+    'kv-set' => 'Cfm::Ui::Cli::KvSet',
+    'kv-unset' => 'Cfm::Ui::Cli::KvUnset',
     'list' => 'Cfm::Ui::Cli::List',
     'now' => 'Cfm::Ui::Cli::Now',
     'record' => 'Cfm::Ui::Cli::Record',
