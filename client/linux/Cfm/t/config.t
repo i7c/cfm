@@ -64,7 +64,7 @@ my $conf = Cfm::Config->new(
 {
     my $conf = Cfm::Config->new();
 
-    ok ($conf->get_option("page") == 0, "empty config returns default");
+    ok ($conf->get_option("page") == 1, "empty config returns default");
 
     $conf->add_flags([ qw/--page 2/ ]);
 

@@ -38,17 +38,18 @@ my @cli_args = (
 );
 
 my %conf_default = (
-    'list-cols'       => ['!', 'Artist', 'Title', 'Album', 'Time'],
     'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
+    'format'          => 'pretty',
     'gap-to-complete' => 3,
     'id-method'       => 'rated',
+    'list-cols'       => ['!', 'Artist', 'Title', 'Album', 'Time'],
     'mpd-host'        => $ENV{MPD_HOST} // 'localhost',
     'mpd-wait'        => 10,
     'mpris-wait'      => 10,
-    format            => 'pretty',
-    page              => 0,
-    threshold         => 50,
+    'page'            => 1,
+    'sync-interval'   => 300,
+    'threshold'       => 50,
 );
 
 has conf => (
