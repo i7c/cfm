@@ -2,7 +2,7 @@ package Cfm::Common::ListRes;
 
 use strict;
 use warnings FATAL => 'all';
-use Moo::Role;
+use Moo;
 
 use Cfm::Common::Res;
 with 'Cfm::Common::Res';

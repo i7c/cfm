@@ -29,11 +29,12 @@ sub BUILD {
 }
 
 sub my_playbacks {
-    my ($self, $only_broken, $page) = @_;
+    my ($self, $only_broken, $page, $psize) = @_;
 
     my @params = ();
     push @params, broken => "true" if $only_broken;
     push @params, page => $page if $page > 0;
+    push @params, size => ($psize // 20);
 
     Cfm::Common::ListRes->from_hash($self->get_json("", \@params),
         sub { Cfm::Playback::Playback->from_hash($_); });
