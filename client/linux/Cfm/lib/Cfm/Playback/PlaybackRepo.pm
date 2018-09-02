@@ -16,30 +16,32 @@ has db => inject 'db';
 has kv => singleton 'Cfm::Db::Kv';
 
 sub find {
-  my ($self, $page, $broken) = @_;
+  my ($self, $page, $broken, $size) = @_;
 
   if (!$broken && $self->try_use_local()) {
-    return $self->find_local($page);
+    return $self->find_local($page, $size // 20);
   } else {
     $log->info('Local db not ready, fall back to remote ...');
-    return $self->find_remote($page, $broken);
+    $size //= 20;
+    return $self->find_remote($page, $broken, $size > 200 ? 200 : $size);
   }
 }
 
 sub find_local {
-  my ($self, $page) = @_;
+  my ($self, $page, $size) = @_;
 
+  my $limit = $size > 0 ? 'limit ? offset ?' : '';
   my $data_stm = $self->db->prepare('
     select data
     from playback
     order by timestamp desc
-    limit ?
-    offset ?
-    ');
+    '.$limit
+  );
 
-  my $page_size = 20;
-  $data_stm->bind_param(1, $page_size, SQL_BIGINT);
-  $data_stm->bind_param(2, $page * $page_size, SQL_BIGINT);
+  if ($size > 0) {
+    $data_stm->bind_param(1, $size, SQL_BIGINT);
+    $data_stm->bind_param(2, $page * $size, SQL_BIGINT);
+  }
   $data_stm->execute();
 
   my @res;
@@ -56,18 +58,18 @@ sub find_local {
 
   Cfm::Common::ListRes->new(
     elements => [ @res ],
-    size => $page_size,
+    size => $size,
     count => scalar @res,
     number => $page,
     total => $count,
-    totalPages => int($count / $page_size) + 1,
+    totalPages => ($size > 0 ? int($count / $size) : 0) + 1,
   );
 }
 
 sub find_remote {
-  my ($self, $page, $broken) = @_;
+  my ($self, $page, $broken, $size) = @_;
 
-  $self->client->my_playbacks($broken, $page);
+  $self->client->my_playbacks($broken, $page, $size);
 }
 
 sub store {

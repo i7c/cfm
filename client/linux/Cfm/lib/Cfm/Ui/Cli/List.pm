@@ -14,7 +14,8 @@ sub run {
 
     my $playbacks = $self->playback_service->my_playbacks(
         $self->config->get_option('page') - 1,
-        $self->config->get_option("broken"),
+        $self->config->get_option('broken'),
+        $self->config->get_option('amount'),
     );
     $self->formatter->playback_list(
         $playbacks,
@@ -38,6 +39,13 @@ sub run {
     playback is on the very top.
 
 =head1 OPTIONS
+
+    --amount <n>, -n <n>
+        Request n elements instead of the default amount. When requesting from
+        the local store, the amount is unlimited. When requesting remotely, a
+        maximum of 200 will be forced.
+
+        You can specify 0 to request all elements, if the local store is used.
 
     --page <n>, -p <n>
         Show the n-th page of playbacks instead of the first one. We start

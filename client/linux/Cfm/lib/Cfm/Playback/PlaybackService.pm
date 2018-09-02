@@ -10,9 +10,9 @@ has client => singleton "Cfm::Playback::PlaybackClient";
 has repo => singleton 'Cfm::Playback::PlaybackRepo';
 
 sub my_playbacks {
-    my ($self, $page, $broken) = @_;
+    my ($self, $page, $broken, $size) = @_;
 
-    $self->repo->find($page // 0, $broken // 0);
+    $self->repo->find($page // 0, $broken // 0, $size);
 }
 
 sub create_playback {

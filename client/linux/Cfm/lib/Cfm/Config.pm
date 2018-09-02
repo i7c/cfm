@@ -17,6 +17,7 @@ my @config_locations = (
 
 my @cli_args = (
     'acc',
+    'amount|n=i',
     'broken',
     'csv-format=s',
     'date-format=s',
@@ -38,6 +39,7 @@ my @cli_args = (
 );
 
 my %conf_default = (
+    'amount'          => 20,
     'csv-format'      => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'date-format'     => 'ben', # https://benjaminbenben.com/lastfm-to-csv/
     'format'          => 'pretty',
